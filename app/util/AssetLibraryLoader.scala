@@ -52,7 +52,7 @@ object AssetLibraryLoader {
     // TODO: load metadata
     //  val metadata = findSuffix(path, ".json")
     Asset(
-      name = path.getName,
+      name = path.getName.trim,
       original = path,
       preview = findSuffix(path, "_thumbnail.jpg"),
       thumbnail = findSuffix(path, "_preview.jpg"))
