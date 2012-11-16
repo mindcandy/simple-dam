@@ -30,7 +30,7 @@ object Application extends Controller {
 
   def index = Action {
 
-    val top = AssetLibrary.topFolder
+    val top = AssetLibrary.current.topFolder
     Ok("Found assets <ul>" + folderToList(top) + "</ul>").as(HTML)
     //views.html.index
   }

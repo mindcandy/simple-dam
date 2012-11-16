@@ -12,7 +12,9 @@ object Global extends GlobalSettings {
   override def onStart(app:Application) {
 
    app.configuration.getString("assetLibrary") match {
-      case Some(path) =>  models.AssetLibrary.load(path)
+      case Some(path) =>  {
+        AssetLibrary.current = AssetLibrary.load(path)
+      }
       case None => throw new IllegalArgumentException("No assetLibrary path defined in application.conf")
     }
 
