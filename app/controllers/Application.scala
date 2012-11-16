@@ -10,7 +10,14 @@ object Application extends Controller {
   private def folderToList(folder: AssetFolder): String = {
 
     val foldersList = if (!folder.assets.isEmpty) {
-       folder.assets.map{ case asset => "<li>" + asset.name + "</li>" }.mkString( "<ul>", "", "</ul>")
+       folder.assets.map{
+         case asset => {
+           val hasThumb = if (asset.thumbnail.isDefined) " [thumb]" else ""
+           val hasPreview = if (asset.preview.isDefined) " [preview]" else ""
+
+           "<li>" + asset.name + hasThumb + hasPreview + "</li>"
+        }
+       }.mkString( "<ul>", "", "</ul>")
       } else ""
 
     val assetsList =

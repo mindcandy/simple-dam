@@ -24,17 +24,40 @@ object AssetLibrary {
 
     // determine if a File is an Asset
     def isAsset(path: File): Boolean = {
-      path.isFile && !path.getName.startsWith(".")
+      var name = path.getName
+      path.isFile &&
+        name.contains('.') &&
+        !name.startsWith(".") &&
+        !name.contains("_thumbnail.") &&
+        !name.contains("_preview.") &&
+        !name.endsWith(".json")
     }
 
     def isValidDirectory(path: File): Boolean = {
        path.isDirectory && !path.getName.startsWith(".")
     }
 
+    def find(path: File, suffix: String): Option[File] = {
+      val parent = path.getParentFile
+      val root = path.getName.substring(0, path.getName.lastIndexOf('.'))
+      val newName = root + suffix + ".jpg"
+      val file = new File(parent, newName)
+
+      if (file.exists()) {
+        Some(file)
+      } else {
+        None
+      }
+    }
+
     // load an Asset
     def loadAsset(path: File): Asset = {
       // do nothing clever yet
-      Asset(path.getName, path, None, None)
+      Asset(
+        name = path.getName,
+        original = path,
+        preview = find(path, "_thumbnail"),
+        thumbnail = find(path, "_preview"))
     }
 
     // load a folder of Assets
@@ -47,7 +70,10 @@ object AssetLibrary {
       val folders = allFiles.filter( isValidDirectory(_) )
       val assets = allFiles.filter( isAsset(_) )
 
-      AssetFolder(path.getName, assets.map(loadAsset(_)), folders.map(loadFolder(_)))
+      AssetFolder(
+        name = path.getName,
+        assets = assets.map(loadAsset(_)),
+        folders = folders.map(loadFolder(_)))
     }
 
     Logger.debug("Loading AssetLibrary from " + path)
