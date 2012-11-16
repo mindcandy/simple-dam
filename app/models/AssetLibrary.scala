@@ -33,15 +33,18 @@ object AssetLibrary {
         !name.endsWith(".json")
     }
 
+    // is this a valid directory?
     def isValidDirectory(path: File): Boolean = {
        path.isDirectory && !path.getName.startsWith(".")
     }
 
-    def find(path: File, suffix: String): Option[File] = {
-      val parent = path.getParentFile
-      val root = path.getName.substring(0, path.getName.lastIndexOf('.'))
-      val newName = root + suffix + ".jpg"
-      val file = new File(parent, newName)
+    /**
+     * find file with suffix e.g. passed in foo.pdf and _suffix.jpg would look
+     * for foo_suffix.jpg
+      */
+    def findSuffix(base: File, suffix: String): Option[File] = {
+      val root = base.getName.substring(0, base.getName.lastIndexOf('.'))
+      val file = new File(base.getParentFile, root + suffix)
 
       if (file.exists()) {
         Some(file)
@@ -53,11 +56,13 @@ object AssetLibrary {
     // load an Asset
     def loadAsset(path: File): Asset = {
       // do nothing clever yet
+      // TODO: load metadata
+      //  val metadata = findSuffix(path, ".json")
       Asset(
         name = path.getName,
         original = path,
-        preview = find(path, "_thumbnail"),
-        thumbnail = find(path, "_preview"))
+        preview = findSuffix(path, "_thumbnail.jpg"),
+        thumbnail = findSuffix(path, "_preview.jpg"))
     }
 
     // load a folder of Assets
