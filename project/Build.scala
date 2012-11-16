@@ -8,8 +8,8 @@ object ApplicationBuild extends Build {
   val appVersion      = "0.1.0"
 
   val appDependencies = Seq(
-    "org.squeryl" %% "squeryl" % "0.9.5-2",
-    "postgresql" % "postgresql" % "9.1-901.jdbc4",
+    // "org.squeryl" %% "squeryl" % "0.9.5-2",
+    // "postgresql" % "postgresql" % "9.1-901.jdbc4",
     "org.mockito" % "mockito-core" % "1.9.0"
   )
 
