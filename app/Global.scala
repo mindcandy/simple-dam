@@ -3,10 +3,20 @@
 // import org.squeryl.{Session, SessionFactory}
 // import play.api.db.DB
 import play.api.GlobalSettings
-
 import play.api.Application
 
+import models.AssetLibrary
+
 object Global extends GlobalSettings {
+
+  override def onStart(app:Application) {
+
+   app.configuration.getString("assetLibrary") match {
+      case Some(path) =>  models.AssetLibrary.load(path)
+      case None => throw new IllegalArgumentException("No assetLibrary path defined in application.conf")
+    }
+
+  }
 
   /** This implements basic DB session management
    *  Set DB config correctly in conf/application.conf, then uncomment
