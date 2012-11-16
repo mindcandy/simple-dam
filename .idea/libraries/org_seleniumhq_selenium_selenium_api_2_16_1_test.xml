@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="org.seleniumhq.selenium_selenium-api_2.16.1_test">
-    <CLASSES>
-      <root url="jar:///usr/local/Cellar/play/2.0.4/libexec/repository/local/org.seleniumhq.selenium/selenium-api/2.16.1/jars/selenium-api.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
