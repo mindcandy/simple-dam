@@ -1,4 +1,4 @@
-@(title: String, assets: List[models.Asset])
+@(title: String, search: String, assets: List[models.Asset])
 
 
 @renderAsset(a: models.Asset) = {    
@@ -11,13 +11,17 @@
 
 @main(title) {
 
+<div class="container-fluid rounded"><!--container-fluid mini-layout fluid"> -->
+
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
-    <a class="brand" href="#">@{title}</a>
     <ul class="nav">
+      <li class="divider-vertical"></li>
+    <a class="brand" href="#">@{title}</a>
+      <li class="divider-vertical"></li>
       <li><a href="/">Show All</a></li> <!--  class="active" -->
       <form class="navbar-form pull-left">
-        <input type="text" name="search" id="search" class="span2"/>
+        <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
       </form>
       <!-- todo: order -->
@@ -25,8 +29,6 @@
     </ul>
   </div>
 </div>
-
-<div class="container-fluid rounded"><!--container-fluid mini-layout fluid"> -->
 
   <div class="row-fluid"><!--row-fluid">-->
 

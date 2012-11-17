@@ -45,10 +45,12 @@ object Application extends Controller {
   // debugging display for now -- proper UI to come later!
   def index(search: String, offset: Int, limit: Int) = Action {
 
-    val assets = if (search.isEmpty)
+    val sanitisedSearch = search.trim
+
+    val assets = if (sanitisedSearch.isEmpty)
       AssetLibrary.current.sortedAssets
     else
-      AssetLibrary.current.findAssets(search)
+      AssetLibrary.current.findAssets(sanitisedSearch)
 
     // limit response
     // val slice = assets.slice(offset, offset + limit)
@@ -71,7 +73,7 @@ object Application extends Controller {
     //   previous + "  " + next + "</p>" +
     //   listAssets(slice)
 
-    Ok(views.html.index(Settings.title, assets));
+    Ok(views.html.index(Settings.title, sanitisedSearch, assets));
   }
   
 }
