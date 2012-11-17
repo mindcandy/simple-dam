@@ -25,11 +25,10 @@ case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPrev
 
 
   private def getSuffixPath(exists: Boolean, suffix: String, default: String): String = {
-    if (exists)
-      Asset.getSuffixPath(new File(original), suffix)
-    else
-      default
+    if (exists) Asset.getSuffixPath(new File(original), suffix)
+    else default
   }
+
 }
 
 

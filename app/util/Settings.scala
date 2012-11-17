@@ -8,13 +8,16 @@ import play.api._
  */
 object Settings {
 
+  private def config = Play.current.configuration
+
   /**
    * get asset library path
    */
-  def assetLibraryPath = {
-    Play.current.configuration.getString("assetLibrary") match {
+  def assetLibraryPath: String = config.getString("assetLibrary") match {
       case Some(path) => path
       case None => throw new IllegalArgumentException("No assetLibrary path defined in application.conf")
     }
-  }
+
+  def title: String = config.getString("ui.title").getOrElse("Assets")
+
 }

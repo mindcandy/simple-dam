@@ -4,9 +4,11 @@ import play.api._
 import play.api.mvc._
 
 import models._
+import util.Settings
+
+
 
 object Application extends Controller {
-
 
   private def emitAsset(asset: Asset): String = {
     val hasThumb =
@@ -43,38 +45,33 @@ object Application extends Controller {
   // debugging display for now -- proper UI to come later!
   def index(search: String, offset: Int, limit: Int) = Action {
 
-//    val top = AssetLibrary.current.topFolder
-//    val result = "Found assets <ul>" + folderToList(top) + "</ul>"
-
-    //views.html.index
     val assets = if (search.isEmpty)
       AssetLibrary.current.sortedAssets
     else
       AssetLibrary.current.findAssets(search)
 
     // limit response
-    val slice = assets.slice(offset, offset + limit)
+    // val slice = assets.slice(offset, offset + limit)
 
-    val searchInfo = if (search.isEmpty)
-      "Showing all assets</p>"
-    else
-      "<p>Seached for '" + search + "'</p>"
+    // val searchInfo = if (search.isEmpty)
+    //   "Showing all assets</p>"
+    // else
+    //   "<p>Seached for '" + search + "'</p>"
 
-    val next = if (assets.length > (offset + limit))
-      "<a href=\"" + routes.Application.index(search, offset + limit, limit) + "\">next</a>"
-    else "next"
+    // val next = if (assets.length > (offset + limit))
+    //   "<a href=\"" + routes.Application.index(search, offset + limit, limit) + "\">next</a>"
+    // else "next"
 
-    val previous = if (offset > 0)
-      "<a href=\"" + routes.Application.index(search, math.max(offset - limit,0), limit) + "\">previous</a>"
-    else "previous"
+    // val previous = if (offset > 0)
+    //   "<a href=\"" + routes.Application.index(search, math.max(offset - limit,0), limit) + "\">previous</a>"
+    // else "previous"
 
-    val result = "<p>" + searchInfo + "</p>"+
-      "<p>Showing " + offset + "-" + (offset + limit -1) + " of " + assets.length + " results. " +
-      previous + "  " + next + "</p>" +
-      listAssets(slice)
+    // val result = "<p>" + searchInfo + "</p>"+
+    //   "<p>Showing " + offset + "-" + (offset + limit -1) + " of " + assets.length + " results. " +
+    //   previous + "  " + next + "</p>" +
+    //   listAssets(slice)
 
-
-    Ok(result).as(HTML)
+    Ok(views.html.index(Settings.title, assets));
   }
   
 }

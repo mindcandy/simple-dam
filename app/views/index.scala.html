@@ -1,9 +1,57 @@
-@(message: String)
+@(title: String, assets: List[models.Asset])
 
-@main("Play 2.0") {
-    
-<div>
-    @message
+
+@renderAsset(a: models.Asset) = {    
+  <li>
+    <img src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
+    @{a.name}
+  </li>
+}
+
+
+@main(title) {
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <a class="brand" href="#">@{title}</a>
+    <ul class="nav">
+      <li><a href="/">Show All</a></li> <!--  class="active" -->
+      <form class="navbar-form pull-left">
+        <input type="text" name="search" id="search" class="span2"/>
+        <button type="submit" class="btn">Submit</button>
+      </form>
+      <!-- todo: order -->
+      <!--<li class="navbar-text">Order</li>-->
+    </ul>
+  </div>
+</div>
+
+<div class="container-fluid rounded"><!--container-fluid mini-layout fluid"> -->
+
+  <div class="row-fluid"><!--row-fluid">-->
+
+    <div class="span2 sidebar">
+      <!--Sidebar content-->
+      Keywords
+        <ul>
+            <li>folder 1
+                <ul><li>foo</li><li>bar</li><li>boing</li></ul>
+            </li>
+            <li>folder 2
+                <ul><li>logo</li><li>bar</li><li>boing</li></ul>
+            </li>
+            <li>folder 3
+                <ul><li>foo</li><li>bar</li><li>boing</li></ul>
+            </li>
+        </ul>            
+    </div>
+
+    <div class="span10 body">
+        <ul>
+            @for(a <- assets) { @renderAsset(a) }
+        </ul>
+    </div>
+  </div>
 </div>
     
 }

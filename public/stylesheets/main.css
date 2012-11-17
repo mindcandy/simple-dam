@@ -1,2 +1,26 @@
 /* CSS goes here
  */
+
+body {
+    padding-top: 43px;
+}
+/*
+.rounded div {
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.sidebar {
+  background-color: red;
+  }
+
+.body {
+  background-color: #bbd8e9;
+}
+
+.searchbar {
+  background-color: green;
+
+}
+*/
