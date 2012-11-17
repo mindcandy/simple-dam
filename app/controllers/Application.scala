@@ -12,8 +12,14 @@ object Application extends Controller {
     val foldersList = if (!folder.assets.isEmpty) {
        folder.assets.map{
          case asset => {
-           val hasThumb = if (asset.hasThumbnail) " [thumb]" else ""
-           val hasPreview = if (asset.hasPreview) " [preview]" else ""
+           val hasThumb =
+             if (asset.hasThumbnail)
+              " <img src=\"" + routes.FileServer.serve(asset.thumbnail) + "\"/>"
+             else ""
+           val hasPreview =
+             if (asset.hasPreview)
+               " <a href=\"" + routes.FileServer.serve(asset.preview) + "\">[preview]</a>"
+             else ""
            val route = routes.FileServer.serve(asset.original)
 
            "<li><a href=\"" + route + "\">" + asset.name + "</a>" + hasThumb + hasPreview + "</li>"

@@ -16,9 +16,9 @@ case class AssetLibrary (topFolder: AssetFolder) {
   }
 
   /**
-   * cached list of all assets
+   * list of all assets -- uncached; prefer sortedAssets
    */
-  lazy val allAssets: List[Asset] = findAssetsRecursively(topFolder)
+  def allAssets: List[Asset] = findAssetsRecursively(topFolder)
 
   /**
    * cached SORTED list of all assets - useful for searching/filtering/reversing
