@@ -11,7 +11,7 @@ object AssetLibraryLoader {
   /**
    * load asset library from a path
    */
-  def load(assetLibraryPath: String) = AssetLibrary(loadFolder(new File(assetLibraryPath)))
+  def load(assetLibraryPath: String) = AssetLibrary(loadFolder(new File(assetLibraryPath), assetLibraryPath))
 
   // determine if a File is an Asset
   private def isAsset(path: File): Boolean = {
@@ -47,21 +47,21 @@ object AssetLibraryLoader {
   /**
    * load an Asset
    */
-  private def loadAsset(path: File): Asset = {
+  private def loadAsset(path: File, basePath: String): Asset = {
     // do nothing clever yet
     // TODO: load metadata
     //  val metadata = findSuffix(path, ".json")
     Asset(
       name = path.getName.trim,
-      original = path,
-      preview = findSuffix(path, "_thumbnail.jpg"),
-      thumbnail = findSuffix(path, "_preview.jpg"))
+      original = path.getPath.replace(basePath,""),
+      hasPreview = findSuffix(path, "_thumbnail.jpg").isDefined,
+      hasThumbnail = findSuffix(path, "_preview.jpg").isDefined)
   }
 
   /**
    * load a folder of Assets
     */
-  private def loadFolder(path: File): AssetFolder = {
+  private def loadFolder(path: File, basePath: String): AssetFolder = {
     val allFiles = path.listFiles() match {
       case null => List()
       case files => files.toList
@@ -72,7 +72,7 @@ object AssetLibraryLoader {
 
     AssetFolder(
       name = path.getName,
-      assets = assets.map(loadAsset(_)),
-      folders = folders.map(loadFolder(_)))
+      assets = assets.map(loadAsset(_, basePath)),
+      folders = folders.map(loadFolder(_, basePath)))
   }
 }

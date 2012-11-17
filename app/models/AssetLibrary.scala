@@ -25,7 +25,9 @@ case class AssetLibrary (topFolder: AssetFolder) {
    */
   lazy val sortedAssets = allAssets.sortBy(_.nameLower)
 
-
+  /**
+   * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
+   */
   def findAsset(search: String) = sortedAssets.filter(_.matches(search))
 }
 

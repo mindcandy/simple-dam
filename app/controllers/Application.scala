@@ -12,10 +12,11 @@ object Application extends Controller {
     val foldersList = if (!folder.assets.isEmpty) {
        folder.assets.map{
          case asset => {
-           val hasThumb = if (asset.thumbnail.isDefined) " [thumb]" else ""
-           val hasPreview = if (asset.preview.isDefined) " [preview]" else ""
+           val hasThumb = if (asset.hasThumbnail) " [thumb]" else ""
+           val hasPreview = if (asset.hasPreview) " [preview]" else ""
+           val route = routes.FileServer.serve(asset.original)
 
-           "<li>" + asset.name + hasThumb + hasPreview + "</li>"
+           "<li><a href=\"" + route + "\">" + asset.name + "</a>" + hasThumb + hasPreview + "</li>"
         }
        }.mkString( "<ul>", "", "</ul>")
       } else ""
