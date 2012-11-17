@@ -1,4 +1,4 @@
-@(title: String, search: String, assets: List[models.Asset])
+@(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset])
 
 
 @renderAsset(a: models.Asset) = {    
@@ -8,29 +8,48 @@
   </li>
 }
 
+@pageLink(page: Int, text: String, nav: Boolean) = {
+  <li @if(page == pagination.current) { 
+        @if(nav) { class="disabled" } else { class="active" }
+    } >
+    <a href="@routes.Application.index(search, page)">@text</a>
+  </li> 
+}
 
 @main(title) {
 
-<div class="container-fluid rounded"><!--container-fluid mini-layout fluid"> -->
-
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
+    <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-    <a class="brand" href="#">@{title}</a>
-      <li class="divider-vertical"></li>
-      <li><a href="/">Show All</a></li> <!--  class="active" -->
+      <li @if(search.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
       <form class="navbar-form pull-left">
         <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
       </form>
-      <!-- todo: order -->
-      <!--<li class="navbar-text">Order</li>-->
     </ul>
+
+@if(pagination.total > 1) {
+    <div class="pagination pagination-small pull-left pagination-in-navbar">
+    <ul>
+        @pageLink(0, "|<", true) 
+        @pageLink(math.max(pagination.current - 1,0), "<", true)
+        @for(p <- pagination.min to pagination.max)  {
+            @pageLink(p, (p + 1).toString, false)
+        }
+        @pageLink(math.min(pagination.current + 1, pagination.total), ">", true)
+        @pageLink(pagination.total, ">|", true)
+    </ul>
+    </div> 
+}
+    <!-- todo: order -->
+    <!--<li class="navbar-text">Order</li>-->
   </div>
 </div>
 
-  <div class="row-fluid"><!--row-fluid">-->
+<div class="container-fluid rounded">
+  <div class="row-fluid">
 
     <div class="span2 sidebar">
       <!--Sidebar content-->
@@ -52,6 +71,8 @@
         <ul>
             @for(a <- assets) { @renderAsset(a) }
         </ul>
+
+
     </div>
   </div>
 </div>

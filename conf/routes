@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index(search: String ?= "", offset: Int ?= 0, limit: Int ?= 50)
+GET     /                           controllers.Application.index(search: String ?= "", page: Int ?= 0)
 
 
 GET     /file/*file                 controllers.FileServer.serve(file)

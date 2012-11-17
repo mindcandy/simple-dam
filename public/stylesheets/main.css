@@ -1,27 +1,28 @@
-/* CSS goes here
- */
 
+/* Extra padding needed with top navbar */
 body {
     padding-top: 43px;
 }
 
-/*
-.rounded div {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+/* space out things in the navbar nicely */
+.brand.titlebrand {
+    margin-left: 0px;
 }
 
+.navbar li, .navbar input {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.pagination.pagination-in-navbar { 
+    margin: 7px 0px 0px 0px;
+    padding-left: 15px;
+}
+
+/*
 .sidebar {
-  background-color: red;
   }
 
 .body {
-  background-color: #bbd8e9;
-}
-
-.searchbar {
-  background-color: green;
-
 }
 */

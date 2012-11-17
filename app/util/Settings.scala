@@ -20,4 +20,6 @@ object Settings {
 
   def title: String = config.getString("ui.title").getOrElse("Assets")
 
+  def assetsPerPage: Int = config.getInt("ui.assetsPerPage").getOrElse(50)
+
 }
