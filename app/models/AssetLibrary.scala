@@ -28,7 +28,7 @@ case class AssetLibrary (topFolder: AssetFolder) {
   /**
    * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
    */
-  def findAsset(search: String) = sortedAssets.filter(_.matches(search))
+  def findAssets(search: String) = sortedAssets.filter(_.matches(search))
 }
 
 /**
