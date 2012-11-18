@@ -14,3 +14,12 @@ String.prototype.hashCode = function(){
     }
     return hash;
 };
+
+
+
+/* set up function */
+jQuery(document).ready(function() {
+
+    $(".inner-asset a").tooltip();
+
+});

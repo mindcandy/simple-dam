@@ -29,7 +29,7 @@
 @assetThumbnail(a: models.Asset) = {    
   <div class="asset pull-left">
     <div class="inner-asset">
-      <a href="@routes.FileServer.serve(a.original)">
+      <a href="@routes.FileServer.serve(a.original)" rel="tooltip" title="@{a.name}">
       <img class="thumb" 
         src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
       </a>
