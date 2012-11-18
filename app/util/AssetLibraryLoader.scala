@@ -13,13 +13,10 @@ object AssetLibraryLoader {
    */
   def load(assetLibraryPath: String) = AssetLibrary(loadFolder(new File(assetLibraryPath), assetLibraryPath))
 
-
-
   // is this a valid directory?
   private def isValidDirectory(path: File): Boolean = {
     path.isDirectory && !path.getName.startsWith(".")
   }
-
 
   /**
    * load a folder of Assets
@@ -36,6 +33,6 @@ object AssetLibraryLoader {
     AssetFolder(
       name = path.getName,
       assets = assets.map(Asset(_, basePath)).sortBy(_.nameLower),
-      folders = folders.map(loadFolder(_, basePath)))
+      folders = folders.map(loadFolder(_, basePath)).sortBy(_.name.toLowerCase))
   }
 }
