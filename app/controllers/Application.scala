@@ -20,6 +20,21 @@ object Application extends Controller {
     else
       AssetLibrary.current.findAssets(sanitisedSearch)
 
+    showResults(sanitisedSearch, page, "", assets)
+  }
+
+  def findFolder(folderPath: String, page: Int) = Action {
+
+    // find folder
+    val folder = AssetLibrary.current.findFolder(folderPath)
+    val assets = folder.assets
+
+    showResults("", page, folderPath, assets)
+  }
+
+
+  private def showResults(sanitisedSearch: String, page: Int, currentFolder: String, assets: List[Asset]) = Action {
+
     // build pagination info
     val totalPages = assets.length / Settings.assetsPerPage
     val minVisiblePage = math.max(page - 3, 0)
@@ -30,7 +45,7 @@ object Application extends Controller {
     val offset = page * Settings.assetsPerPage
     val slice = assets.slice(offset, offset + Settings.assetsPerPage)
 
-    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, slice, AssetLibrary.current));
+    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, currentFolder, slice, AssetLibrary.current));
   }
   
 }

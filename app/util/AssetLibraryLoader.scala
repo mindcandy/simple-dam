@@ -35,7 +35,7 @@ object AssetLibraryLoader {
 
     AssetFolder(
       name = path.getName,
-      assets = assets.map(Asset(_, basePath)),
+      assets = assets.map(Asset(_, basePath)).sortBy(_.nameLower),
       folders = folders.map(loadFolder(_, basePath)))
   }
 }

@@ -1,20 +1,20 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset], library: models.AssetLibrary)
+@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: List[models.Asset], library: models.AssetLibrary)
 
 
-@listFolders(folders: List[models.AssetFolder]) = {
+@listFolders(folders: List[models.AssetFolder], folderPath: String) = {
   @if(!folders.isEmpty) {
     <ul>
     @for(f <- folders) {
-        @showFolder(f)
+        @showFolder(f, folderPath + f.name + "/")
     }
     </ul>
   } 
 }
 
-@showFolder(folder: models.AssetFolder) = {
-    <li>
-        <a href="#">@{folder.name}</a>
-        @listFolders(folder.folders)
+@showFolder(folder: models.AssetFolder, folderPath: String) = {
+    <li id="@{folderPath}">
+        <a href="@routes.Application.findFolder(folderPath, 0)">@{folder.name}</a>
+        @listFolders(folder.folders, folderPath)
     </li>
 }
 
@@ -46,6 +46,8 @@
   </li> 
 }
 
+
+
 @main(title) {
 
 <div class="navbar navbar-fixed-top">
@@ -53,7 +55,7 @@
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-      <li @if(search.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
+      <li @if(search.isEmpty && currentFolder.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
       <form class="navbar-form pull-left">
         <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
@@ -84,7 +86,7 @@
       <!--Sidebar content-->
       <h5>Folders</h5>
       <div class="tree">
-        @listFolders(library.topFolder.folders)
+        @listFolders(library.topFolder.folders, "")
       </div>
     </div>
 
@@ -94,5 +96,45 @@
   </div>
 </div>
 }
+<!-- after scripts are loaded -->
 
+<script>
+jQuery(document).ready(function() {
+
+    // replace string path with hash id for easy lookup later...
+    $(".tree li").each(function(index) { $(this).attr("id", $(this).attr("id").hashCode().toString()) })
+
+    // figure out which items we want to auto-open
+    var auto_open = [];
+    var currentFolder = "@{currentFolder}";
+    if (currentFolder) {
+        // open current folder node
+        var id = currentFolder.hashCode().toString();
+        console.log("opening ", id);
+        // $(".tree").jstree("open_node", id, false, true);
+        auto_open.push(id);
+    }
+
+    // create tree
+    $(".tree").jstree({
+        core: {
+            "animation": 100,
+            "open_parents": true,
+            "initially_open": auto_open
+        },
+        themes: { 
+            "icons" : false,
+            "theme": "classic",
+            "url": "/web/tree-themes/classic/style.css"
+        },
+        plugins: [ "themes", "html_data" ]
+    });
+
+
+});
+</script>
+
+<!-- footer -->       
+</body>
+</html>
 

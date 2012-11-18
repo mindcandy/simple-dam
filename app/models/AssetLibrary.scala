@@ -29,6 +29,25 @@ case class AssetLibrary (topFolder: AssetFolder) {
    * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
    */
   def findAssets(search: String) = sortedAssets.filter(_.matches(search))
+
+  /**
+   * find a folder by its path
+   */
+  def findFolder(path: String): AssetFolder = {
+
+    def findFolderRecursive(folder: AssetFolder, components: Array[String]): AssetFolder = {
+      if (components.isEmpty) folder
+      else {
+        folder.folders.find(_.name == components.head) match {
+          case Some(matchingFolder) => findFolderRecursive(matchingFolder, components.tail)
+          case None => throw new Exception("No matching folder for " + components.head)
+        }
+      }
+    }
+
+    val pathComponents = path.split("/").filter(!_.isEmpty)
+    findFolderRecursive(topFolder, pathComponents)
+  } 
 }
 
 /**

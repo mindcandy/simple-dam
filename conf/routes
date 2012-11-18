@@ -5,6 +5,8 @@
 # Home page
 GET     /                           controllers.Application.index(search: String ?= "", page: Int ?= 0)
 
+GET     /folder/*folder             controllers.Application.findFolder(folder, page: Int ?= 0)
+
 
 GET     /file/*file                 controllers.FileServer.serve(file)
 
