@@ -31,7 +31,7 @@ object Application extends Controller {
     val offset = page * Settings.assetsPerPage
     val slice = assets.slice(offset, offset + Settings.assetsPerPage)
 
-    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, slice));
+    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, slice, AssetLibrary.current));
   }
   
 }

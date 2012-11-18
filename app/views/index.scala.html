@@ -1,4 +1,22 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset])
+@(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset], library: models.AssetLibrary)
+
+
+@listFolders(folders: List[models.AssetFolder], cssClass: String) = {
+  @if(!folders.isEmpty) {
+    <ul @if(!cssClass.isEmpty) { class="@cssClass" } >
+    @for(f <- folders) {
+        @showFolder(f)
+    }
+    </ul>
+  } 
+}
+
+@showFolder(folder: models.AssetFolder) = {
+    <li>
+        <div class="folder"><a href="#">@{folder.name}</a></div>
+        @listFolders(folder.folders, "")
+    </li>
+}
 
 @displayName(name: String) = {
     @if(name.length > 16) {
@@ -8,17 +26,16 @@
     }
 }
 
-
-@renderAsset(a: models.Asset) = {    
-    <div class="asset pull-left">
+@assetThumbnail(a: models.Asset) = {    
+  <div class="asset pull-left">
     <div class="inner-asset">
-    <a href="@routes.FileServer.serve(a.original)">
-    <img class="thumb" 
+      <a href="@routes.FileServer.serve(a.original)">
+      <img class="thumb" 
         src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
-    </a>
-    <p class="caption">@displayName(a.name)</p>
+      </a>
+      <p class="caption">@displayName(a.name)</p>
     </div>
-    </div>
+  </div>
 }
 
 @pageLink(page: Int, text: String, nav: Boolean) = {
@@ -63,28 +80,17 @@
 
 <div class="container-fluid rounded">
   <div class="row-fluid">
-
     <div class="span2 sidebar">
       <!--Sidebar content-->
-      Keywords
-        <ul>
-            <li>folder 1
-                <ul><li>foo</li><li>bar</li><li>boing</li></ul>
-            </li>
-            <li>folder 2
-                <ul><li>logo</li><li>bar</li><li>boing</li></ul>
-            </li>
-            <li>folder 3
-                <ul><li>foo</li><li>bar</li><li>boing</li></ul>
-            </li>
-        </ul>            
+      <h6>Keywords</h6>
+      @listFolders(library.topFolder.folders, "tree")
     </div>
 
     <div class="span10 content">
-        @for(a <- assets) { @renderAsset(a) }
+        @for(a <- assets) { @assetThumbnail(a) }
     </div>
-
   </div>
 </div>
-    
 }
+
+
