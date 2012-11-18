@@ -13,7 +13,7 @@
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
     <li id="@{folderPath}">
-        <a href="@routes.Application.findFolder(folderPath, 0)">@{folder.name}</a>
+        <a href="@routes.Application.findFolder(folderPath, 1)">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
 }
@@ -42,7 +42,9 @@
   <li @if(page == pagination.current) { 
         @if(nav) { class="disabled" } else { class="active" }
     } >
-    <a href="@routes.Application.index(search, page)">@text</a>
+    <a 
+    href="@if(currentFolder.isEmpty) { @routes.Application.index(search, page) } else { @routes.Application.findFolder(currentFolder,page) }"
+      >@text</a>
   </li> 
 }
 
@@ -56,7 +58,7 @@
     <ul class="nav">
       <li class="divider-vertical"></li>
       <li @if(search.isEmpty && currentFolder.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
-      <form class="navbar-form pull-left">
+      <form class="navbar-form pull-left" action="@routes.Application.index()">
         <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
       </form>
@@ -65,10 +67,10 @@
 @if(pagination.total > 1) {
     <div class="pagination pagination-small pull-left pagination-in-navbar">
     <ul>
-        @pageLink(0, "|<", true) 
-        @pageLink(math.max(pagination.current - 1,0), "<", true)
+        @pageLink(1, "|<", true) 
+        @pageLink(math.max(pagination.current - 1,1), "<", true)
         @for(p <- pagination.min to pagination.max)  {
-            @pageLink(p, (p + 1).toString, false)
+            @pageLink(p, p.toString, false)
         }
         @pageLink(math.min(pagination.current + 1, pagination.total), ">", true)
         @pageLink(pagination.total, ">|", true)

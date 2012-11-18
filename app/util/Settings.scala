@@ -13,13 +13,12 @@ object Settings {
   /**
    * get asset library path
    */
-  def assetLibraryPath: String = config.getString("assetLibrary") match {
+  lazy val assetLibraryPath: String = config.getString("assetLibrary") match {
       case Some(path) => path
       case None => throw new IllegalArgumentException("No assetLibrary path defined in application.conf")
     }
 
-  def title: String = config.getString("ui.title").getOrElse("Assets")
+  lazy val title: String = config.getString("ui.title").getOrElse("Assets")
 
-  def assetsPerPage: Int = config.getInt("ui.assetsPerPage").getOrElse(50)
-
+  lazy val assetsPerPage: Int = config.getInt("ui.assetsPerPage").getOrElse(50)
 }

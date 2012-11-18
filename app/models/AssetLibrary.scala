@@ -10,20 +10,10 @@ import util.AssetLibraryLoader
  */
 case class AssetLibrary (topFolder: AssetFolder) {
 
-  // recurse through all assets
-  private def findAssetsRecursively(folder: AssetFolder): List[Asset] = {
-    folder.assets ++ folder.folders.flatMap( findAssetsRecursively(_) )
-  }
-
-  /**
-   * list of all assets -- uncached; prefer sortedAssets
-   */
-  def allAssets: List[Asset] = findAssetsRecursively(topFolder)
-
   /**
    * cached SORTED list of all assets - useful for searching/filtering/reversing
    */
-  lazy val sortedAssets = allAssets.sortBy(_.nameLower)
+  lazy val sortedAssets = topFolder.allAssetsUnsorted.sortBy(_.nameLower)
 
   /**
    * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
@@ -70,8 +60,6 @@ object AssetLibrary {
    */
   def load(path: String): AssetLibrary = {
     Logger.debug("Loading AssetLibrary from " + path)
-    val loaded = AssetLibraryLoader.load(path)
-    Logger.debug("Load Finished")
-    loaded
+    AssetLibraryLoader.load(path)
   }
 }
