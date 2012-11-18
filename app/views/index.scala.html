@@ -1,9 +1,9 @@
 @(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset], library: models.AssetLibrary)
 
 
-@listFolders(folders: List[models.AssetFolder], cssClass: String) = {
+@listFolders(folders: List[models.AssetFolder]) = {
   @if(!folders.isEmpty) {
-    <ul @if(!cssClass.isEmpty) { class="@cssClass" } >
+    <ul>
     @for(f <- folders) {
         @showFolder(f)
     }
@@ -13,8 +13,8 @@
 
 @showFolder(folder: models.AssetFolder) = {
     <li>
-        <div class="folder"><a href="#">@{folder.name}</a></div>
-        @listFolders(folder.folders, "")
+        <a href="#">@{folder.name}</a>
+        @listFolders(folder.folders)
     </li>
 }
 
@@ -82,8 +82,10 @@
   <div class="row-fluid">
     <div class="span2 sidebar">
       <!--Sidebar content-->
-      <h6>Keywords</h6>
-      @listFolders(library.topFolder.folders, "tree")
+      <h5>Folders</h5>
+      <div class="tree">
+        @listFolders(library.topFolder.folders)
+      </div>
     </div>
 
     <div class="span10 content">

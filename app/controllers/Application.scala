@@ -25,8 +25,7 @@ object Application extends Controller {
     val minVisiblePage = math.max(page - 3, 0)
     val maxVisiblePage = math.min(minVisiblePage + 6, totalPages)
     val pagination = Pagination(current = page, total = totalPages, min = minVisiblePage, max = maxVisiblePage)
-    Logger.debug("pages=" + pagination + " assets=" + assets.length)
-
+    
     // limit response
     val offset = page * Settings.assetsPerPage
     val slice = assets.slice(offset, offset + Settings.assetsPerPage)
