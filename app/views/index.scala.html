@@ -1,11 +1,24 @@
 @(title: String, search: String, pagination: controllers.Application.Pagination, assets: List[models.Asset])
 
+@displayName(name: String) = {
+    @if(name.length > 16) {
+        @{name.substring(0,16) + "..."}
+    } else {
+        @{name}
+    }
+}
+
 
 @renderAsset(a: models.Asset) = {    
-  <li>
-    <img src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
-    @{a.name}
-  </li>
+    <div class="asset pull-left">
+    <div class="inner-asset">
+    <a href="@routes.FileServer.serve(a.original)">
+    <img class="thumb" 
+        src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
+    </a>
+    <p class="caption">@displayName(a.name)</p>
+    </div>
+    </div>
 }
 
 @pageLink(page: Int, text: String, nav: Boolean) = {
@@ -67,13 +80,10 @@
         </ul>            
     </div>
 
-    <div class="span10 body">
-        <ul>
-            @for(a <- assets) { @renderAsset(a) }
-        </ul>
-
-
+    <div class="span10 content">
+        @for(a <- assets) { @renderAsset(a) }
     </div>
+
   </div>
 </div>
     

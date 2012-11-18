@@ -19,10 +19,24 @@ body {
     padding-left: 15px;
 }
 
-/*
-.sidebar {
-  }
-
-.body {
+.caption {
+    font-size: 11px;
 }
-*/
+
+.thumb {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inner-asset {
+    display: table-cell;
+    vertical-align: bottom;
+    text-align: center;
+}
+
+.asset {
+    padding: 5px;
+    width: 128px;
+    height: 128px;
+    display: table;
+}
