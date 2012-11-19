@@ -1,4 +1,4 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: List[models.Asset], library: models.AssetLibrary)
+@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary)
 
 
 @listFolders(folders: List[models.AssetFolder], folderPath: String) = {
