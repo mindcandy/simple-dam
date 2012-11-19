@@ -12,7 +12,7 @@
 }
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
-    <li id="@{folderPath}">
+    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath, 1)">
         <a href="@routes.Application.findFolder(folderPath, 1)">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
@@ -87,7 +87,7 @@
     <div class="span2 sidebar">
       <!--Sidebar content-->
       <h5>Folders</h5>
-      <div class="tree">
+      <div class="tree" id="keywordTree">
         @listFolders(library.topFolder.folders, "")
       </div>
     </div>
@@ -103,34 +103,53 @@
 <script>
 jQuery(document).ready(function() {
 
-    // replace string path with hash id for easy lookup later...
-    $(".tree li").each(function(index) { $(this).attr("id", $(this).attr("id").hashCode().toString()) })
+  // build a big lookup table from path -> node id
+  var currentFolder = "@Html(currentFolder)";
+  //console.log("looking for", currentFolder);
+  var auto_open = [];
+  var expect_select = false;
+  // var nodes = [];
+      
+  // replace string path with hash id for easy lookup later...
+  $(".tree li").each(function(index) { 
+    var nodeName = $(this).attr("data-folder-path");
+    var nodeId = "node" + index;
+    //nodes[ nodeName ] = nodeId; 
+    $(this).attr("id", nodeId);
 
-    // figure out which items we want to auto-open
-    var auto_open = [];
-    var currentFolder = "@{currentFolder}";
-    if (currentFolder) {
-        // open current folder node
-        var id = currentFolder.hashCode().toString();
-        console.log("opening ", id);
-        // $(".tree").jstree("open_node", id, false, true);
-        auto_open.push(id);
+    if (nodeName === currentFolder) {
+      auto_open.push("#" + nodeId);
+      expect_select = true;
+    } 
+  });
+
+  // create tree
+  $("#keywordTree").jstree({
+      core: {
+          "animation": 100,
+          "open_parents": true
+          // "initially_open": auto_open
+      },
+      themes: { 
+          "icons" : false,
+          "theme": "classic",
+          "url": "/web/tree-themes/classic/style.css"
+      },
+      ui: {
+          "initially_select": auto_open
+      }, 
+      plugins: [ "themes",  "html_data", "ui" ]
+  })
+  .bind("select_node.jstree", function(e, data) {
+    if (data.rslt.obj) {
+      if (expect_select) {
+        expect_select = false;
+      } else {
+        // redirect! (eventually, just submit query)
+        window.location.href = data.rslt.obj.attr("data-query-url");
+      }
     }
-
-    // create tree
-    $(".tree").jstree({
-        core: {
-            "animation": 100,
-            "open_parents": true,
-            "initially_open": auto_open
-        },
-        themes: { 
-            "icons" : false,
-            "theme": "classic",
-            "url": "/web/tree-themes/classic/style.css"
-        },
-        plugins: [ "themes", "html_data" ]
-    });
+  });
 
 
 });
