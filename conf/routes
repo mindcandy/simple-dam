@@ -2,12 +2,16 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Home page / search
 GET     /                           controllers.Application.index(search: String ?= "", page: Int ?= 1)
 
+# search in a folder
 GET     /folder/*folder             controllers.Application.findFolder(folder, page: Int ?= 1)
 
+# supply js routing information for AJAX
+GET     /web/javascripts/jsroutes.js         controllers.JavascriptRoutes.generateRoutes
 
+# external files -- may be replaced by Apache in production
 GET     /file/*file                 controllers.FileServer.serve(file)
 
 # Map static resources from the /public folder to the /web URL path
