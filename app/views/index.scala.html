@@ -29,11 +29,13 @@
 @assetThumbnail(a: models.Asset) = {    
   <div class="asset pull-left">
     <div class="inner-asset">
-      <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}">
+      <a href="@routes.Application.showAsset(a.original)">
       <img class="thumb" 
         src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
       </a>
-      <p class="caption">@displayName(a.name)</p>
+      <p class="caption">
+        <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}" data-placement="bottom">@displayName(a.name)</a>
+      </p>
     </div>
   </div>
 }
