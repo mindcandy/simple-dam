@@ -123,7 +123,7 @@
     <div class="span2 sidebar">
       <!--Sidebar content-->
       <h5>Folders</h5>
-      <div class="tree" id="keywordTree">
+      <div class="tree" id="keywordTree" style="display:none;">
         @listFolders(library.topFolder.folders, "")
       </div>
     </div>
@@ -164,7 +164,8 @@ jQuery(document).ready(function() {
   });
 
   // create tree
-  $("#keywordTree").jstree({
+  $("#keywordTree").hide()
+  .jstree({
       core: {
           "animation": 100,
           "open_parents": true
@@ -188,7 +189,7 @@ jQuery(document).ready(function() {
         window.location.href = data.rslt.obj.attr("data-query-url");
       }
     }
-  });
+  }).show();
 
 
 });
