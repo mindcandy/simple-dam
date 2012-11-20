@@ -80,8 +80,25 @@ function ProcessFile(file) {
 }
 
 
+function hasBackgroundLayer(document) {
+    var layers = document.layers;
+    for (var i = 0; i < layers.length; i++) {
+
+        if (layers[i].isBackgroundLayer) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function TrimImage() {
-    app.activeDocument.trim(TrimType.TRANSPARENT)
+    if (hasBackgroundLayer(app.activeDocument)) {
+        // can't use transparency to trim!
+        app.activeDocument.trim(TrimType.TOPLEFT);    
+    } else {
+        // can trim transparent images
+        app.activeDocument.trim(TrimType.TRANSPARENT);
+    }
 }
 
 function SaveJPEG(originalFile, suffix, quality, includeProfile) {
