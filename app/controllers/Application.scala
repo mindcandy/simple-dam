@@ -14,12 +14,7 @@ object Application extends Controller {
   /**
    * utility class to pass pagination info the the View easily
    */
-  case class Pagination(current: Int, total: Int, min: Int, max: Int, search: SearchType)
-
-  abstract class SearchType
-  object BySearch extends SearchType
-  object ByFolder extends SearchType
-  object ByAsset extends SearchType
+  case class Pagination(current: Int, total: Int, min: Int, max: Int)
 
   /**
    * main index -- also currently does a search
@@ -56,7 +51,7 @@ object Application extends Controller {
     // find asset
     val asset = AssetLibrary.current.findAssetByPath(assetPath)
 
-    val pagination = Pagination(current = 1, total = 1, min = 1, max = 1, search = ByAsset)
+    val pagination = Pagination(current = 1, total = 1, min = 1, max = 1)
     
     Ok(views.html.index(Settings.title, "", pagination, "", List(), AssetLibrary.current, Some(asset)));
   }
@@ -79,8 +74,7 @@ object Application extends Controller {
     val totalPages = 1 + (assets.length / Settings.assetsPerPage)
     val minVisiblePage = math.max(page - 3, 1)
     val maxVisiblePage = math.min(minVisiblePage + 6, totalPages)
-    val searchType = if (currentFolder.isEmpty) BySearch else ByFolder
-    val pagination = Pagination(current = page, total = totalPages, min = minVisiblePage, max = maxVisiblePage, search = searchType)
+    val pagination = Pagination(current = page, total = totalPages, min = minVisiblePage, max = maxVisiblePage)
     
     // limit response
     val offset = (page-1) * Settings.assetsPerPage

@@ -41,18 +41,18 @@
 @showIndividualAsset(a: models.Asset) = {
   <div class="assetDetail">
     <h1 class="title">@{a.name}</h1>
+    <a href="@routes.FileServer.serve(a.original)">
     <img class="preview"
-      src="@if(a.hasPreview) { @routes.FileServer.serve(a.preview) } else { http://placehold.it/128x128 }"/>
+      src="@if(a.hasPreview) { @routes.FileServer.serve(a.preview) } else { http://placehold.it/320x320 }"/>
+    </a>
     <dl class="dl-horizontal">
       <dt>Description</dt>
       <dd>Description would be here! This is a great little asset you will like it very much.</dd>
       <dt>Folder</dt>
       <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
       <dt>Keywords</dt>
-      <dd>keywords, would, be, listed, here</dd>
+      <dd><a href="#">keywords</a>, <a href="#">would</a>, <a href="#">be</a>, <a href="#">listed</a>, <a href="#">here</a></dd>
     </dl>
-<!--    <p class="description lead"></p>
-    <p class="keywords">keywords, would, be, listed, here</p> -->
     <a class="btn" href="@routes.FileServer.serve(a.original)">Download</a>
   </div>
 }
@@ -76,7 +76,7 @@
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-      <li @if(search.isEmpty && currentFolder.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
+      <li @if(search.isEmpty && currentFolder.isEmpty && individualAsset.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
       <form class="navbar-form pull-left" action="@routes.Application.index()">
         <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
@@ -166,7 +166,6 @@ jQuery(document).ready(function() {
       core: {
           "animation": 100,
           "open_parents": true
-          // "initially_open": auto_open
       },
       themes: { 
           "icons" : false,
