@@ -38,6 +38,21 @@ case class AssetLibrary (topFolder: AssetFolder) {
     val pathComponents = path.split("/").filter(!_.isEmpty)
     findFolderRecursive(topFolder, pathComponents)
   } 
+
+  /** 
+   * find asset by its path
+   */
+  def findAssetByPath(assetPath: String): Asset = {
+
+    // split into path and folder
+    val splitPoint = assetPath.lastIndexOf("/") + 1
+    val path = assetPath.substring(0, splitPoint)
+    val assetName = assetPath.substring(splitPoint)
+
+    val folder = findFolder(path)
+
+    folder.assets.find(_.name == assetName).get
+  }
 }
 
 /**

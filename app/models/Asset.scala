@@ -23,6 +23,11 @@ case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPrev
    */
   def preview: String = getSuffixPath(hasPreview, Asset.PreviewSuffix, "")
 
+  /**
+   * get folder path
+   */
+  def folderPath: String = original.substring(0, original.lastIndexOf("/") + 1)
+
 
   private def getSuffixPath(exists: Boolean, suffix: String, default: String): String = {
     if (exists) Asset.getSuffixPath(new File(original), suffix)

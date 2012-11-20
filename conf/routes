@@ -8,6 +8,9 @@ GET     /                           controllers.Application.index(search: String
 # search in a folder
 GET     /folder/*folder             controllers.Application.findFolder(folder, page: Int ?= 1)
 
+# show individual asset
+GET     /asset/*path                controllers.Application.showAsset(path)
+
 # rescan the asset folder, reloading all assets
 GET     /admin/rescan               controllers.Application.rescan
 

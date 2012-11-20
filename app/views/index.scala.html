@@ -1,4 +1,4 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary)
+@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary, individualAsset: Option[models.Asset])
 
 
 @listFolders(folders: List[models.AssetFolder], folderPath: String) = {
@@ -29,12 +29,31 @@
 @assetThumbnail(a: models.Asset) = {    
   <div class="asset pull-left">
     <div class="inner-asset">
-      <a href="@routes.FileServer.serve(a.original)" rel="tooltip" title="@{a.name}">
+      <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}">
       <img class="thumb" 
         src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
       </a>
       <p class="caption">@displayName(a.name)</p>
     </div>
+  </div>
+}
+
+@showIndividualAsset(a: models.Asset) = {
+  <div class="assetDetail">
+    <h1 class="title">@{a.name}</h1>
+    <img class="preview"
+      src="@if(a.hasPreview) { @routes.FileServer.serve(a.preview) } else { http://placehold.it/128x128 }"/>
+    <dl class="dl-horizontal">
+      <dt>Description</dt>
+      <dd>Description would be here! This is a great little asset you will like it very much.</dd>
+      <dt>Folder</dt>
+      <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
+      <dt>Keywords</dt>
+      <dd>keywords, would, be, listed, here</dd>
+    </dl>
+<!--    <p class="description lead"></p>
+    <p class="keywords">keywords, would, be, listed, here</p> -->
+    <a class="btn" href="@routes.FileServer.serve(a.original)">Download</a>
   </div>
 }
 
@@ -108,7 +127,11 @@
     </div>
 
     <div class="span10 content">
-        @for(a <- assets) { @assetThumbnail(a) }
+@if(individualAsset.isDefined) {
+    @showIndividualAsset(individualAsset.get)  
+} else {     
+    @for(a <- assets) { @assetThumbnail(a) }
+}
     </div>
   </div>
 </div>
