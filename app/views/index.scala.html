@@ -79,6 +79,21 @@
 }
     <!-- todo: order -->
     <!--<li class="navbar-text">Order</li>-->
+
+@if(util.Settings.isAdmin) {
+  <!-- show admin -->
+  <ul class="nav pull-right">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
+          <b class="caret"></b>
+        </a>
+      <ul class="dropdown-menu">
+        <a href="@routes.Application.rescan()">Rescan</a>
+      </ul>
+    </li>
+  </ul>
+}
+
   </div>
 </div>
 

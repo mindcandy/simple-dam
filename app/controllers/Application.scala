@@ -32,6 +32,15 @@ object Application extends Controller {
     showResults("", page, folderPath, assets)
   }
 
+  def rescan() = Action {
+    if (Settings.isAdmin) {
+      // reload
+      AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
+      Redirect(routes.Application.index())
+    } else {
+      NotFound
+    }
+  }
 
   private def showResults(sanitisedSearch: String, page: Int, currentFolder: String, assets: List[Asset]) = Action {
 
