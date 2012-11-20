@@ -18,7 +18,7 @@ main();
 function main() {
     try {
         var sourceFolder = Folder.selectDialog(
-            "Select Folder to create thumbnails and previews." +
+            "Select Folder to create thumbnails and previews. Will recurse into all sub-folders." +
             "\nSupported file types: ai, pdf, png, gif, jpg, bmp, tif, psd");
 
         if (sourceFolder) {
@@ -27,7 +27,7 @@ function main() {
             var oldPref = app.preferences.rulerUnits;   
             app.preferences.rulerUnits = Units.PIXELS; 
 
-            var files = findFiles(sourceFolder);
+            var files = findFiles(sourceFolder, new Array());
             for (var i = 0; i < files.length; i++) {
                 // for each folder 
                 ProcessFile(files[i]);
@@ -176,25 +176,29 @@ function ResizeImage(width, height) {
 ///////////////////////////////////////////////////////////////////////////////
 // findFiles - get all files within the specified source
 ///////////////////////////////////////////////////////////////////////////////
-function findFiles(sourceFolder) {
+function findFiles(sourceFolder, fileArray) {
 
     // declare local variables
-    var fileArray = new Array();
     var extRE = /\.(?:ai|pdf|png|gif|jpg|jpeg|bmp|tif|tiff|psd)$/i;
     var excludedRE = /(_preview|_thumbnail)\.\w+$/;
 
     // get all files in source folder
-    var docs = Folder( sourceFolder ).getFiles();
-    var len = docs.length;
-    for (var i = 0; i < len; i++) {
-        var doc = docs[i];
+    var foundThings = sourceFolder.getFiles();
+    for (var i = 0; i < foundThings.length; i++) {
+        var aFoundThing = foundThings[i];
 
         // only match files (not folders)
-        if (doc instanceof File) {
+        if (aFoundThing instanceof File) {
             // store all recognized files into an array
-            var docName = doc.name;
+            var docName = aFoundThing.name;
             if (docName.match(extRE) && !docName.match(excludedRE)) {
-                fileArray.push(doc);
+                fileArray.push(aFoundThing);
+            }
+        }
+        else if (aFoundThing instanceof Folder) {
+            if (aFoundThing.name[0] !== ".") {
+                // recurse into folders that don't start with a . (e.g. .git, .svn)
+                findFiles(aFoundThing, fileArray)
             }
         }
     }
