@@ -11,27 +11,35 @@ import util.Settings
  */
 object Admin extends Controller {
 
+    /**
+     * utility wrapper of Action to enforce admin mode
+     */
+    def WithAdmin[A](action: Action[A]): Action[A] = {
+        Action(action.parser) { request =>
+            if (Settings.isAdmin) {
+                action(request)
+            } else {
+                NotFound
+            }
+        }
+    }
+
 
   /**
    * rescan the asset library
    */
-  def rescan() = Action {
-    if (Settings.isAdmin) {
+  def rescan() = WithAdmin {
+    Action {
       AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
       Redirect(routes.Application.index())
-    } else {
-      NotFound
     }
   }
 
   /**
    * edit metadata on an asset
    */
-  def editMetadata(asset: String, description: String, keywords: String) = Action {
-    if (!Settings.isAdmin) {
-       NotFound
-    } else {
-
+  def editMetadata(asset: String, description: String, keywords: String) = WithAdmin {
+    Action {
         // save metadata
         val oldAsset = AssetLibrary.current.findAssetByPath(asset)
         Asset.saveMetadata(AssetLibrary.current.basePath, oldAsset, description, keywords)
