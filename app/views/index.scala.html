@@ -1,4 +1,4 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)
+@(results: controllers.Application.SearchResult, title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)(implicit request: play.api.mvc.RequestHeader)
 
 
 @*******************************
@@ -114,7 +114,7 @@
 
 
 @pageLink(page: Int, text: String, nav: Boolean) = {
-  <li @if(page == pagination.current) { 
+  <li @if(page == results.current) { 
         @if(nav) { class="disabled" } else { class="active" }
     } >
     <a 
@@ -149,16 +149,16 @@
       </form>
     </ul>
 
-@if(pagination.total > 1) {
+@if(results.total > 1) {
     <div class="pagination pagination-small pull-left pagination-in-navbar">
     <ul>
         @pageLink(1, "|<", true) 
-        @pageLink(math.max(pagination.current - 1,1), "<", true)
-        @for(p <- pagination.min to pagination.max)  {
+        @pageLink(math.max(results.current - 1,1), "<", true)
+        @for(p <- results.min to results.max)  {
             @pageLink(p, p.toString, false)
         }
-        @pageLink(math.min(pagination.current + 1, pagination.total), ">", true)
-        @pageLink(pagination.total, ">|", true)
+        @pageLink(math.min(results.current + 1, results.total), ">", true)
+        @pageLink(results.total, ">|", true)
     </ul>
     </div> 
 }
@@ -173,7 +173,7 @@
           <b class="caret"></b>
         </a>
       <ul class="dropdown-menu">
-        <a href="@routes.Admin.rescan()">Rescan Asset Library</a>
+        <a href="@routes.Admin.rescan(request.uri)">Rescan Asset Library</a>
       </ul>
     </li>
   </ul>
@@ -210,7 +210,7 @@
 @if(individualAsset.isDefined) {
     @showIndividualAsset(individualAsset.get)  
 } else {     
-    @for(a <- assets) { @assetThumbnail(a) }
+    @for(a <- results.assets) { @assetThumbnail(a) }
 }
     </div>
   </div>

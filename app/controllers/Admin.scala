@@ -28,10 +28,13 @@ object Admin extends Controller {
   /**
    * rescan the asset library
    */
-  def rescan() = WithAdmin {
+  def rescan(url: String) = WithAdmin {
     Action {
       AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
-      Redirect(routes.Application.index())
+      if (url.isEmpty)
+        Redirect(routes.Application.index())
+      else
+        Redirect(url)
     }
   }
 
