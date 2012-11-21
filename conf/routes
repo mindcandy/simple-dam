@@ -11,8 +11,11 @@ GET     /folder/*folder             controllers.Application.findFolder(folder, p
 # show individual asset
 GET     /asset/*path                controllers.Application.showAsset(path)
 
+# ADMIN mode routes
 # rescan the asset folder, reloading all assets
-GET     /admin/rescan               controllers.Application.rescan
+GET     /admin/rescan               controllers.Admin.rescan
+GET     /admin/editMetadata/*asset         controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
+
 
 # supply js routing information for AJAX
 GET     /web/javascripts/jsroutes.js         controllers.JavascriptRoutes.generateRoutes

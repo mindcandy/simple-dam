@@ -9,7 +9,7 @@ import scala.collection.SortedSet
  * a loaded asset library
  * NOTE: put all caching etc in this
  */
-case class AssetLibrary (topFolder: AssetFolder) {
+case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
 
   /**
    * cached SORTED list of all assets - useful for searching/filtering/reversing
@@ -85,7 +85,7 @@ object AssetLibrary {
   /**
    * an empty library
    */
-  val Empty = AssetLibrary(AssetFolder.Empty)
+  val Empty = AssetLibrary(AssetFolder.Empty, "")
 
   /**
    * currently loaded asset library

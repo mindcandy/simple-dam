@@ -78,8 +78,40 @@
       }
     </dl>
     <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)">Download</a>
+
+      @if(util.Settings.isAdmin) {
+        <a href="#editAsset" role="button" class="btn" data-toggle="modal">Edit Metadata (Admin)</a>
+      }
   </div>
+
+ @******** Admin edit of asset metadat *****@
+
+  @if(util.Settings.isAdmin) {
+  <div id="editAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Edit Metadata: @{a.name}</h3>
+    </div>
+    <form action="@routes.Admin.editMetadata(a.original)">
+      <fieldset>
+        <div class="modal-body">
+          <p>You can edit the description and keywords here, it will write out to a .json file and the reload all the assets to show you changes. To share these changes with other use a version control system like Git or Subversion.</p>
+          <label>Description</label>
+          <textarea name="description" id="description" rows="3"  class="input-block-level">@{a.description}</textarea>
+          <label>Keywords</label>
+          <input type="text" name="keywords" id="keywords"  class="input-block-level" value="@{a.keywords.mkString(", ")}"/>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  }
+
 }
+
 
 @pageLink(page: Int, text: String, nav: Boolean) = {
   <li @if(page == pagination.current) { 
@@ -141,7 +173,7 @@
           <b class="caret"></b>
         </a>
       <ul class="dropdown-menu">
-        <a href="@routes.Application.rescan()">Rescan</a>
+        <a href="@routes.Admin.rescan()">Rescan Asset Library</a>
       </ul>
     </li>
   </ul>
@@ -149,6 +181,7 @@
 
   </div>
 </div>
+
 
 <div class="container-fluid rounded">
   <div class="row-fluid">
@@ -285,8 +318,6 @@ jQuery(document).ready(function() {
       }
     }   
   }).show();
-
-
 });
 </script>
 

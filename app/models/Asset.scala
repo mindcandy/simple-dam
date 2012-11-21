@@ -1,6 +1,6 @@
 package models
 
-import java.io.File
+import java.io.{File, FileWriter}
 import play.api.libs.json._
 import play.api._
 
@@ -86,6 +86,17 @@ object Asset {
     } else { 
       EmptyMetadata
     }
+  }
+
+  def saveMetadata(basePath: String, asset: Asset, description: String, keywords: String) {
+    val metadata = Map("description" -> description, "keywords" -> keywords)
+    val json = Json.toJson(metadata)
+    val originalPath = new File(basePath + asset.original)
+    val metadataPath = getSuffixPath(originalPath, ".json")
+
+    val fw = new FileWriter(metadataPath) 
+    fw.write(Json.stringify(json)) 
+    fw.close()
   }
 
   private def convertStringListToSet(s: String): Set[String] = s.split(",").map(_.trim).filter(!_.isEmpty).toSet

@@ -59,17 +59,6 @@ object Application extends Controller {
     Ok(views.html.index(Settings.title, "", pagination, "", List(), AssetLibrary.current, Some(asset), ""));
   }
 
-  /**
-   * Admin mode: rescan the asset library
-   */
-  def rescan() = Action {
-    if (Settings.isAdmin) {
-      AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
-      Redirect(routes.Application.index())
-    } else {
-      NotFound
-    }
-  }
 
   private def showResults(sanitisedSearch: String, page: Int, currentFolder: String, keywordSearch: String, assets: List[Asset]) = Action {
 

@@ -12,7 +12,8 @@ object AssetLibraryLoader {
    * load asset library from a path
    */
   def load(assetLibraryPath: String) = AssetLibrary(
-    loadFolder(new File(assetLibraryPath), assetLibraryPath).getOrElse(AssetFolder.Empty))
+    loadFolder(new File(assetLibraryPath), assetLibraryPath).getOrElse(AssetFolder.Empty),
+    assetLibraryPath)
 
   // is this a valid directory?
   private def isValidDirectory(path: File): Boolean = {
