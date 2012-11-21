@@ -107,7 +107,7 @@
       }
   </div>
 
- @******** Admin edit of asset metadat *****@
+ @******** Admin edit of asset metadata *****@
 
   @if(util.Settings.isAdmin) {
   <div id="editAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -166,9 +166,12 @@
     <ul class="nav">
       <li class="divider-vertical"></li>
       <li @if(search.isEmpty && currentFolder.isEmpty && individualAsset.isEmpty && keywordSearch.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
-      <form class="navbar-form pull-left" action="@routes.Application.index()">
-        <input type="text" name="search" id="search" class="span2" value="@{search}"/>
-        <button type="submit" class="btn">Submit</button>
+      <form class="navbar-form pull-left form-search" action="@routes.Application.index()">
+      <div class="input-append">
+        <input type="text" class="span3 search-query"  name="search" id="search" value="@{search}">
+        <button type="submit" class="btn">Search</button>
+      </div>
+
       </form>
     </ul>
 
