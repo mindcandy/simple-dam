@@ -1,6 +1,8 @@
 package models
 
 import java.io.File
+import play.api.libs.json._
+import play.api._
 
 /**
  * hold an asset
@@ -44,14 +46,17 @@ object Asset {
   val ThumbnailSuffix =  "_thumbnail.jpg"
   val PreviewSuffix = "_preview.jpg"
 
+  val EmptyMetadata = Map[String, String]()
+
   /**
    * load an Asset
    */
   def apply(path: File, basePath: String): Asset = {
     // load metadata if there is any
-    val metadataFile = getSuffixPath(path, ".json")
-    val description = "Hello, world!"
-    val keywords = Set("keywords", "would", "go", "here")    
+    val metadata = loadMetadata(new File(getSuffixPath(path, ".json")))
+
+    val description = metadata.getOrElse("description", "")
+    val keywords = convertStringListToSet(metadata.getOrElse("keywords", ""))
 
     Asset(
       name = path.getName.trim,
@@ -61,6 +66,29 @@ object Asset {
       description = description,
       keywords = keywords)
   }
+
+  private def loadMetadata (file: File): Map[String, String] = {
+    if (file.exists) {
+      try {
+        val dataFile = scala.io.Source.fromFile(file)
+        val parsed = Json.parse(dataFile.mkString)  
+        dataFile.close()
+
+        Map(
+          "description" -> (parsed \ "description").asOpt[String].getOrElse(""), 
+          "keywords" -> (parsed \ "keywords").asOpt[String].getOrElse(""))
+      } catch {
+        case e => {
+          Logger.error("Failure to parse " + file + " error: " + e)
+          EmptyMetadata
+        }
+      }
+    } else { 
+      EmptyMetadata
+    }
+  }
+
+  private def convertStringListToSet(s: String): Set[String] = s.split(",").map(_.trim).filter(!_.isEmpty).toSet
 
   /**
    * find file with suffix e.g. passed in foo.pdf and _suffix.jpg would look
@@ -72,7 +100,7 @@ object Asset {
   }
 
   private def checkSuffixFileExists (base: File, suffix: String): Boolean = {
-    new File(getSuffixPath(base, suffix)).exists()
+    new File(getSuffixPath(base, suffix)).exists
   }
 
   /**

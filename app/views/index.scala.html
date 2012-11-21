@@ -63,15 +63,19 @@
       src="@if(a.hasPreview) { @routes.FileServer.serve(a.preview) } else { http://placehold.it/320x320 }"/>
     </a>
     <dl class="dl-horizontal">
-      <dt>Description</dt>
-      <dd>@{a.description}</dd>
+      @if(!a.description.isEmpty) {
+        <dt>Description</dt>
+        <dd>@{a.description}</dd>
+      }
       <dt>Folder</dt>
       <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
+      @if(!a.keywords.isEmpty) {
       <dt>Keywords</dt>
       <dd>
         @for(key <- a.keywords) {
           <a href="@routes.Application.index("",key, 1)">@key</a>, 
         }
+      }
     </dl>
     <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)">Download</a>
   </div>
