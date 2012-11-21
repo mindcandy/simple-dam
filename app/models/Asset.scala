@@ -7,10 +7,12 @@ import java.io.File
  */
 case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPreview: Boolean) {
 
-  lazy val nameLower = name.toLowerCase
+  def nameLower = name.toLowerCase
+
+  private val matchString = original.toLowerCase
 
   def matches(search: String): Boolean = {
-     nameLower.contains(search)
+     matchString.contains(search)
   }
 
   /**
