@@ -5,11 +5,11 @@ import java.io.File
 /**
  * hold an asset
  */
-case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPreview: Boolean) {
+case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPreview: Boolean, description: String, keywords: Set[String]) {
 
   def nameLower = name.toLowerCase
 
-  private val matchString = original.toLowerCase
+  private val matchString = original.toLowerCase + keywords.toList.map(_.toLowerCase).mkString(" ")
 
   def matches(search: String): Boolean = {
      matchString.contains(search)
@@ -48,14 +48,18 @@ object Asset {
    * load an Asset
    */
   def apply(path: File, basePath: String): Asset = {
-    // do nothing clever yet
-    // TODO: load metadata
-    //  val metadata = findSuffix(path, ".json")
+    // load metadata if there is any
+    val metadataFile = getSuffixPath(path, ".json")
+    val description = "Hello, world!"
+    val keywords = Set("keywords", "would", "go", "here")    
+
     Asset(
       name = path.getName.trim,
       original = path.getPath.replace(basePath,""),
       hasPreview = checkSuffixFileExists(path, ThumbnailSuffix),
-      hasThumbnail = checkSuffixFileExists(path, PreviewSuffix))
+      hasThumbnail = checkSuffixFileExists(path, PreviewSuffix),
+      description = description,
+      keywords = keywords)
   }
 
   /**
@@ -76,11 +80,12 @@ object Asset {
    */
   def isValidAsset(path: File): Boolean = {
     var name = path.getName
+    // TODO: could make regular expression
     path.isFile &&
       name.contains('.') &&
       !name.startsWith(".") &&
-      !name.contains("_thumbnail.") &&
-      !name.contains("_preview.") &&
+      !name.endsWith("_thumbnail.jpg") &&
+      !name.endsWith("_preview.jpg") &&
       !name.endsWith(".json")
   }
 }

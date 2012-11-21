@@ -1,7 +1,12 @@
-@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary, individualAsset: Option[models.Asset])
+@(title: String, search: String, pagination: controllers.Application.Pagination, currentFolder: String, assets: scala.collection.immutable.List[models.Asset], library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)
 
 
-@listFolders(folders: List[models.AssetFolder], folderPath: String) = {
+@*******************************
+ * useful functions!
+ *@
+
+
+@listFolders(folders: Seq[models.AssetFolder], folderPath: String) = {
   @if(!folders.isEmpty) {
     <ul>
     @for(f <- folders) {
@@ -13,9 +18,19 @@
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
     <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath, 1)">
-        <a href="@routes.Application.findFolder(folderPath, 1)">@{folder.name}</a>
+        <a href="#">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
+}
+
+@listKeywords(keywords: Seq[String]) = {
+  <ul>
+  @for(key <- keywords) {
+    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key, 1)">
+      <a href="#">@{key}</a>
+    </li>
+  }
+  </ul>
 }
 
 @displayName(name: String) = {
@@ -49,11 +64,14 @@
     </a>
     <dl class="dl-horizontal">
       <dt>Description</dt>
-      <dd>Description would be here! This is a great little asset you will like it very much.</dd>
+      <dd>@{a.description}</dd>
       <dt>Folder</dt>
       <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
       <dt>Keywords</dt>
-      <dd><a href="#">keywords</a>, <a href="#">would</a>, <a href="#">be</a>, <a href="#">listed</a>, <a href="#">here</a></dd>
+      <dd>
+        @for(key <- a.keywords) {
+          <a href="#">@{key}</a>, @* todo: link to keyword object *@
+        }
     </dl>
     <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)">Download</a>
   </div>
@@ -64,21 +82,31 @@
         @if(nav) { class="disabled" } else { class="active" }
     } >
     <a 
-    href="@if(currentFolder.isEmpty) { @routes.Application.index(search, page) } else { @routes.Application.findFolder(currentFolder,page) }"
+    href="@if(currentFolder.isEmpty) { @routes.Application.index(search, keywordSearch,page) } else { @routes.Application.findFolder(currentFolder,page) }"
       >@text</a>
   </li> 
 }
 
 
 
+
+
+@*******************************
+ * the actual page starts here 
+ *@
+
 @main(title) {
+
+@********************************
+ * Navigation bar 
+ *@
 
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-      <li @if(search.isEmpty && currentFolder.isEmpty && individualAsset.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
+      <li @if(search.isEmpty && currentFolder.isEmpty && individualAsset.isEmpty && keywordSearch.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
       <form class="navbar-form pull-left" action="@routes.Application.index()">
         <input type="text" name="search" id="search" class="span2" value="@{search}"/>
         <button type="submit" class="btn">Submit</button>
@@ -98,11 +126,11 @@
     </ul>
     </div> 
 }
-    <!-- todo: order -->
-    <!--<li class="navbar-text">Order</li>-->
+    @**** todo: order ****@
+    @* <li class="navbar-text">Order</li> *@
 
 @if(util.Settings.isAdmin) {
-  <!-- show admin -->
+  @* show admin *@
   <ul class="nav pull-right">
     <li class="dropdown">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
@@ -120,13 +148,26 @@
 
 <div class="container-fluid rounded">
   <div class="row-fluid">
+
+@*******************************
+ * sidebar 
+ *@
+
     <div class="span2 sidebar">
-      <!--Sidebar content-->
       <h5>Folders</h5>
-      <div class="tree" id="keywordTree" style="display:none;">
+      <div class="tree" id="folderTree" style="display:none;">
         @listFolders(library.topFolder.folders, "")
       </div>
+
+      <h5>Keywords</h5>
+      <div class="tree" id="keywordTree" style="display:none;">
+        @listKeywords(library.keywords)
+      </div>
     </div>
+
+@*******************************
+ * actual content 
+ *@
 
     <div class="span10 content">
 @if(individualAsset.isDefined) {
@@ -137,8 +178,14 @@
     </div>
   </div>
 </div>
-}
-<!-- after scripts are loaded -->
+
+} @* end of main() call *@
+
+
+@******************
+ * scripts to run after other scripts are loaded ...
+ * TODO: move these out to other js files to speed up loading
+ *@
 
 <script>
 jQuery(document).ready(function() {
@@ -153,7 +200,7 @@ jQuery(document).ready(function() {
   // replace string path with hash id for easy lookup later...
   $(".tree li").each(function(index) { 
     var nodeName = $(this).attr("data-folder-path");
-    var nodeId = "node" + index;
+    var nodeId = "folder" + index;
     //nodes[ nodeName ] = nodeId; 
     $(this).attr("id", nodeId);
 
@@ -164,7 +211,7 @@ jQuery(document).ready(function() {
   });
 
   // create tree
-  $("#keywordTree").hide()
+  $("#folderTree").hide()
   .jstree({
       core: {
           "animation": 100,
@@ -192,10 +239,54 @@ jQuery(document).ready(function() {
   }).show();
 
 
+  var currentKeyword = "@Html(keywordSearch)";
+  var keyword_to_open = [];
+  var expect_keyword_select = false;
+  // var keyNodes = [];
+
+  $(".tree li").each(function(index) { 
+    var nodeName = $(this).attr("data-keyword");
+    var nodeId = "keyword" + index;
+    //keyNodes[ nodeName ] = nodeId; 
+    $(this).attr("id", nodeId);
+
+    if (nodeName === currentKeyword) {
+      keyword_to_open.push("#" + nodeId);
+      expect_keyword_select = true;
+    } 
+  });
+
+  $("#keywordTree").hide()
+  .jstree({
+      core: {
+          "animation": 100
+      },
+      themes: { 
+          "icons" : false,
+          "theme": "classic",
+          "url": "/web/tree-themes/classic/style.css"
+      },
+      ui: {
+          "initially_select": keyword_to_open
+      }, 
+      plugins: [ "themes",  "html_data", "ui" ]
+  })
+  .bind("select_node.jstree", function(e, data) {
+    if (data.rslt.obj) {
+      if (expect_keyword_select) {
+        expect_keyword_select = false;
+      } else {
+        // redirect! (eventually, just submit query)
+        window.location.href = data.rslt.obj.attr("data-query-url");
+      }
+    }   
+  }).show();
+
+
 });
 </script>
 
-<!-- footer -->       
+@* end page correctly *@
 </body>
 </html>
 

@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page / search
-GET     /                           controllers.Application.index(search: String ?= "", page: Int ?= 1)
+GET     /                           controllers.Application.index(search: String ?= "", keyword: String ?= "", page: Int ?= 1)
 
 # search in a folder
 GET     /folder/*folder             controllers.Application.findFolder(folder, page: Int ?= 1)

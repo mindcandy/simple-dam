@@ -19,16 +19,19 @@ object Application extends Controller {
   /**
    * main index -- also currently does a search
    */
-  def index(search: String, page: Int) = Action {
+  def index(search: String, keyword: String, page: Int) = Action {
 
     // perform search
     val sanitisedSearch = search.trim
-    val assets = if (sanitisedSearch.isEmpty)
-      AssetLibrary.current.sortedAssets
-    else
-      AssetLibrary.current.findAssets(sanitisedSearch)
+    val assets = if (!sanitisedSearch.isEmpty) {
+        AssetLibrary.current.findAssets(sanitisedSearch)
+      } else if (!keyword.isEmpty) {
+        AssetLibrary.current.findAssetsByKeyword(keyword)
+      } else {  
+        AssetLibrary.current.sortedAssets
+      }
 
-    showResults(sanitisedSearch, page, "", assets)
+    showResults(sanitisedSearch, page, "", keyword, assets)
   }
 
   /**
@@ -40,7 +43,7 @@ object Application extends Controller {
     val folder = AssetLibrary.current.findFolder(folderPath)
     val assets = folder.allAssets
 
-    showResults("", page, folderPath, assets)
+    showResults("", page, folderPath, "", assets)
   }
 
   
@@ -53,7 +56,7 @@ object Application extends Controller {
 
     val pagination = Pagination(current = 1, total = 1, min = 1, max = 1)
     
-    Ok(views.html.index(Settings.title, "", pagination, "", List(), AssetLibrary.current, Some(asset)));
+    Ok(views.html.index(Settings.title, "", pagination, "", List(), AssetLibrary.current, Some(asset), ""));
   }
 
   /**
@@ -68,7 +71,7 @@ object Application extends Controller {
     }
   }
 
-  private def showResults(sanitisedSearch: String, page: Int, currentFolder: String, assets: List[Asset]) = Action {
+  private def showResults(sanitisedSearch: String, page: Int, currentFolder: String, keywordSearch: String, assets: List[Asset]) = Action {
 
     // build pagination info
     val totalPages = 1 + (assets.length / Settings.assetsPerPage)
@@ -80,7 +83,7 @@ object Application extends Controller {
     val offset = (page-1) * Settings.assetsPerPage
     val slice = assets.slice(offset, offset + Settings.assetsPerPage)
 
-    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, currentFolder, slice, AssetLibrary.current, None));
+    Ok(views.html.index(Settings.title, sanitisedSearch, pagination, currentFolder, slice, AssetLibrary.current, None, keywordSearch));
   }
   
 }

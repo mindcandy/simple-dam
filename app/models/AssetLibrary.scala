@@ -2,6 +2,7 @@ package models
 
 import play.api._
 import util.AssetLibraryLoader
+import scala.collection.SortedSet
 
 
 /**
@@ -13,12 +14,17 @@ case class AssetLibrary (topFolder: AssetFolder) {
   /**
    * cached SORTED list of all assets - useful for searching/filtering/reversing
    */
-  lazy val sortedAssets = topFolder.allAssetsUnsorted.sortBy(_.nameLower)
+  lazy val sortedAssets: List[Asset] = topFolder.allAssetsUnsorted.sortBy(_.nameLower)
+
+  /**
+   * cached set of all keywords used in all assets
+   */
+  lazy val keywords: List[String] = collectKeywords(sortedAssets)
 
   /**
    * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
    */
-  def findAssets(search: String) = sortedAssets.filter(_.matches(search))
+  def findAssets(search: String): List[Asset] = sortedAssets.filter(_.matches(search.toLowerCase))
 
   /**
    * find a folder by its path
@@ -52,6 +58,22 @@ case class AssetLibrary (topFolder: AssetFolder) {
     val folder = findFolder(path)
 
     folder.assets.find(_.name == assetName).get
+  }
+
+  /** 
+   * find by keyword
+   */
+  def findAssetsByKeyword(keyword: String): List[Asset] = {
+    sortedAssets.filter(_.keywords.contains(keyword) )
+  }
+
+  /**
+   * collect all keywords
+   */
+  private def collectKeywords(assets: Seq[Asset]): List[String] = {
+    assets.foldLeft (Set[String]()) {
+      case (set, asset) => set ++ asset.keywords
+    }.toList.sorted
   }
 }
 
