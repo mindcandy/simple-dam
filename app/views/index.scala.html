@@ -70,7 +70,7 @@
       <dt>Keywords</dt>
       <dd>
         @for(key <- a.keywords) {
-          <a href="#">@{key}</a>, @* todo: link to keyword object *@
+          <a href="@routes.Application.index("",key, 1)">@key</a>, 
         }
     </dl>
     <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)">Download</a>
