@@ -3,6 +3,7 @@ package models
 import play.api._
 import util.AssetLibraryLoader
 import scala.collection.SortedSet
+import java.util.Date
 
 
 /**
@@ -10,6 +11,11 @@ import scala.collection.SortedSet
  * NOTE: put all caching etc in this
  */
 case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
+
+  /**
+   * get load time to use as cache bust if needed
+   */
+  val loadedAt = new java.util.Date().getTime()
 
   /**
    * cached SORTED list of all assets - useful for searching/filtering/reversing

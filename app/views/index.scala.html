@@ -5,7 +5,6 @@
  * useful functions!
  *@
 
-
 @listFolders(folders: Seq[models.AssetFolder], folderPath: String) = {
   @if(!folders.isEmpty) {
     <ul>
@@ -41,12 +40,37 @@
     }
 }
 
+@imgSrcThumbnail(a: models.Asset) = {
+  @if(a.hasThumbnail) {
+    @if(util.Settings.isAdmin) {
+      src="@routes.FileServer.serve(a.thumbnail)?bust=@{library.loadedAt}"
+    } else {
+      src="@routes.FileServer.serve(a.thumbnail)"
+    }
+  } else {
+    @* placeholder *@
+    http://placehold.it/96x96
+  } 
+}
+
+@imgSrcPreview(a: models.Asset) = {
+  @if(a.hasThumbnail) {
+    @if(util.Settings.isAdmin) {
+      src="@routes.FileServer.serve(a.preview)?bust=@{library.loadedAt}"
+    } else {
+      src="@routes.FileServer.serve(a.preview)"
+    }
+  } else {
+    @* placeholder *@
+    http://placehold.it/320x320
+  } 
+}
+
 @assetThumbnail(a: models.Asset) = {    
   <div class="asset pull-left">
     <div class="inner-asset">
       <a href="@routes.Application.showAsset(a.original)">
-      <img class="thumb" 
-        src="@if(a.hasThumbnail) { @routes.FileServer.serve(a.thumbnail) } else { http://placehold.it/96x96 }"/>
+      <img class="thumb" @imgSrcThumbnail(a) />
       </a>
       <p class="caption">
         <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}" data-placement="bottom">@displayName(a.name)</a>
@@ -59,8 +83,7 @@
   <div class="assetDetail">
     <h1 class="title">@{a.name}</h1>
     <a href="@routes.FileServer.serve(a.original)">
-    <img class="preview"
-      src="@if(a.hasPreview) { @routes.FileServer.serve(a.preview) } else { http://placehold.it/320x320 }"/>
+    <img class="preview" @imgSrcPreview(a) />
     </a>
     <dl class="dl-horizontal">
       @if(!a.description.isEmpty) {
