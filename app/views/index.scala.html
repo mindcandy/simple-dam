@@ -40,16 +40,16 @@
     }
 }
 
-@imgSrcThumbnail(a: models.Asset) = {
+@imgSrcThumbnail(attr: String, a: models.Asset) = {
   @if(a.hasThumbnail) {
     @if(util.Settings.isAdmin) {
-      src="@routes.FileServer.serve(a.thumbnail)?bust=@{library.loadedAt}"
+      @{attr}="@routes.FileServer.serve(a.thumbnail)?bust=@{library.loadedAt}"
     } else {
-      src="@routes.FileServer.serve(a.thumbnail)"
+      @{attr}="@routes.FileServer.serve(a.thumbnail)"
     }
   } else {
     @* placeholder *@
-    src="http://placehold.it/96x96"
+    @{attr}="http://placehold.it/96x96"
   } 
 }
 
@@ -70,7 +70,8 @@
   <div class="asset pull-left">
     <div class="inner-asset">
       <a href="@routes.Application.showAsset(a.original)">
-      <img class="thumb" @imgSrcThumbnail(a) />
+        @* lazy load thumbnails so we can return ALL the results and just load when scrolling *@
+      <img class="thumb lazy" src="@routes.Assets.at("img/grey.gif")" @imgSrcThumbnail("data-original", a) />
       </a>
       <p class="caption">
         <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}" data-placement="bottom">@displayName(a.name)</a>
@@ -175,21 +176,21 @@
       </form>
     </ul>
 
-@if(results.total > 1) {
-    <div class="pagination pagination-small pull-left pagination-in-navbar">
-    <ul>
-        @pageLink(1, "|<", true) 
-        @pageLink(math.max(results.current - 1,1), "<", true)
-        @for(p <- results.min to results.max)  {
-            @pageLink(p, p.toString, false)
-        }
-        @pageLink(math.min(results.current + 1, results.total), ">", true)
-        @pageLink(results.total, ">|", true)
-    </ul>
-    </div> 
-}
-    @**** todo: order ****@
-    @* <li class="navbar-text">Order</li> *@
+@***** PAGINATION -- TODO: remove 
+* @if(results.total > 1) {
+*    <div class="pagination pagination-small pull-left pagination-in-navbar">
+*    <ul>
+*        @pageLink(1, "|<", true) 
+*        @pageLink(math.max(results.current - 1,1), "<", true)
+*        @for(p <- results.min to results.max)  {
+*            @pageLink(p, p.toString, false)
+*        }
+*        @pageLink(math.min(results.current + 1, results.total), ">", true)
+*        @pageLink(results.total, ">|", true)
+*    </ul>
+*    </div> 
+*}
+*****@
 
 @if(util.Settings.isAdmin) {
   @* show admin *@

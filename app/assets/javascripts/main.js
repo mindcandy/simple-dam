@@ -5,4 +5,5 @@ jQuery(document).ready(function() {
 
     $(".inner-asset a").tooltip();
 
+    $("img.lazy").lazyload();
 });

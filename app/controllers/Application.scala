@@ -67,15 +67,19 @@ object Application extends Controller {
    */
   private def buildResult(assets: List[Asset], page: Int): SearchResult = {
 
-    val totalPages = 1 + (assets.length / Settings.assetsPerPage)
-    val minVisiblePage = math.max(page - 3, 1)
-    val maxVisiblePage = math.min(minVisiblePage + 6, totalPages)
-    
-    // limit response
-    val offset = (page-1) * Settings.assetsPerPage
-    val slice = assets.slice(offset, offset + Settings.assetsPerPage)
+    // actually we don't care about pagination now -- always return everything
+    // TODO: clean this up when we definitely won't care about pagination!
+    SearchResult(current = 1, total = 1, min = 1, max = 1, assets = assets)
 
-    SearchResult(current = page, total = totalPages, min = minVisiblePage, max = maxVisiblePage, assets = slice)
+    // val totalPages = 1 + (assets.length / Settings.assetsPerPage)
+    // val minVisiblePage = math.max(page - 3, 1)
+    // val maxVisiblePage = math.min(minVisiblePage + 6, totalPages)
+    
+    // // limit response
+    // val offset = (page-1) * Settings.assetsPerPage
+    // val slice = assets.slice(offset, offset + Settings.assetsPerPage)
+
+    // SearchResult(current = page, total = totalPages, min = minVisiblePage, max = maxVisiblePage, assets = slice)
   }
   
 }
