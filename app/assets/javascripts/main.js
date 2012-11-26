@@ -5,5 +5,8 @@ jQuery(document).ready(function() {
 
     $(".inner-asset a").tooltip();
 
-    $("img.lazy").lazyload();
+    $("img.lazy").lazyload({
+       threshold : 200,
+       event: "scrollstop"
+    });
 });

@@ -66,12 +66,16 @@
   } 
 }
 
-@assetThumbnail(a: models.Asset) = {    
+@assetThumbnail(a: models.Asset, index: Int) = {    
   <div class="asset pull-left">
     <div class="inner-asset">
       <a href="@routes.Application.showAsset(a.original)">
-        @* lazy load thumbnails so we can return ALL the results and just load when scrolling *@
+      @if(index < 64) {
+        <img class="thumb" @imgSrcThumbnail("src", a) />
+      } else {
+        @* lazy load later thumbnails so we can return ALL the results and just load when scrolling *@
       <img class="thumb lazy" src="@routes.Assets.at("img/grey.gif")" @imgSrcThumbnail("data-original", a) />
+      }
       </a>
       <p class="caption">
         <a href="@routes.Application.showAsset(a.original)" rel="tooltip" title="@{a.name}" data-placement="bottom">@displayName(a.name)</a>
@@ -166,15 +170,13 @@
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-      <li @if(search.isEmpty && currentFolder.isEmpty && individualAsset.isEmpty && keywordSearch.isEmpty) { class="active" } ><a href="/">Show All</a></li> 
-      <form class="navbar-form pull-left form-search" action="@routes.Application.index()">
+    </ul>
+    <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
       <div class="input-append">
         <input type="text" class="span3 search-query"  name="search" id="search" value="@{search}">
         <button type="submit" class="btn">Search</button>
       </div>
-
-      </form>
-    </ul>
+    </form>
 
 @***** PAGINATION -- TODO: remove 
 * @if(results.total > 1) {
@@ -192,19 +194,7 @@
 *}
 *****@
 
-@if(util.Settings.isAdmin) {
-  @* show admin *@
-  <ul class="nav pull-right">
-    <li class="dropdown">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
-          <b class="caret"></b>
-        </a>
-      <ul class="dropdown-menu">
-        <a href="@routes.Admin.rescan(request.uri)">Rescan Asset Library</a>
-      </ul>
-    </li>
-  </ul>
-}
+
 
   </div>
 </div>
@@ -218,6 +208,8 @@
  *@
 
     <div class="span2 sidebar">
+      <h5><a href="/" id="everything">Show Everything</a></h5>
+
       <h5>Folders</h5>
       <div class="tree" id="folderTree" style="display:none;">
         @listFolders(library.topFolder.folders, "")
@@ -237,9 +229,45 @@
 @if(individualAsset.isDefined) {
     @showIndividualAsset(individualAsset.get)  
 } else {     
-    @for(a <- results.assets) { @assetThumbnail(a) }
+    @for((a,i) <- results.assets.view.zipWithIndex) { @assetThumbnail(a,i) }
 }
     </div>
+  </div>
+</div>
+
+@******************************
+ * Info bar 
+ *@
+<div class="navbar navbar-fixed-bottom navbar-inverse">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li>
+<p class="navbar-text" id="statusText">
+@if(individualAsset.isDefined) {
+    Showing single asset.
+} else {     
+    @{results.assets.length} assets found.
+}    
+</p>
+    </ul>
+
+@if(util.Settings.isAdmin) {
+  @* show admin *@
+  <ul class="nav pull-right" id="admin">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
+          <b class="caret"></b>
+        </a>
+      <ul class="dropdown-menu">
+        <a href="@routes.Admin.rescan(request.uri)">Rescan Asset Library</a>
+      </ul>
+    </li>
+  </ul>
+}
+
+    <ul class="nav pull-right">
+      <li><a href="#">Help</a></li>
+    </ul>
   </div>
 </div>
 

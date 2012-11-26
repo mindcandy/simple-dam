@@ -13,10 +13,18 @@ body {
     margin-left: 8px;
 }
 
-.pagination.pagination-in-navbar { 
+#searchForm {
+    margin-right: 10px;
+}
+
+#everything {
+    color: #000;
+}
+
+/*.pagination.pagination-in-navbar { 
     margin: 7px 0px 0px 0px;
     padding-left: 15px;
-}
+}*/
 
 .caption {
     font-size: 11px;
