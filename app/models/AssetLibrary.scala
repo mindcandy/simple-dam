@@ -59,7 +59,7 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
     // split into path and folder
     val splitPoint = assetPath.lastIndexOf("/") + 1
     val path = assetPath.substring(0, splitPoint)
-    val assetName = assetPath.substring(splitPoint)
+    val assetName = assetPath.substring(splitPoint).trim
 
     val folder = findFolder(path)
 
