@@ -188,6 +188,18 @@
       </div>
     </form>
 
+@if(util.Settings.isAdmin) {
+  @* show admin *@
+    <ul class="nav pull-right">
+      <li><div class="btn-group"> 
+        <a class="btn disabled" href="#">Admin:</a>
+
+        <a class="btn btn-warning" href="#"><i class="icon-edit icon-white"></i> Edit Metadata</a>
+        <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
+      </div></li>
+    </ul>
+}
+
 @***** PAGINATION -- TODO: remove 
 * @if(results.total > 1) {
 *    <div class="pagination pagination-small pull-left pagination-in-navbar">
@@ -261,20 +273,6 @@
 }    
 </p>
     </ul>
-
-@if(util.Settings.isAdmin) {
-  @* show admin *@
-  <ul class="nav pull-right" id="admin">
-    <li class="dropdown">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-wrench icon-white"></i> Admin
-          <b class="caret"></b>
-        </a>
-      <ul class="dropdown-menu">
-        <a href="@routes.Admin.rescan(request.uri)"><i class="icon-refresh"></i> Rescan Asset Library</a>
-      </ul>
-    </li>
-  </ul>
-}
 
     <ul class="nav pull-right">
       <li><a href="#"><i class="icon-question-sign icon-white"></i> Help</a></li>
