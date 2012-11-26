@@ -105,10 +105,10 @@
         }
       }
     </dl>
-    <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)">Download</a>
+    <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)"><i class="icon-download-alt icon-white"></i> Download</a>
 
       @if(util.Settings.isAdmin) {
-        <a href="#editAsset" role="button" class="btn" data-toggle="modal">Edit Metadata (Admin)</a>
+        <a href="#editAsset" role="button" class="btn" data-toggle="modal"><i class="icon-edit"></i> Edit Metadata (Admin)</a>
       }
   </div>
 
@@ -130,8 +130,8 @@
           <input type="text" name="keywords" id="keywords"  class="input-block-level" value="@{a.keywords.mkString(", ")}"/>
         </div>
         <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          <button class="btn btn-primary" type="submit">Save changes</button>
+          <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+          <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
         </div>
       </fieldset>
     </form>
@@ -174,7 +174,7 @@
     <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
       <div class="input-append">
         <input type="text" class="span3 search-query"  name="search" id="search" value="@{search}">
-        <button type="submit" class="btn">Search</button>
+        <button type="submit" class="btn"><i class="icon-search"></i> Search</button>
       </div>
     </form>
 
@@ -243,6 +243,7 @@
     <ul class="nav">
       <li>
 <p class="navbar-text" id="statusText">
+  <i class="icon-info-sign icon-white"></i> 
 @if(individualAsset.isDefined) {
     Showing single asset.
 } else {     
@@ -255,18 +256,18 @@
   @* show admin *@
   <ul class="nav pull-right" id="admin">
     <li class="dropdown">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-wrench icon-white"></i> Admin
           <b class="caret"></b>
         </a>
       <ul class="dropdown-menu">
-        <a href="@routes.Admin.rescan(request.uri)">Rescan Asset Library</a>
+        <a href="@routes.Admin.rescan(request.uri)"><i class="icon-refresh"></i> Rescan Asset Library</a>
       </ul>
     </li>
   </ul>
 }
 
     <ul class="nav pull-right">
-      <li><a href="#">Help</a></li>
+      <li><a href="#"><i class="icon-question-sign icon-white"></i> Help</a></li>
     </ul>
   </div>
 </div>
