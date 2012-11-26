@@ -188,15 +188,6 @@
       </div>
     </form>
 
-@if(util.Settings.isAdmin) {
-  @* show admin *@
-    <ul class="nav pull-right">
-      <li><div class="btn-group"> 
-        <a class="btn btn-warning disabled" href="#" title="Edit metadata of Selected Assets"><i class="icon-edit icon-white"></i> Mass Edit</a>
-        <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)" title="Reload all Assets from disk (e.g. if there are new or changed assets)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
-      </div></li>
-    </ul>
-}
 
 @***** PAGINATION -- TODO: remove 
 * @if(results.total > 1) {
@@ -228,14 +219,14 @@
  *@
 
     <div class="span2 sidebar">
-      <h5><a href="/" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
+      <h5 class="category"><a href="/" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
 
-      <h5><i class="icon-folder-close"></i> Folders</h5>
+      <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
       <div class="tree" id="folderTree" style="display:none;">
         @listFolders(library.topFolder.folders, "")
       </div>
 
-      <h5><i class="icon-tags"></i> Keywords</h5>
+      <h5 class="category"><i class="icon-tags"></i> Keywords</h5>
       <div class="tree" id="keywordTree" style="display:none;">
         @listKeywords(library.keywords)
       </div>
@@ -275,6 +266,17 @@
     <ul class="nav pull-right">
       <li><a href="#"><i class="icon-question-sign icon-white"></i> Help</a></li>
     </ul>
+
+@if(util.Settings.isAdmin) {
+  @* show admin *@
+    <ul class="nav pull-right">
+      <li><div class="btn-group"> 
+        <a class="btn btn-warning disabled" href="#" title="Edit metadata of Selected Assets"><i class="icon-edit icon-white"></i> Mass Edit</a>
+        <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)" title="Reload all Assets from disk (e.g. if there are new or changed assets)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
+      </div></li>
+    </ul>
+}
+
   </div>
 </div>
 

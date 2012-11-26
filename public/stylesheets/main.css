@@ -1,7 +1,8 @@
 
-/* Extra padding needed with top navbar */
+/* Extra padding needed with navbars */
 body {
-    padding-top: 43px;
+    padding-top: 45px;
+    padding-bottom: 43px;
 }
 
 /* space out things in the navbar nicely */
@@ -16,6 +17,11 @@ body {
 
 #searchForm {
     margin-right: 10px;
+}
+
+.category {
+    margin-bottom: 1px;
+    margin-top: 15px;
 }
 
 #everything {
@@ -33,11 +39,6 @@ body {
 
 .caption a {
     color: #333;
-}
-
-.thumb {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .inner-asset {
