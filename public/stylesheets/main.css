@@ -9,8 +9,8 @@ body {
     margin-left: 0px;
 }
 
-.navbar li, .navbar input {
-    margin-left: 8px;
+.navbar li {
+    margin-left: 10px;
 }
 
 #searchForm {

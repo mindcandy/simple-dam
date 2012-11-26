@@ -169,8 +169,18 @@
   <div class="navbar-inner">
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
-      <li class="divider-vertical"></li>
+      <!--<li class="divider-vertical"></li>-->
+      <li><div class="btn-group"> 
+        <a class="btn" data-toggle="button" href="#">Select</a>
+        <a class="btn" href="#"><i class="icon-plus"></i> All</a>
+        <a class="btn disabled" href="#"><i class="icon-minus"></i> None</a>
+      </div></li>
+      <!--<li class="divider-vertical"></li>-->
+      <li><div class="btn-group"> 
+        <a class="btn btn-info" href="#"><i class="icon-download-alt icon-white"></i> Download</a>
+      </div></li>
     </ul>
+
     <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
       <div class="input-append">
         <input type="text" class="span3 search-query"  name="search" id="search" value="@{search}">
