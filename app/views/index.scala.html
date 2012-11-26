@@ -105,10 +105,10 @@
         }
       }
     </dl>
-    <a class="btn btn-primary" href="@routes.FileServer.serve(a.original)"><i class="icon-download-alt icon-white"></i> Download</a>
+    <a class="btn btn-info" href="@routes.FileServer.serve(a.original)" title="Download this Asset"><i class="icon-download-alt icon-white"></i> Download</a>
 
       @if(util.Settings.isAdmin) {
-        <a href="#editAsset" role="button" class="btn" data-toggle="modal"><i class="icon-edit"></i> Edit Metadata (Admin)</a>
+        <a href="#editAsset" role="button" class="btn btn-warning" data-toggle="modal"><i class="icon-edit icon-white"></i> Edit Metadata</a>
       }
   </div>
 
@@ -171,19 +171,19 @@
     <ul class="nav">
       <!--<li class="divider-vertical"></li>-->
       <li><div class="btn-group"> 
-        <a class="btn" data-toggle="button" href="#">Select</a>
-        <a class="btn" href="#"><i class="icon-plus"></i> All</a>
-        <a class="btn disabled" href="#"><i class="icon-minus"></i> None</a>
+        <a class="btn" data-toggle="button" href="#" title="Enable or Disable Asset Selection">Select</a>
+        <a class="btn" href="#"><i class="icon-plus" title="Select All Assets in current Search"></i> All</a>
+        <a class="btn disabled" href="#"><i class="icon-minus" title="Clear Asset selection"></i> None</a>
       </div></li>
       <!--<li class="divider-vertical"></li>-->
       <li><div class="btn-group"> 
-        <a class="btn btn-info" href="#"><i class="icon-download-alt icon-white"></i> Download</a>
+        <a class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> Download All</a>
       </div></li>
     </ul>
 
     <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
       <div class="input-append">
-        <input type="text" class="span3 search-query"  name="search" id="search" value="@{search}">
+        <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords.">
         <button type="submit" class="btn"><i class="icon-search"></i> Search</button>
       </div>
     </form>
@@ -192,10 +192,8 @@
   @* show admin *@
     <ul class="nav pull-right">
       <li><div class="btn-group"> 
-        <a class="btn disabled" href="#">Admin:</a>
-
-        <a class="btn btn-warning" href="#"><i class="icon-edit icon-white"></i> Edit Metadata</a>
-        <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
+        <a class="btn btn-warning disabled" href="#" title="Edit metadata of Selected Assets"><i class="icon-edit icon-white"></i> Mass Edit</a>
+        <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)" title="Reload all Assets from disk (e.g. if there are new or changed assets)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
       </div></li>
     </ul>
 }
@@ -230,7 +228,7 @@
  *@
 
     <div class="span2 sidebar">
-      <h5><a href="/" id="everything"><i class="icon-home"></i> Show Everything</a></h5>
+      <h5><a href="/" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
 
       <h5><i class="icon-folder-close"></i> Folders</h5>
       <div class="tree" id="folderTree" style="display:none;">
