@@ -140,36 +140,6 @@
 
 
 
- @******** Admin mass-edit of asset metadata *****@
-
-@if(util.Settings.isAdmin) {
-<div id="massEditAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Mass Edit Metadata</h3>
-  </div>
-  <form @** action="@routes.Admin.massEditMetadata()" **@>
-    <fieldset>
-      <div class="modal-body">
-        <p>You can add/remove keywords to multiple assets at the same time:</p>
-        <label>Assets to edit</label>
-        <select multiple name="assets" id="massEditAssetList" class="input-block-level">
-        </select>
-        <label>Keywords to add</label>
-        <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"/>
-        <label>Keywords to remove</label>
-        <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"/>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
-        <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
-      </div>
-    </fieldset>
-  </form>
-</div>
-}
-
-
 @pageLink(page: Int, text: String, nav: Boolean) = {
   <li @if(page == results.current) { 
         @if(nav) { class="disabled" } else { class="active" }
@@ -281,7 +251,7 @@
   @* show admin *@
     <ul class="nav pull-right">
       <li><div class="btn-group"> 
-        <a id="massEditMetaBtn" class="btn btn-warning disabled" href="#massEditAsset" title="Edit metadata of Selected Assets"><i class="icon-edit icon-white"></i> Mass Edit</a>
+        <a id="massEditMetaBtn" class="btn btn-warning disabled" href="#" title="Edit metadata of Selected Assets"><i class="icon-edit icon-white"></i> Mass Edit</a>
         <a class="btn btn-warning" href="@routes.Admin.rescan(request.uri)" title="Reload all Assets from disk (e.g. if there are new or changed assets)"><i class="icon-refresh icon-white"></i> Rescan Library</a>
       </div></li>
     </ul>
@@ -289,6 +259,38 @@
 
   </div>
 </div>
+
+
+
+
+ @******** Admin mass-edit of asset metadata *****@
+
+@if(util.Settings.isAdmin) {
+<div id="massEditAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Mass Edit Metadata</h3>
+  </div>
+  <form @** action="@routes.Admin.massEditMetadata()" **@>
+    <fieldset>
+      <div class="modal-body">
+        <p>You can add/remove keywords to multiple assets at the same time:</p>
+        <label>Assets to edit</label>
+        <select multiple name="assets" id="massEditAssetList" class="input-block-level">
+        </select>
+        <label>Keywords to add</label>
+        <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"/>
+        <label>Keywords to remove</label>
+        <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+        <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+}
 
 } @* end of main() call *@
 
@@ -299,9 +301,6 @@
  *@
 
 <script>
-@* sneaky preload of tree icons *@
-@*(new Image()).src = "@routes.Assets.at("tree-themes/classic/d.png")";*@
-
 jQuery(document).ready(function() {
 
   // build a big lookup table from path -> node id
