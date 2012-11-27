@@ -397,6 +397,15 @@ jQuery(document).ready(function() {
 
 
 
+  // set up tooltips on assets
+  $(".inner-asset a").tooltip();
+
+  // set up lazy loading on asset thumbnails - use delay to ensure it happens after other things
+  $("img.lazy").lazyload({
+     threshold : 200,
+     event: "scrollstop"
+  });
+
 });
 </script>
 

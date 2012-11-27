@@ -3,12 +3,6 @@
 /* set up function */
 jQuery(document).ready(function() {
 
-    $(".inner-asset a").tooltip();
-
-    $("img.lazy").lazyload({
-       threshold : 200,
-       event: "scrollstop"
-    });
 
   var setButtonStates = function(anySelected) {
     if (anySelected) {
@@ -69,5 +63,6 @@ jQuery(document).ready(function() {
   $("#downloadAllBtn").click(function(e) {
     alert("Mass-download is not implemented yet, sorry!");
   });
+
 });
   
