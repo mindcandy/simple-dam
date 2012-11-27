@@ -28,9 +28,13 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
   lazy val keywords: List[String] = collectKeywords(sortedAssets)
 
   /**
-   * find assets that match the given search -- NOTE: very basic at moment! only 1 search term
+   * find assets that match the given search 
+   * will AND together terms separated by spaces
    */
-  def findAssets(search: String): List[Asset] = sortedAssets.filter(_.matches(search.toLowerCase))
+  def findAssets(search: String): List[Asset] = {
+    val searchTerms = search.toLowerCase.split(" ").map(_.trim).filter(!_.isEmpty).toList
+    sortedAssets.filter(_.matches(searchTerms))
+  }
 
   /**
    * find a folder by its path

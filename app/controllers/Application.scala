@@ -23,6 +23,7 @@ object Application extends Controller {
 
     // perform search
     val sanitisedSearch = search.trim
+
     val assets = if (!sanitisedSearch.isEmpty) {
         AssetLibrary.current.findAssets(sanitisedSearch)
       } else if (!keyword.isEmpty) {

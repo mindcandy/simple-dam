@@ -13,8 +13,8 @@ case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPrev
 
   private val matchString = original.toLowerCase + keywords.toList.map(_.toLowerCase).mkString(" ")
 
-  def matches(search: String): Boolean = {
-     matchString.contains(search)
+  def matches(searchTerms: Seq[String]): Boolean = {
+     searchTerms.forall(matchString.contains(_))
   }
 
   /**
