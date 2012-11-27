@@ -99,7 +99,7 @@ object Asset {
     fw.close()
   }
 
-  private def convertStringListToSet(s: String): Set[String] = s.split(",").map(_.trim).filter(!_.isEmpty).toSet
+  def convertStringListToSet(s: String): Set[String] = s.split(",").map(_.trim).filter(!_.isEmpty).toSet
 
   /**
    * find file with suffix e.g. passed in foo.pdf and _suffix.jpg would look

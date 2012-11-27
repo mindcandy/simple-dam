@@ -13,8 +13,10 @@ GET     /asset/*path                controllers.Application.showAsset(path)
 
 # ADMIN mode routes
 # rescan the asset folder, reloading all assets
-GET     /admin/rescan               controllers.Admin.rescan(url: String ?= "")
-GET     /admin/editMetadata/*asset         controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
+GET     /admin/rescan                   controllers.Admin.rescan(url: String ?= "")
+GET     /admin/editMetadata/*asset      controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
+GET     /admin/massEditMetadata/        controllers.Admin.massEditMetadata(addKeywords: String ?= "", removeKeywords: String ?= "", redirect: String ?= "")
+
 
 
 # supply js routing information for AJAX

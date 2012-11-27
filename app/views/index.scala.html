@@ -271,7 +271,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Mass Edit Metadata</h3>
   </div>
-  <form @** action="@routes.Admin.massEditMetadata()" **@>
+  <form action="@routes.Admin.massEditMetadata()">
     <fieldset>
       <div class="modal-body">
         <p>You can add/remove keywords to multiple assets at the same time:</p>
@@ -282,6 +282,7 @@
         <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"/>
         <label>Keywords to remove</label>
         <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"/>
+        <input type="hidden" name="redirect" value="@request.uri"/>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
