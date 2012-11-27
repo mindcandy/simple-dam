@@ -95,6 +95,8 @@
       }
       <dt>Folder</dt>
       <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
+      <dt>Size</dt>
+      <dd>@{a.humanSize}</dd>
       @if(!a.keywords.isEmpty) {
       <dt>Keywords</dt>
       <dd>

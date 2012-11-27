@@ -1,18 +1,31 @@
 package models
 
 import java.io.{File, FileWriter}
+import scala.tools.nsc.io.{File => NscFile}
 import play.api.libs.json._
 import play.api._
+import util.Humanize
 
 /**
  * hold an asset
  */
-case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPreview: Boolean, description: String, keywords: Set[String]) {
-
+case class Asset (
+  name: String, 
+  original: String, 
+  hasThumbnail: Boolean, 
+  hasPreview: Boolean, 
+  description: String, 
+  keywords: Set[String],
+  sizeBytes: Long) {
+  
   def nameLower = name.toLowerCase
 
+  // cache the string of useful things to match against - path and keywords
   private val matchString = original.toLowerCase + keywords.toList.map(_.toLowerCase).mkString(" ")
 
+  /**
+   * check if this asset matches the search terms (ANDed together)
+   */
   def matches(searchTerms: Seq[String]): Boolean = {
      searchTerms.forall(matchString.contains(_))
   }
@@ -38,6 +51,10 @@ case class Asset (name: String, original: String, hasThumbnail: Boolean, hasPrev
     else default
   }
 
+  /**
+   * get human-readable size
+   */
+  def humanSize: String = Humanize.filesize(sizeBytes)
 }
 
 
@@ -52,11 +69,12 @@ object Asset {
    * load an Asset
    */
   def apply(path: File, basePath: String): Asset = {
-    // load metadata if there is any
-    val metadata = loadMetadata(new File(getSuffixPath(path, ".json")))
+    val metadataFile = new NscFile(new File(getSuffixPath(path, ".json")))
+    val metadata = loadMetadata(metadataFile)
 
     val description = metadata.getOrElse("description", "")
     val keywords = convertStringListToSet(metadata.getOrElse("keywords", ""))
+    val sizeBytes: Long = path.length
 
     Asset(
       name = path.getName.trim,
@@ -64,15 +82,14 @@ object Asset {
       hasPreview = checkSuffixFileExists(path, ThumbnailSuffix),
       hasThumbnail = checkSuffixFileExists(path, PreviewSuffix),
       description = description,
-      keywords = keywords)
+      keywords = keywords,
+      sizeBytes = sizeBytes)
   }
 
-  private def loadMetadata (file: File): Map[String, String] = {
+  private def loadMetadata (file: NscFile): Map[String, String] = {
     if (file.exists) {
       try {
-        val dataFile = scala.io.Source.fromFile(file)
-        val parsed = Json.parse(dataFile.mkString)  
-        dataFile.close()
+        val parsed = Json.parse(file.slurp)
 
         Map(
           "description" -> (parsed \ "description").asOpt[String].getOrElse(""), 
@@ -92,11 +109,9 @@ object Asset {
     val metadata = Map("description" -> description, "keywords" -> keywords)
     val json = Json.toJson(metadata)
     val originalPath = new File(basePath + asset.original)
-    val metadataPath = getSuffixPath(originalPath, ".json")
+    val metadataPath = new File(getSuffixPath(originalPath, ".json"))
 
-    val fw = new FileWriter(metadataPath) 
-    fw.write(Json.stringify(json)) 
-    fw.close()
+    (new NscFile(metadataPath)).writeAll(Json.stringify(json))
   }
 
   def convertStringListToSet(s: String): Set[String] = s.split(",").map(_.trim).filter(!_.isEmpty).toSet

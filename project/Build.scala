@@ -8,7 +8,8 @@ object ApplicationBuild extends Build {
   val appVersion      = "0.1.2"
 
   val appDependencies = Seq(
-    "org.mockito" % "mockito-core" % "1.9.0"
+    "org.mockito" % "mockito-core" % "1.9.0",
+    "org.scala-lang" % "scala-compiler" % "2.9.1"
   )
 
 
