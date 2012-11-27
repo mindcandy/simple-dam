@@ -71,3 +71,8 @@ body {
 .assetDetail .btn {
     margin-left: 110px;
 }
+
+
+.selectedAsset {
+    background-color: orange;
+}
