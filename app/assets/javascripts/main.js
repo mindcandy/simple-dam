@@ -11,7 +11,6 @@ jQuery(document).ready(function() {
     });
 
   var setButtonStates = function(anySelected) {
-    console.log("setButtonStates", anySelected);
     if (anySelected) {
       $("#deselectAllBtn").removeClass("disabled");
       $("#massEditMetaBtn").removeClass("disabled");
@@ -42,14 +41,7 @@ jQuery(document).ready(function() {
 
     // is select mode active?
     if ($("#selectModeBtn").hasClass("active")) {
-
-      if (asset.hasClass("selectedAsset")) {
-        // deselect
-        asset.removeClass("selectedAsset");
-      } else {
-        // select
-        asset.addClass("selectedAsset");
-      }
+      asset.toggleClass("selectedAsset");
 
       // TODO: track how many selected items or just count them
       setButtonStates(true);
@@ -62,5 +54,20 @@ jQuery(document).ready(function() {
 
   });
 
+  $("#massEditMetaBtn").click(function(e) {
+    // populate the list of assets to edit
+    var options = "";
+
+    $(".selectedAsset").each(function() {
+        options += '<option selected>' + $(this).attr("data-original") + '</option>';
+    });
+
+    $("#massEditAssetList").html("").append(options);
+    $("#massEditAsset").modal();
+  })
+
+  $("#downloadAllBtn").click(function(e) {
+    alert("Mass-download is not implemented yet, sorry!");
+  });
 });
   
