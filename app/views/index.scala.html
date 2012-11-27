@@ -93,6 +93,8 @@
         <dt>Description</dt>
         <dd>@{a.description}</dd>
       }
+      <dt>Type</dt>
+      <dd>@{a.extension.toUpperCase}</dd>
       <dt>Folder</dt>
       <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
       <dt>Size</dt>

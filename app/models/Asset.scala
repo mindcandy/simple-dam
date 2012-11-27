@@ -18,6 +18,9 @@ case class Asset (
   keywords: Set[String],
   sizeBytes: Long) {
   
+  /*
+   * name in Lowercase -- used in sorting a lot
+   */
   def nameLower = name.toLowerCase
 
   // cache the string of useful things to match against - path and keywords
@@ -55,6 +58,11 @@ case class Asset (
    * get human-readable size
    */
   def humanSize: String = Humanize.filesize(sizeBytes)
+
+  /**
+   * get extension of file
+   */
+  def extension: String = name.substring(name.lastIndexOf('.') + 1)
 }
 
 
@@ -105,6 +113,9 @@ object Asset {
     }
   }
 
+  /**
+   * save metadata for given file path - will create or overwrite .json files
+   */
   def saveMetadata(basePath: String, asset: Asset, description: String, keywords: String) {
     val metadata = Map("description" -> description, "keywords" -> keywords)
     val json = Json.toJson(metadata)
