@@ -49,18 +49,52 @@ jQuery(document).ready(function() {
 
   });
 
+  // Mass edit of assets
   $("#massEditMetaBtn").click(function(e) {
     // populate the list of assets to edit
+
     var options = "";
 
     $(".selectedAsset").each(function() {
-        options += '<option selected>' + $(this).attr("data-original") + '</option>';
+        options += '<option>' + $(this).attr("data-original") + '</option>';
     });
 
     $("#massEditAssetList").html("").append(options);
     $("#massEditAsset").modal();
-  })
+  });
 
+
+  $("#massEditMetaSubmitBtn").click(function(e) {
+    e.stopPropagation();
+
+    // submit ajax query
+    var assets = $(".selectedAsset").map(function() { return $(this).attr('data-original'); }).toArray();
+    var queryParameters = {
+      "addKeywords": $("#addKeywords").val(),
+      "removeKeywords": $("#removeKeywords").val(),
+      "assets": assets
+    };
+    var queryAsString = JSON.stringify(queryParameters)
+
+
+    // prevent multiple submits
+    $("#massEditAsset .btn").hide(); 
+    $("#massEditMetaProgress").html("Working...");
+    
+    // send query
+    $.ajax("/admin/json/massEditMetadata/", {
+      type : 'POST',
+      data : queryAsString,
+      processData : false,
+      contentType : 'application/json',
+      complete: function(xhr,settings) {
+        location.reload();
+      }
+    });
+  });
+
+
+  // mass download of assets
   $("#downloadAllBtn").click(function(e) {
     var assets = $(".selectedAsset");
 

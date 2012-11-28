@@ -258,15 +258,15 @@
  @******** Admin mass-edit of asset metadata *****@
 
 @if(util.Settings.isAdmin) {
-<div id="massEditAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="massEditAsset" class="modal hide fade" tabindex="-1" role="dialog" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Mass Edit Metadata</h3>
   </div>
-  <form action="@routes.Admin.massEditMetadata()">
-    <fieldset>
-      <div class="modal-body">
-        <p>You can add/remove keywords to multiple assets at the same time:</p>
+  <div class="modal-body">
+    <p>You can add/remove keywords to multiple assets at the same time:</p>
+    <form>    
+      <fieldset>
         <label>Assets to edit</label>
         <select multiple name="assets" id="massEditAssetList" class="input-block-level">
         </select>
@@ -274,14 +274,14 @@
         <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"/>
         <label>Keywords to remove</label>
         <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"/>
-        <input type="hidden" name="redirect" value="@request.uri"/>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
-        <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
-      </div>
-    </fieldset>
-  </form>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+    <button id="massEditMetaSubmitBtn" class="btn btn-primary"><i class="icon-ok icon-white"></i> Save changes</button>
+    <span id="massEditMetaProgress"></span>
+  </div>
 </div>
 }
   
