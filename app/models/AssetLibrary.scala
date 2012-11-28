@@ -83,7 +83,7 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
   private def collectKeywords(assets: Seq[Asset]): List[String] = {
     assets.foldLeft (Set[String]()) {
       case (set, asset) => set ++ asset.keywords
-    }.toList.sorted
+    }.toList.sortBy(_.toLowerCase)
   }
 }
 
