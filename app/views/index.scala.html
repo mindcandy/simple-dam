@@ -179,7 +179,7 @@
         <a id="deselectAllBtn" class="btn disabled" href="#"><i class="icon-minus" title="Clear Asset selection"></i> None</a>
       </div></li>
       <li><div class="btn-group"> 
-        <a id="downloadAllBtn" class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> Download</a>
+        <a id="downloadAllBtn" class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> <span id="downloadAllBtnLabel">Download All</span></a>
       </div></li> 
     }
     </ul>
@@ -237,13 +237,15 @@
   <div class="navbar-inner">
     <ul class="nav">
       <li>
-<p class="navbar-text" id="statusText">
+<p class="navbar-text">
   <i class="icon-info-sign icon-white"></i> 
+  <span id="statusText">
 @if(individualAsset.isDefined) {
     Showing single asset.
 } else {     
     @{results.assets.length} assets found.
 }    
+  </span>
 </p>
     </ul>
 
@@ -296,6 +298,29 @@
   </form>
 </div>
 }
+  
+@******** mass-download dialog *********@
+<div id="massDownload" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Download Multiple Assets</h3>
+  </div>
+  <form @*action="@routes.Application.massDownload()" *@>
+    <fieldset>
+      <div class="modal-body">
+        <p>Download multiple Assets as a single archive (zip) file</p>
+        <label><span id="massDownloadAssetCount"></span> Assets</label>
+        <select multiple name="assets" id="massDownloadAssetList" class="input-block-level">
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="icon-download-alt icon-white"></i> Download Archive</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+
 
 } @* end of main() call *@
 

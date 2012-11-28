@@ -4,28 +4,30 @@
 jQuery(document).ready(function() {
 
 
-  var setButtonStates = function(anySelected) {
-    if (anySelected) {
+  var updateUiState = function(selectionCount) {
+    if (selectionCount > 0) {
       $("#deselectAllBtn").removeClass("disabled");
       $("#massEditMetaBtn").removeClass("disabled");
-
+      $("#downloadAllBtnLabel").html("Download Selection");
+      $("#statusText").html(selectionCount + " Assets selected.");
     } else {
       $("#deselectAllBtn").addClass("disabled");
       $("#massEditMetaBtn").addClass("disabled");
-
+      $("#downloadAllBtnLabel").html("Download All");
+      $("#statusText").html("No assets selected.");
     }
   };
 
   $("#selectAllBtn").click(function(e) {
-    $(".inner-asset").addClass("selectedAsset");
+    var count = $(".inner-asset").addClass("selectedAsset").length;
     $("#selectModeBtn").addClass("active");
-    setButtonStates(true);
+    updateUiState(count);
   });
 
   $("#deselectAllBtn").click(function(e) {
     $(".selectedAsset").removeClass("selectedAsset");
     $("#selectModeBtn").removeClass("active");
-    setButtonStates(false);
+    updateUiState(0);
   });
 
   // either select/deselect or go to individual view
@@ -36,9 +38,8 @@ jQuery(document).ready(function() {
     // is select mode active?
     if ($("#selectModeBtn").hasClass("active")) {
       asset.toggleClass("selectedAsset");
-
-      // TODO: track how many selected items or just count them
-      setButtonStates(true);
+      
+      updateUiState($(".selectedAsset").length);
 
     } else {
       // look at single item
@@ -61,7 +62,21 @@ jQuery(document).ready(function() {
   })
 
   $("#downloadAllBtn").click(function(e) {
-    alert("Mass-download is not implemented yet, sorry!");
+    var options = "";
+    var assets = $(".selectedAsset");
+
+    if (assets.length === 0) {
+      // download all if no selection
+      assets = $(".inner-asset")
+    }
+
+    assets.each(function() {
+        options += '<option selected>' + $(this).attr("data-original") + '</option>';
+    });
+
+    $("#massDownloadAssetCount").html(assets.length)
+    $("#massDownloadAssetList").html("").append(options);
+    $("#massDownload").modal();
   });
 
 });
