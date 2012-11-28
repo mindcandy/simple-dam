@@ -1,4 +1,4 @@
-@(results: controllers.Application.SearchResult, title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)(implicit request: play.api.mvc.RequestHeader)
+@(assets: Seq[models.Asset], title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)(implicit request: play.api.mvc.RequestHeader)
 
 
 @*******************************
@@ -144,20 +144,6 @@
 
 
 
-@pageLink(page: Int, text: String, nav: Boolean) = {
-  <li @if(page == results.current) { 
-        @if(nav) { class="disabled" } else { class="active" }
-    } >
-    <a 
-    href="@if(currentFolder.isEmpty) { @routes.Application.index(search, keywordSearch,page) } else { @routes.Application.findFolder(currentFolder,page) }"
-      >@text</a>
-  </li> 
-}
-
-
-
-
-
 @*******************************
  * the actual page starts here 
  *@
@@ -224,7 +210,7 @@
 @if(individualAsset.isDefined) {
     @showIndividualAsset(individualAsset.get)  
 } else {     
-    @for((a,i) <- results.assets.view.zipWithIndex) { @assetThumbnail(a,i) }
+    @for((a,i) <- assets.view.zipWithIndex) { @assetThumbnail(a,i) }
 }
     </div>
   </div>
@@ -243,7 +229,7 @@
 @if(individualAsset.isDefined) {
     Showing single asset.
 } else {     
-    @{results.assets.length} assets found.
+    @{assets.length} assets found.
 }    
   </span>
 </p>

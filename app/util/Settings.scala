@@ -20,7 +20,7 @@ object Settings {
 
   lazy val title: String = config.getString("ui.title").getOrElse("Assets")
 
-  lazy val assetsPerPage: Int = config.getInt("ui.assetsPerPage").getOrElse(50)
-
   lazy val isAdmin: Boolean = config.getBoolean("ui.adminMode").getOrElse(false);
+
+  // TODO: more configuration e.g. logo, favicon?
 }
