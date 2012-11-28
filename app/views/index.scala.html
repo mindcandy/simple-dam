@@ -16,7 +16,7 @@
 }
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
-    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath, 1)">
+    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath)">
         <a href="#">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
@@ -25,7 +25,7 @@
 @listKeywords(keywords: Seq[String]) = {
   <ul>
   @for(key <- keywords) {
-    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key, 1)">
+    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key)">
       <a href="#">@{key}</a>
     </li>
   }
@@ -96,14 +96,14 @@
       <dt>Type</dt>
       <dd>@{a.extension.toUpperCase}</dd>
       <dt>Folder</dt>
-      <dd><a href="@routes.Application.findFolder(a.folderPath,1)">@{a.folderPath}</a></dd>
+      <dd><a href="@routes.Application.findFolder(a.folderPath)">@{a.folderPath}</a></dd>
       <dt>Size</dt>
       <dd>@{a.humanSize}</dd>
       @if(!a.keywords.isEmpty) {
       <dt>Keywords</dt>
       <dd>
         @for(key <- a.keywords) {
-          <a href="@routes.Application.index("",key, 1)">@key</a>, 
+          <a href="@routes.Application.index("",key)">@key</a>, 
         }
       }
     </dl>

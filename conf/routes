@@ -3,10 +3,11 @@
 # ~~~~
 
 # Home page / search
-GET     /                           controllers.Application.index(search: String ?= "", keyword: String ?= "", page: Int ?= 1)
+GET     /                           controllers.Application.index(search: String ?= "", keyword: String ?= "")
 
 # search in a folder
-GET     /folder/*folder             controllers.Application.findFolder(folder, page: Int ?= 1)
+GET     /folder/*folder             controllers.Application.findFolder(folder)
+#GET     /downloadFolder/*folder
 
 # show individual asset
 GET     /asset/*path                controllers.Application.showAsset(path)

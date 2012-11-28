@@ -14,7 +14,7 @@ object Application extends Controller {
   /**
    * main index -- also currently does a search
    */
-  def index(search: String, keyword: String, page: Int) = Action { implicit request =>
+  def index(search: String, keyword: String) = Action { implicit request =>
 
     // perform search
     val sanitisedSearch = search.trim
@@ -33,7 +33,7 @@ object Application extends Controller {
   /**
    * search within a folder (must be permalink)
    */
-  def findFolder(folderPath: String, page: Int) = Action { implicit request =>
+  def findFolder(folderPath: String) = Action { implicit request =>
 
     // find folder
     val folder = AssetLibrary.current.findFolder(folderPath)
