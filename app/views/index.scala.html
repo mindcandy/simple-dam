@@ -68,7 +68,7 @@
 
 @assetThumbnail(a: models.Asset, index: Int) = {    
   <div class="asset pull-left">
-    <div class="inner-asset" data-original="@{a.original}">
+    <div class="inner-asset" data-original="@{a.original}" data-size-bytes="@{a.sizeBytes}">
       @if(index < 64) {
         <img class="thumb" @imgSrcThumbnail("src", a) />
       } else {
@@ -294,8 +294,8 @@
   <form @*action="@routes.Application.massDownload()" *@>
     <fieldset>
       <div class="modal-body">
-        <p>Download multiple Assets as a single archive (zip) file</p>
-        <label><span id="massDownloadAssetCount"></span> Assets</label>
+        <p>Download multiple Assets as a single archive (zip) file. Note that this archive may take some time to build if there is a large number of assets!</p>
+        <label id="massDownloadAssetLabel"></label>
         <select multiple name="assets" id="massDownloadAssetList" class="input-block-level">
         </select>
       </div>

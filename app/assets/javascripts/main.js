@@ -62,19 +62,38 @@ jQuery(document).ready(function() {
   })
 
   $("#downloadAllBtn").click(function(e) {
-    var options = "";
     var assets = $(".selectedAsset");
 
     if (assets.length === 0) {
       // download all if no selection
-      assets = $(".inner-asset")
+      assets = $(".inner-asset");
     }
+
+    if (assets.length === 0) {
+      alert("Nothing to download!");
+      return;
+
+    } else if (assets.length === 1) {
+      // exactly one asset, download it
+      assets.each(function() {
+        window.location.href = jsRoutes.controllers.FileServer.serve($(this).attr("data-original"));
+      });
+      return;
+    }
+
+    var options = "";
+    var totalSizeMB = 0.0;
 
     assets.each(function() {
         options += '<option selected>' + $(this).attr("data-original") + '</option>';
+        totalSizeMB += ($(this).attr("data-size-bytes") / (1024 * 1024));
     });
 
-    $("#massDownloadAssetCount").html(assets.length)
+    // TODO: limit number or total size of files that can be downloaded in one go?
+    //       or provide warning?
+
+    totalSizeMB = Math.floor(0.5 + totalSizeMB);
+    $("#massDownloadAssetLabel").html(assets.length + " Assets, approx " + totalSizeMB + " MB");
     $("#massDownloadAssetList").html("").append(options);
     $("#massDownload").modal();
   });
