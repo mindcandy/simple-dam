@@ -38,4 +38,19 @@ object AssetLibraryLoader {
       assets = assets.map(Asset(_, basePath)).sortBy(_.nameLower),
       folders = folders.flatMap(loadFolder(_, basePath)).sortBy(_.name.toLowerCase)))    
   }
+
+  /**
+   * get list of all assets in a folder
+   */
+  def findAllAssetFiles(path: File): List[File] = {
+    val allFiles = path.listFiles() match {
+      case null => List()
+      case files => files.toList
+    }
+
+    val folders = allFiles.filter( isValidDirectory(_) )
+    val assets = allFiles.filter( Asset.isValidAsset(_) )
+
+    assets ++ folders.flatMap(findAllAssetFiles(_))
+  }
 }

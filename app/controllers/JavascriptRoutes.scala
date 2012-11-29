@@ -21,7 +21,8 @@ object JavascriptRoutes extends Controller {
         )
 
       val assetRoutes = generateAssetRoutes("jsRoutes")(
-        FileServer.serve
+        FileServer.serve,
+        FileServer.serveArchive
         // add any other static asset routes for Javascript here
         )
 

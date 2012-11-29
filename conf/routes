@@ -7,7 +7,7 @@ GET     /                           controllers.Application.index(search: String
 
 # search in a folder
 GET     /folder/*folder             controllers.Application.findFolder(folder)
-#GET     /downloadFolder/*folder
+GET     /downloadFolder/*folder     controllers.Application.downloadFolder(folder)
 
 # show individual asset
 GET     /asset/*path                controllers.Application.showAsset(path)
@@ -25,6 +25,7 @@ GET     /web/javascripts/jsroutes.js         controllers.JavascriptRoutes.genera
 
 # external files -- may be replaced by Apache in production
 GET     /file/*file                 controllers.FileServer.serve(file)
+GET     /archive/*file              controllers.FileServer.serveArchive(file)
 
 # Map static resources from the /public folder to the /web URL path
 GET     /web/*file                  controllers.Assets.at(path="/public", file)

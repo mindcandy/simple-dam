@@ -86,7 +86,7 @@ object Asset {
 
     Asset(
       name = path.getName.trim,
-      original = path.getPath.replace(basePath,""),
+      original = path.getPath.replaceFirst(basePath,""),
       hasPreview = checkSuffixFileExists(path, ThumbnailSuffix),
       hasThumbnail = checkSuffixFileExists(path, PreviewSuffix),
       description = description,

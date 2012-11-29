@@ -4,7 +4,7 @@ import play.api._
 import play.api.mvc._
 
 import models._
-import util.Settings
+import util.{Settings, Archiver}
 
 /* 
  * main controller 
@@ -53,5 +53,11 @@ object Application extends Controller {
     Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), ""));
   }
 
-  
+  /**
+   * zip up and serve a folder
+   */
+  def downloadFolder(folderPath: String) = Action { 
+    val archivePath = Archiver.archiveFolder(folderPath)
+    Redirect(routes.FileServer.serveArchive(archivePath))
+  } 
 }
