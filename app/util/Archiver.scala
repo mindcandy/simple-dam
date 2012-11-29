@@ -3,14 +3,26 @@ package util
 
 import java.io.{BufferedReader, FileInputStream, FileOutputStream, File, InputStream, OutputStream}
 import java.util.zip.{ZipEntry, ZipOutputStream}
-
 import play.api.Logger
-
+import java.util.Date
 
 /**
  *  Utility for archiving Assets and folders of Assets (note: filters out non-asset files)
  */
 object Archiver {
+
+  /** 
+   * archive ALL folders
+   */
+  def createAllFolderArchives() {
+    Logger.debug("Starting Archive create at " + new Date())
+    val folders = AssetLibraryLoader.findAllAssetFolders(new File(Settings.assetLibraryPath))
+    for (folder <- folders) {
+      archiveFolder(getRelativePath(folder, Settings.assetLibraryPath))
+    }
+    Logger.debug("Finished Archive create at " + new Date())
+  }
+
 
   /**
    * generate a path (relative to archiveCachePath) for a given folder archive
@@ -24,19 +36,24 @@ object Archiver {
    * archive every Asset in a given folder AND its subfolders
    * NOTE: skips non-asset files
    */
-  def archiveFolder(folderPath: String): String = {
+  def archiveFolder(folderPath: String): Option[String] = {
 
     val archivePath = pathToArchiveFolder(folderPath)
     val fullArchivePath = Settings.archiveCachePath + archivePath
     val fullFolderPath = Settings.assetLibraryPath + folderPath
 
-    Logger.debug("ArchiveFolder: " + folderPath + " -> " + archivePath)
-    compress(fullArchivePath, 
-      AssetLibraryLoader.findAllAssetFiles(new File(fullFolderPath)),
-      Settings.assetLibraryPath)
-
-    Logger.debug("done")
-    archivePath
+    val files = AssetLibraryLoader.findAllAssetFiles(new File(fullFolderPath))
+    if (files.isEmpty) {
+      Logger.debug("No files to archive in: " + folderPath)
+      None
+    } else {
+      Logger.debug("ArchiveFolder: " + folderPath + " -> " + archivePath)
+      if (compress(fullArchivePath, files, Settings.assetLibraryPath)) {
+        Some(archivePath)
+      } else {
+        None
+      }
+    }
   }
 
   // ensure a directory exists
@@ -54,27 +71,36 @@ object Archiver {
 
 
   // create the zipfile
-  private def compress(zipFilepath: String, files: List[File], basePath: String) {
+  private def compress(zipFilepath: String, files: List[File], basePath: String): Boolean = {
 
-    // make parent dirs
-    ensureExists(new File(zipFilepath).getParentFile)
+    try 
+    {
+      // make parent dirs
+      ensureExists(new File(zipFilepath).getParentFile)
 
-    Logger.debug("Creating zip: " + zipFilepath)
-    val zip = new ZipOutputStream(new FileOutputStream(zipFilepath));
-    try {
-      for (file <- files) {
-        //add zip entry to output stream
-        val relativePath = getRelativePath(file, basePath)
-        Logger.debug("adding file: " + file + " -> " + relativePath)
-        zip.putNextEntry(new ZipEntry(relativePath));
+      // Logger.debug("Creating zip: " + zipFilepath)
+      val zip = new ZipOutputStream(new FileOutputStream(zipFilepath));
+      try {
+        for (file <- files) {
+          //add zip entry to output stream
+          val relativePath = getRelativePath(file, basePath)
+          zip.putNextEntry(new ZipEntry(relativePath));
 
-        val in = new FileInputStream(file.getCanonicalPath);
-        transferAndClose(in, zip)
-        zip.closeEntry();
+          val in = new FileInputStream(file.getCanonicalPath);
+          transferAndClose(in, zip)
+          zip.closeEntry();
+        }
       }
-    }
-    finally {
-      zip.close();
+      finally {
+        zip.close();
+      }
+      true
+
+    } catch {
+      case e: Exception => {
+        Logger.error("During zipfile creation for '" + zipFilepath + "' this error happenned: " + e.toString)
+        false
+      }
     }
   }  
 

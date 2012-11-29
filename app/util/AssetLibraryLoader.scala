@@ -20,6 +20,10 @@ object AssetLibraryLoader {
     path.isDirectory && !path.getName.startsWith(".")
   }
 
+  //
+  // TODO: refactor into a walk()-style iterator
+  //
+
   /**
    * load a folder of Assets
     */
@@ -52,5 +56,20 @@ object AssetLibraryLoader {
     val assets = allFiles.filter( Asset.isValidAsset(_) )
 
     assets ++ folders.flatMap(findAllAssetFiles(_))
+  }
+
+  /**
+   * get list of all valid asset folders
+   */
+  def findAllAssetFolders(path: File): List[File] = {
+
+     val allFiles = path.listFiles() match {
+      case null => List()
+      case files => files.toList
+    }
+
+    val folders = allFiles.filter( isValidDirectory(_) )
+
+    path :: folders.flatMap(findAllAssetFolders(_))
   }
 }

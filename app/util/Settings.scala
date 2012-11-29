@@ -32,7 +32,8 @@ object Settings {
 
   lazy val title: String = config.getString("ui.title").getOrElse("Assets")
 
-  lazy val isAdmin: Boolean = config.getBoolean("ui.adminMode").getOrElse(false);
+  lazy val isAdmin: Boolean = config.getBoolean("ui.adminMode").getOrElse(false)
 
+  lazy val archiveOnStart: Boolean = config.getBoolean("archiveOnStart").getOrElse(false)
   // TODO: more configuration e.g. logo, favicon?
 }

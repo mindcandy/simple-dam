@@ -57,7 +57,9 @@ object Application extends Controller {
    * zip up and serve a folder
    */
   def downloadFolder(folderPath: String) = Action { 
-    val archivePath = Archiver.archiveFolder(folderPath)
-    Redirect(routes.FileServer.serveArchive(archivePath))
+    Archiver.archiveFolder(folderPath) match {
+      case Some(archivePath) => Redirect(routes.FileServer.serveArchive(archivePath))
+      case None => InternalServerError("Failure to build or find archive")
+    }
   } 
 }
