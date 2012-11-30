@@ -1,0 +1,11 @@
+@(scriptname:String)
+@import play.api._
+
+@****
+ * Choose between minified or non-minified js automatically
+ *@
+@if(Play.current.mode == Mode.Prod) {
+   <script type="text/javascript" src="@routes.Assets.at("javascripts/" + scriptname + ".min.js")"></script>
+} else {
+   <script type="text/javascript" src="@routes.Assets.at("javascripts/" + scriptname + ".js")"></script>
+}

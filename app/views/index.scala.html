@@ -291,20 +291,21 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Download Multiple Assets</h3>
   </div>
-  <form @*action="@routes.Application.massDownload()" *@>
-    <fieldset>
-      <div class="modal-body">
-        <p>Download multiple Assets as a single archive (zip) file. Note that this archive may take some time to build if there is a large number of assets!</p>
+  <div class="modal-body">
+    <p>Download multiple Assets as a single archive (zip) file. Note that this archive may take some time to build if there is a large number of assets!</p>
+    <form>
+      <fieldset>
         <label id="massDownloadAssetLabel"></label>
         <select multiple name="assets" id="massDownloadAssetList" class="input-block-level">
         </select>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Cancel</button>
-        <button class="btn btn-primary" type="submit"><i class="icon-download-alt icon-white"></i> Download Archive</button>
-      </div>
-    </fieldset>
-  </form>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Cancel</button>
+    <button id="massDownloadSubmitBtn" class="btn btn-primary" type="submit"><i class="icon-download-alt icon-white"></i> Download Archive</button>
+    <span id="massDownloadProgress"></span>
+  </div>
 </div>
 
 
@@ -349,7 +350,7 @@ jQuery(document).ready(function() {
       themes: { 
           "icons" : false,
           "theme": "classic",
-          "url": "/web/tree-themes/classic/style.css"
+          "url": "@routes.Assets.at("/tree-themes/classic/style.css")"
       },
       ui: {
           "initially_select": auto_open
@@ -393,7 +394,7 @@ jQuery(document).ready(function() {
       themes: { 
           "icons" : false,
           "theme": "classic",
-          "url": "/web/tree-themes/classic/style.css"
+          "url": "@routes.Assets.at("/tree-themes/classic/style.css")"
       },
       ui: {
           "initially_select": keyword_to_open

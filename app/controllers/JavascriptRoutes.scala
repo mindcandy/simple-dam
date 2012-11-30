@@ -14,15 +14,18 @@ object JavascriptRoutes extends Controller {
      */
     def generateRoutes = Action { implicit request =>
       import routes.javascript._
-      val ajaxRoutes = Routes.javascriptRouter("jsRoutes")(
+      val ajaxRoutes = Routes.javascriptRouter("jsRoutesAjax")(
           Application.index,
-          Application.findFolder
+          Application.findFolder          
           // add any other endpoints you want to use in Javascript here
         )
 
       val assetRoutes = generateAssetRoutes("jsRoutes")(
         FileServer.serve,
-        FileServer.serveArchive
+        FileServer.serveArchive,
+        Application.showAsset,
+        Admin.massEditMetadata, // TODO: see how to call these with JSON param - perhaps more codegen?
+        ArchiveBuilder.archive
         // add any other static asset routes for Javascript here
         )
 
@@ -36,12 +39,13 @@ object JavascriptRoutes extends Controller {
      */
     private def generateAssetRoutes(name: String)(routes: JavascriptReverseRoute*): String = {
 
-      """|(function(_root){
+      """|var %s = {};(function(_root){
              |var _nS = function(c,f,b){var e=c.split(f||"."),g=b||_root,d,a;for(d=0,a=e.length;d<a;d++){g=g[e[d]]=g[e[d]]||{}}return g};
              |var _wA = function(r){return r.url};
              |%s
              |})(%s);
           """.stripMargin.format(
+        name, 
         routes.map { route =>
           "_nS('%s'); _root.%s = %s;".format(
             route.name.split('.').dropRight(1).mkString("."),

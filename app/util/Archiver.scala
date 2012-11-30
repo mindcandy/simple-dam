@@ -47,7 +47,7 @@ object Archiver {
       Logger.debug("No files to archive in: " + folderPath)
       None
     } else {
-      Logger.debug("ArchiveFolder: " + folderPath + " -> " + archivePath)
+      Logger.debug("ArchiveFolder: " + folderPath)
       if (compress(fullArchivePath, files, Settings.assetLibraryPath)) {
         Some(archivePath)
       } else {
@@ -55,6 +55,31 @@ object Archiver {
       }
     }
   }
+
+  /**
+   * build an archive out of the given files - relative to the base path
+   * return a path to the built archive, relative to Settings.archiveCachePath
+   */
+  def archiveFiles(archiveName:String, basePath: String, files: Seq[String]): Option[String] = {
+
+    val archivePath = "_dynamic/" + archiveName + ".zip"
+    val fullArchivePath = Settings.archiveCachePath + archivePath
+    Logger.debug("files to archive: " + files.mkString(", "))
+
+    if (files.isEmpty) {
+      Logger.debug("No files to archive for " + archiveName )
+      None
+    } else {
+      Logger.debug("Dynamic Archive: " + archiveName)
+      val archiveFiles = files.map(new File(basePath, _))
+      if (compress(fullArchivePath, archiveFiles, Settings.assetLibraryPath)) {
+        Some(archivePath)
+      } else {
+        None
+      }
+    }
+  }
+
 
   // ensure a directory exists
   private def ensureExists(directory: File) {
@@ -71,7 +96,7 @@ object Archiver {
 
 
   // create the zipfile
-  private def compress(zipFilepath: String, files: List[File], basePath: String): Boolean = {
+  private def compress(zipFilepath: String, files: Seq[File], basePath: String): Boolean = {
 
     try 
     {

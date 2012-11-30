@@ -60,7 +60,7 @@ object Admin extends Controller {
    * mass edit of metadata -- expects a JSON body with parameters (as asset list may be LARGE)
    * { "addKeywords": "foo, bar", "removeKeywords": "foo, bar", "assets": ["asset1", "asset2"] }
    */
-  def massEditMetadataJson = Action(parse.json) { request => {
+  def massEditMetadata = Action(parse.json) { request => {
       if (!Settings.isAdmin) {
         BadRequest(Json.toJson(
           Map("status" -> "FAIL", "message" -> "Admin mode is not enabled")

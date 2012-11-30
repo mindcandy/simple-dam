@@ -53,13 +53,13 @@ object Application extends Controller {
     Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), ""));
   }
 
-  /**
-   * zip up and serve a folder
-   */
-  def downloadFolder(folderPath: String) = Action { 
-    Archiver.archiveFolder(folderPath) match {
-      case Some(archivePath) => Redirect(routes.FileServer.serveArchive(archivePath))
-      case None => InternalServerError("Failure to build or find archive")
-    }
-  } 
+  // /**
+  //  * zip up and serve a folder
+  //  */
+  // def downloadFolder(folderPath: String) = Action { 
+  //   Archiver.archiveFolder(folderPath) match {
+  //     case Some(archivePath) => Redirect(routes.FileServer.serveArchive(archivePath))
+  //     case None => InternalServerError("Failure to build or find archive")
+  //   }
+  // } 
 }

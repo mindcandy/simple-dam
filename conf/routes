@@ -1,31 +1,25 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
+# all REST endpoints are prefixed with /rest/ and receive/return JSON-encoded data
 
-# Home page / search
-GET     /                           controllers.Application.index(search: String ?= "", keyword: String ?= "")
+GET     /                                controllers.Application.index(search: String ?= "", keyword: String ?= "")
+GET     /folder/*folder                  controllers.Application.findFolder(folder)
+GET     /asset/*path                     controllers.Application.showAsset(path)
+GET     /jsroutes.js                     controllers.JavascriptRoutes.generateRoutes
 
-# search in a folder
-GET     /folder/*folder             controllers.Application.findFolder(folder)
-GET     /downloadFolder/*folder     controllers.Application.downloadFolder(folder)
+POST    /rest/archive                    controllers.ArchiveBuilder.archive
 
-# show individual asset
-GET     /asset/*path                controllers.Application.showAsset(path)
-
+#
 # ADMIN mode routes
-# rescan the asset folder, reloading all assets
-GET     /admin/rescan                   controllers.Admin.rescan(url: String ?= "")
-GET     /admin/editMetadata/*asset      controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
-POST    /admin/json/massEditMetadata/        controllers.Admin.massEditMetadataJson
+#
+GET     /admin/rescan                    controllers.Admin.rescan(url: String ?= "")
+GET     /admin/editMetadata/*asset       controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
+POST    /rest/admin/massEditMetadata/    controllers.Admin.massEditMetadata
 
-
-
-# supply js routing information for AJAX
-GET     /web/javascripts/jsroutes.js         controllers.JavascriptRoutes.generateRoutes
-
-# external files -- may be replaced by Apache in production
-GET     /file/*file                 controllers.FileServer.serve(file)
-GET     /archive/*file              controllers.FileServer.serveArchive(file)
-
-# Map static resources from the /public folder to the /web URL path
-GET     /web/*file                  controllers.Assets.at(path="/public", file)
+#
+# Static resources -- may be replaced by Apache or nginx in production
+# 
+GET     /s/file/*file                    controllers.FileServer.serve(file)
+GET     /s/archive/*file                 controllers.FileServer.serveArchive(file)
+GET     /s/web/*file                     controllers.Assets.at(path="/public", file)

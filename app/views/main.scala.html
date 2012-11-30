@@ -13,12 +13,12 @@
     <body>
         @content
 
-        <script src="@routes.Assets.at("javascripts/jquery-1.8.3.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-cookie.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-jstree.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-lazyload.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-scrollstop.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+        @includejs("jquery-1.8.3")
+        @includejs("jquery-cookie")
+        @includejs("jquery-jstree")
+        @includejs("jquery-lazyload")
+        @includejs("jquery-scrollstop")
+        @includejs("bootstrap")
         <script src="@routes.JavascriptRoutes.generateRoutes()" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/main.min.js")" type="text/javascript"></script>
+        @includejs("main")
 

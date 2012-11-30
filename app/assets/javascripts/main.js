@@ -43,8 +43,8 @@ jQuery(document).ready(function() {
 
     } else {
       // look at single item
-      // TODO: use jsrouting?
-      window.location.href = "/asset/" + asset.attr("data-original");
+      // TODO: use AJAX
+      window.location.href = jsRoutes.controllers.Application.showAsset(asset.attr("data-original"));
     }
 
   });
@@ -59,10 +59,10 @@ jQuery(document).ready(function() {
         options += '<option>' + $(this).attr("data-original") + '</option>';
     });
 
+    $("#massEditAsset .btn").show(); 
     $("#massEditAssetList").html("").append(options);
     $("#massEditAsset").modal();
   });
-
 
   $("#massEditMetaSubmitBtn").click(function(e) {
     e.stopPropagation();
@@ -74,17 +74,15 @@ jQuery(document).ready(function() {
       "removeKeywords": $("#removeKeywords").val(),
       "assets": assets
     };
-    var queryAsString = JSON.stringify(queryParameters)
-
 
     // prevent multiple submits
     $("#massEditAsset .btn").hide(); 
     $("#massEditMetaProgress").html("Working...");
     
     // send query
-    $.ajax("/admin/json/massEditMetadata/", {
+    $.ajax(jsRoutes.controllers.Admin.massEditMetadata(), {
       type : 'POST',
-      data : queryAsString,
+      data : JSON.stringify(queryParameters),
       processData : false,
       contentType : 'application/json',
       complete: function(xhr,settings) {
@@ -93,15 +91,19 @@ jQuery(document).ready(function() {
     });
   });
 
-
-  // mass download of assets
-  $("#downloadAllBtn").click(function(e) {
+  var getAssetsToDownload = function() {
     var assets = $(".selectedAsset");
 
     if (assets.length === 0) {
       // download all if no selection
-      assets = $(".inner-asset");
+      return $(".inner-asset");
     }
+    return assets;
+  };
+
+  // mass download of assets
+  $("#downloadAllBtn").click(function(e) {
+    var assets = getAssetsToDownload();
 
     if (assets.length === 0) {
       alert("Nothing to download!");
@@ -113,13 +115,14 @@ jQuery(document).ready(function() {
         window.location.href = jsRoutes.controllers.FileServer.serve($(this).attr("data-original"));
       });
       return;
-    }
+
+    } 
 
     var options = "";
     var totalSizeMB = 0.0;
 
     assets.each(function() {
-        options += '<option selected>' + $(this).attr("data-original") + '</option>';
+        options += '<option>' + $(this).attr("data-original") + '</option>';
         totalSizeMB += ($(this).attr("data-size-bytes") / (1024 * 1024));
     });
 
@@ -127,9 +130,48 @@ jQuery(document).ready(function() {
     //       or provide warning?
 
     totalSizeMB = Math.floor(0.5 + totalSizeMB);
-    $("#massDownloadAssetLabel").html(assets.length + " Assets, approx " + totalSizeMB + " MB");
+
+    if (assets.length > 20) {
+      // too many assets
+      $("#massDownloadAssetLabel").html("<h4>You have selected too many assets, the limit is 20.<h4>" + 
+        "This limit is because dynamically building Archives has to be limited for performance reasons. " + 
+        "Please select fewer assets or download an entire Folder archive (as these are pre-built). " + 
+        assets.length + " Assets, approx " + totalSizeMB + " MB");
+      $("#massDownloadSubmitBtn").addClass("disabled");
+    } else {
+      $("#massDownloadAssetLabel").html(assets.length + " Assets, approx " + totalSizeMB + " MB");
+      $("#massDownloadSubmitBtn").removeClass("disabled");
+    }
+
+    $("#massDownload .btn").show(); 
     $("#massDownloadAssetList").html("").append(options);
     $("#massDownload").modal();
+  });
+
+  $("#massDownloadSubmitBtn").click(function(e) {
+    e.stopPropagation();
+
+    // submit ajax query
+    var assets = getAssetsToDownload();
+    var assetPaths = assets.map(function() { return $(this).attr('data-original'); }).toArray();
+    var queryParameters = {     
+      "assets": assetPaths
+    };
+
+    // prevent multiple submits
+    $("#massDownload .btn").hide(); 
+    $("#massDownloadProgress").html("Building archive of " + assets.length + " assets, please wait...");
+    
+    // send query
+    $.ajax(jsRoutes.controllers.ArchiveBuilder.archive(), {
+      type : 'POST',
+      data : JSON.stringify(queryParameters),
+      processData : false,
+      contentType : 'application/json'
+    }).success(function(data) {
+        console.log("result was ",data);
+        window.location = data.archive;
+    });
   });
 
 });
