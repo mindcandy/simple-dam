@@ -64,13 +64,10 @@ object Archiver {
 
     val archivePath = "_dynamic/" + archiveName + ".zip"
     val fullArchivePath = Settings.archiveCachePath + archivePath
-    Logger.debug("files to archive: " + files.mkString(", "))
 
     if (files.isEmpty) {
-      Logger.debug("No files to archive for " + archiveName )
       None
     } else {
-      Logger.debug("Dynamic Archive: " + archiveName)
       val archiveFiles = files.map(new File(basePath, _))
       if (compress(fullArchivePath, archiveFiles, Settings.assetLibraryPath)) {
         Some(archivePath)

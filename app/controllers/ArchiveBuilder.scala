@@ -3,7 +3,9 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
+import play.api.libs.concurrent._
 import java.util.UUID
+import play.api.Play.current
 
 import models._
 import util.{Settings, Archiver}
@@ -29,23 +31,25 @@ object ArchiveBuilder extends Controller {
 
       Logger.debug("ArchiveBuilder.archive(" + assets.mkString(", ") + ")")
 
-      // TODO: generate an id for the request
       val archiveId = UUID.randomUUID.toString.replace("-","")
       val assetRelativeFiles = assets.map(AssetLibrary.current.findAssetByPath(_).original)
       val basePath = AssetLibrary.current.basePath
 
-      // build archive
-      Archiver.archiveFiles(archiveId, basePath, assetRelativeFiles) match {
+      // build archive - this can take a while so use a future to avoid blocking
+      val archivedPath = Akka.future { 
+        Archiver.archiveFiles(archiveId, basePath, assetRelativeFiles)
+      }
+      Async {
+        archivedPath.map(pathResult => pathResult match {
+          case Some(pathToArchive) =>  Ok(Json.toJson(
+              Map("status" -> "OK", "archive" -> routes.FileServer.serveArchive(pathToArchive).absoluteURL())
+            ))
 
-        // TODO: return the FULL ROUTE to the archive
-        case Some(pathToArchive) =>  Ok(Json.toJson(
-            Map("status" -> "OK", "archive" -> routes.FileServer.serveArchive(pathToArchive).absoluteURL())
-          ))
-
-        case None => BadRequest(Json.toJson(
-          Map("status" -> "FAIL", 
-            "message" -> ("The archive could not be built for assets: " + assets.mkString(", ")))
-        ))
+          case None => BadRequest(Json.toJson(
+            Map("status" -> "FAIL", 
+              "message" -> ("The archive could not be built for assets: " + assets.mkString(", ")))
+            ))
+        })
       }
 
     }
