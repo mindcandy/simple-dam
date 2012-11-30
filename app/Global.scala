@@ -15,6 +15,7 @@ object Global extends GlobalSettings {
     AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
 
     if (Settings.archiveOnStart) {
+      Logger.debug("Will archive folders in background...")
       Akka.system.scheduler.scheduleOnce(10 seconds) {
         Archiver.createAllFolderArchives()
         AssetLibrary.areFolderArchivesGenerated = true 

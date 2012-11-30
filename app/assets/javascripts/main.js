@@ -36,7 +36,7 @@ jQuery(document).ready(function() {
 
     } else {
       var assetCount = $(".inner-asset").length;
-      $("#statusText").html("No assets selected.");
+      $("#statusText").html(assetCount + " assets found. None currently selected.");
       disableBtn($("#deselectAllBtn"));
       disableBtn($("#massEditMetaBtn"));
       $("#downloadAllBtnLabel").html("Download All");
