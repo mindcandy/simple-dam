@@ -103,6 +103,12 @@ object AssetLibrary {
   var current: AssetLibrary = Empty
 
   /**
+   * true if folder archives have been generated -- only if archiveOnStart=true in the configuration
+   * which can be checked in Settings.archiveOnStart
+   */
+  var areFolderArchivesGenerated: Boolean = false
+
+  /**
    * load the library from the given path
    */
   def load(path: String): AssetLibrary = {

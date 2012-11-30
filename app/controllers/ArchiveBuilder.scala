@@ -4,8 +4,8 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.concurrent._
-import java.util.UUID
 import play.api.Play.current
+import java.util.UUID
 
 import models._
 import util.{Settings, Archiver}
