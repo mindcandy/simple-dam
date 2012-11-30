@@ -125,7 +125,7 @@
     <form action="@routes.Admin.editMetadata(a.original)">
       <fieldset>
         <div class="modal-body">
-          <p>You can edit the description and keywords here, it will write out to a .json file and the reload all the assets to show you changes. To share these changes with other use a version control system like Git or Subversion.</p>
+          <p>You can edit the description and keywords here, it will write out to a .json file and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
           <label>Description</label>
           <textarea name="description" id="description" rows="3"  class="input-block-level">@{a.description}</textarea>
           <label>Keywords</label>
@@ -264,7 +264,7 @@
     <h3 id="myModalLabel">Mass Edit Metadata</h3>
   </div>
   <div class="modal-body">
-    <p>You can add/remove keywords to multiple assets at the same time:</p>
+    <p>You can add/remove keywords to multiple assets at the same time. This will write out changes to .json files and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
     <form>    
       <fieldset>
         <label>Assets to edit</label>
@@ -292,7 +292,7 @@
     <h3 id="myModalLabel">Download Multiple Assets</h3>
   </div>
   <div class="modal-body">
-    <p>Download multiple Assets as a single archive (zip) file. Note that this archive may take some time to build if there is a large number of assets!</p>
+    <p>Download multiple Assets as a single archive (zip) file. Note that this archive may take some time to build if the size of assets is large.</p>
     <form>
       <fieldset>
         <label id="massDownloadAssetLabel"></label>

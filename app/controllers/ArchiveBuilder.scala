@@ -3,6 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
+import java.util.UUID
 
 import models._
 import util.{Settings, Archiver}
@@ -29,7 +30,7 @@ object ArchiveBuilder extends Controller {
       Logger.debug("ArchiveBuilder.archive(" + assets.mkString(", ") + ")")
 
       // TODO: generate an id for the request
-      val archiveId = "test"
+      val archiveId = UUID.randomUUID.toString.replace("-","")
       val assetRelativeFiles = assets.map(AssetLibrary.current.findAssetByPath(_).original)
       val basePath = AssetLibrary.current.basePath
 
