@@ -3,20 +3,49 @@
 /* set up function */
 jQuery(document).ready(function() {
 
+  var AssetArchiveDownloadLimit = 20;
+
+  var postJson = function(url, param) {
+    return $.ajax(url, {
+      type: 'POST',
+      dataType: 'json',
+      contentType : 'application/json',
+      data: JSON.stringify(param),
+      processData : false
+    });
+  };
+
+  var disableBtn = function(element) { element.addClass("disabled"); };
+  var enableBtn = function(element) { element.removeClass("disabled"); };
+  var isBtnDisabled = function(element) { return element.hasClass("disabled"); };
+  var setEnabledBtn = function(element, isEnabled) { 
+    if (isEnabled) {
+      enableBtn(element);
+    } else {
+      disableBtn(element);
+    }
+  };
 
   var updateUiState = function(selectionCount) {
     if (selectionCount > 0) {
-      $("#deselectAllBtn").removeClass("disabled");
-      $("#massEditMetaBtn").removeClass("disabled");
-      $("#downloadAllBtnLabel").html("Download Selection");
       $("#statusText").html(selectionCount + " Assets selected.");
+      enableBtn($("#deselectAllBtn"));
+      enableBtn($("#massEditMetaBtn"));
+      $("#downloadAllBtnLabel").html("Download Selection");
+      setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
+
     } else {
-      $("#deselectAllBtn").addClass("disabled");
-      $("#massEditMetaBtn").addClass("disabled");
-      $("#downloadAllBtnLabel").html("Download All");
+      var assetCount = $(".inner-asset").length;
       $("#statusText").html("No assets selected.");
+      disableBtn($("#deselectAllBtn"));
+      disableBtn($("#massEditMetaBtn"));
+      $("#downloadAllBtnLabel").html("Download All");
+      setEnabledBtn($("#downloadAllBtn"), assetCount <= AssetArchiveDownloadLimit);
     }
   };
+
+  // set initial UI state
+  updateUiState(0);
 
   $("#selectAllBtn").click(function(e) {
     var count = $(".inner-asset").addClass("selectedAsset").length;
@@ -49,8 +78,11 @@ jQuery(document).ready(function() {
 
   });
 
+
   // Mass edit of assets
   $("#massEditMetaBtn").click(function(e) {
+    e.stopPropagation();
+    if (isBtnDisabled($(this))) return;    
     // populate the list of assets to edit
 
     var options = "";
@@ -66,6 +98,7 @@ jQuery(document).ready(function() {
 
   $("#massEditMetaSubmitBtn").click(function(e) {
     e.stopPropagation();
+    if (isBtnDisabled($(this))) return;
 
     // submit ajax query
     var assets = $(".selectedAsset").map(function() { return $(this).attr('data-original'); }).toArray();
@@ -80,15 +113,9 @@ jQuery(document).ready(function() {
     $("#massEditMetaProgress").html("Working...");
     
     // send query
-    $.ajax(jsRoutes.controllers.Admin.massEditMetadata(), {
-      type : 'POST',
-      data : JSON.stringify(queryParameters),
-      processData : false,
-      contentType : 'application/json',
-      complete: function(xhr,settings) {
-        location.reload();
-      }
-    });
+    var reloadAfter = function() { location.reload(); }
+    postJson(jsRoutes.controllers.Admin.massEditMetadata(), queryParameters)
+    .done(reloadAfter).fail(reloadAfter);
   });
 
   var getAssetsToDownload = function() {
@@ -103,6 +130,9 @@ jQuery(document).ready(function() {
 
   // mass download of assets
   $("#downloadAllBtn").click(function(e) {
+    e.stopPropagation();
+    if (isBtnDisabled($(this))) return;
+
     var assets = getAssetsToDownload();
 
     if (assets.length === 0) {
@@ -116,7 +146,11 @@ jQuery(document).ready(function() {
       });
       return;
 
-    } 
+    } else if (assets.length > AssetArchiveDownloadLimit) {
+
+      alert("Too many assets! You can only download " + AssetArchiveDownloadLimit + " at a time, apologies.");
+      return;
+    }
 
     var options = "";
     var totalSizeMB = 0.0;
@@ -131,25 +165,16 @@ jQuery(document).ready(function() {
 
     totalSizeMB = Math.floor(0.5 + totalSizeMB);
 
-    if (assets.length > 20) {
-      // too many assets
-      $("#massDownloadAssetLabel").html("<h4>You have selected too many assets, the limit is 20.<h4>" + 
-        "This limit is because dynamically building Archives has to be limited for performance reasons. " + 
-        "Please select fewer assets or download an entire Folder archive (as these are pre-built). " + 
-        assets.length + " Assets, approx " + totalSizeMB + " MB");
-      $("#massDownloadSubmitBtn").addClass("disabled");
-    } else {
-      $("#massDownloadAssetLabel").html(assets.length + " Assets, approx " + totalSizeMB + " MB");
-      $("#massDownloadSubmitBtn").removeClass("disabled");
-    }
-
+    $("#massDownloadAssetLabel").html(assets.length + " Assets, approx " + totalSizeMB + " MB before archiving");
     $("#massDownload .btn").show(); 
     $("#massDownloadAssetList").html("").append(options);
+    $("#massDownloadProgress").html("");
     $("#massDownload").modal();
   });
 
   $("#massDownloadSubmitBtn").click(function(e) {
     e.stopPropagation();
+    if (isBtnDisabled($(this))) return;
 
     // submit ajax query
     var assets = getAssetsToDownload();
@@ -163,14 +188,14 @@ jQuery(document).ready(function() {
     $("#massDownloadProgress").html("Building archive of " + assets.length + " assets, please wait...");
     
     // send query
-    $.ajax(jsRoutes.controllers.ArchiveBuilder.archive(), {
-      type : 'POST',
-      data : JSON.stringify(queryParameters),
-      processData : false,
-      contentType : 'application/json'
-    }).success(function(data) {
-        console.log("result was ",data);
+    postJson(jsRoutes.controllers.ArchiveBuilder.archive(), queryParameters)
+    .done(function(data) {
+        $('#massDownload').modal('hide');
         window.location = data.archive;
+
+    }).fail(function(jqXHR, textStatus) {
+        $('#massDownload').modal('hide');
+        alert( "Archive Build failed: " + textStatus );
     });
   });
 
