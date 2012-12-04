@@ -14,7 +14,7 @@ object Application extends Controller {
   /**
    * main index -- also currently does a search
    */
-  def index(search: String, keyword: String) = Action { implicit request =>
+  def index(search: String, keyword: String, order: String) = Action { implicit request =>
 
     // perform search
     val sanitisedSearch = search.trim
@@ -27,19 +27,42 @@ object Application extends Controller {
         AssetLibrary.current.sortedAssets
       }
 
-    Ok(views.html.index(assets, Settings.title, sanitisedSearch, "", AssetLibrary.current, None, keyword));
+    val sortedAssets = orderAssets(assets, order)
+
+    Ok(views.html.index(sortedAssets, Settings.title, sanitisedSearch, "", AssetLibrary.current, None, keyword, order));
   }
 
   /**
    * search within a folder (must be permalink)
    */
-  def findFolder(folderPath: String) = Action { implicit request =>
+  def findFolder(folderPath: String, order: String) = Action { implicit request =>
 
     // find folder
     val folder = AssetLibrary.current.findFolder(folderPath)
     val assets = folder.allAssets
+    val sortedAssets = orderAssets(assets, order)
 
-    Ok(views.html.index(assets, Settings.title, "", folderPath, AssetLibrary.current, None, ""));
+    Ok(views.html.index(sortedAssets, Settings.title, "", folderPath, AssetLibrary.current, None, "", order));
+  }
+
+  /**
+   * sort assets
+   */
+  private def orderAssets(assets: Seq[Asset], order: String): Seq[Asset] = {
+    order match {
+      // order by time (last modified)
+      case "time" => assets.sortBy(_.lastModified)
+      case "-time" => assets.sortBy(- _.lastModified)
+
+      // order by size
+      case "size" => assets.sortBy(_.sizeBytes)
+      case "-size" => assets.sortBy(- _.sizeBytes)
+
+      // reverse default order
+      case "-name" => assets.reverse
+      // default ordering is by name (or unknown ordering)
+      case _ => assets
+    }
   }
 
   
@@ -50,7 +73,7 @@ object Application extends Controller {
     // find asset
     val asset = AssetLibrary.current.findAssetByPath(assetPath)
     
-    Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), ""));
+    Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), "", ""));
   }
 
   /**

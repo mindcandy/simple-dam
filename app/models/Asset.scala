@@ -16,7 +16,8 @@ case class Asset (
   hasPreview: Boolean, 
   description: String, 
   keywords: Set[String],
-  sizeBytes: Long) {
+  sizeBytes: Long,
+  lastModified: Long) {
   
   /*
    * name in Lowercase -- used in sorting a lot
@@ -91,7 +92,8 @@ object Asset {
       hasThumbnail = checkSuffixFileExists(path, PreviewSuffix),
       description = description,
       keywords = keywords,
-      sizeBytes = sizeBytes)
+      sizeBytes = sizeBytes,
+      lastModified = path.lastModified)
   }
 
   private def loadMetadata (file: NscFile): Map[String, String] = {

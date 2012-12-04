@@ -1,4 +1,4 @@
-@(assets: Seq[models.Asset], title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String)(implicit request: play.api.mvc.RequestHeader)
+@(assets: Seq[models.Asset], title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String, order: String)(implicit request: play.api.mvc.RequestHeader)
 
 
 @*******************************
@@ -16,7 +16,7 @@
 }
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
-    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath)">
+    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.findFolder(folderPath, order)">
         <a href="#">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
@@ -25,7 +25,7 @@
 @listKeywords(keywords: Seq[String]) = {
   <ul>
   @for(key <- keywords) {
-    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key)">
+    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key, order)">
       <a href="#">@{key}</a>
     </li>
   }
@@ -103,7 +103,7 @@
       <dt>Keywords</dt>
       <dd>
         @for(key <- a.keywords) {
-          <a href="@routes.Application.index("",key)">@key</a>, 
+          <a href="@routes.Application.index("",key, order)">@key</a>, 
         }
       }
     </dl>
@@ -140,6 +140,14 @@
   </div>
   }
 
+}
+
+@changeOrderingUrl(newOrder: String) = {
+  @if(!currentFolder.isEmpty) {
+    "@routes.Application.findFolder(currentFolder, newOrder)"
+  } else {
+    "@routes.Application.index(search, keywordSearch, newOrder)"
+  }
 }
 
 
@@ -179,13 +187,36 @@
       </div></li> 
       
       }
+
+      <div class="btn-group">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        Order: @{order match {
+          case "time"  => "Oldest"
+          case "-time" => "Newest"
+          case "size"  => "Smallest"
+          case "-size" => "Largest"
+          case "-name" => "Z->A"
+          case _       => "A->Z"
+        }}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href=@changeOrderingUrl("name")  >Name A-&gt;Z</a></li>
+        <li><a href=@changeOrderingUrl("-name") >Name Z-&gt;A</a></li>
+        <li><a href=@changeOrderingUrl("time")  >Oldest First</a></li>
+        <li><a href=@changeOrderingUrl("-time") >Newest First</a></li>
+        <li><a href=@changeOrderingUrl("size")  >Smallest First</a></li>
+        <li><a href=@changeOrderingUrl("-size") >Largest First</a></li>
+      </ul>
+    </div>
     }
     </ul>
 
     <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
       <div class="input-append">
-        <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords.">
+        <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords."/>
         <button type="submit" class="btn"><i class="icon-search"></i> Search</button>
+        <input type="hidden" name="order" id="order" value="@{order}"/>
       </div>
     </form>
 
@@ -201,7 +232,7 @@
  *@
 
     <div class="span2 sidebar">
-      <h5 class="category"><a href="/" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
+      <h5 class="category"><a href="@routes.Application.index("", "", order)" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
 
       <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
       <div class="tree" id="folderTree" style="display:none;">
