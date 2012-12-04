@@ -1,7 +1,11 @@
 package models
 
 import play.api._
-import util.AssetLibraryLoader
+import play.api.libs.concurrent._
+import play.api.Play.current
+import akka.util.duration._
+
+import util.{AssetLibraryLoader, Archiver}
 import scala.collection.SortedSet
 import java.util.Date
 
@@ -114,5 +118,17 @@ object AssetLibrary {
   def load(path: String): AssetLibrary = {
     Logger.debug("Loading AssetLibrary from " + path)
     AssetLibraryLoader.load(path)
+  }
+
+  /**
+   * generate archives
+   */ 
+  def generateArchives() {
+    areFolderArchivesGenerated = false
+    Logger.debug("Will archive folders in background...")
+    Akka.system.scheduler.scheduleOnce(10 seconds) {
+      Archiver.createAllFolderArchives()
+      AssetLibrary.areFolderArchivesGenerated = true 
+    }
   }
 }
