@@ -35,7 +35,7 @@ object Application extends Controller {
   /**
    * search within a folder (must be permalink)
    */
-  def findFolder(folderPath: String, order: String) = Action { implicit request =>
+  def listAssetsInFolder(folderPath: String, order: String) = Action { implicit request =>
 
     // find folder
     val folder = AssetLibrary.current.findFolder(folderPath)

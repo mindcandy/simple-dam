@@ -16,7 +16,7 @@ object JavascriptRoutes extends Controller {
       import routes.javascript._
       val ajaxRoutes = Routes.javascriptRouter("jsRoutesAjax")(
           Application.index,
-          Application.findFolder          
+          Application.listAssetsInFolder// TODO          
           // add any other endpoints you want to use in Javascript here
         )
 

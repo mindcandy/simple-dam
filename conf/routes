@@ -4,7 +4,7 @@
 # all REST endpoints are prefixed with /rest/ and receive/return JSON-encoded data
 
 GET     /                                controllers.Application.index(search: String ?= "", keyword: String ?= "", order: String ?= "name")
-GET     /folder/*folder                  controllers.Application.findFolder(folder, order: String ?= "name")
+GET     /folder/*folder                  controllers.Application.listAssetsInFolder(folder, order: String ?= "name")
 GET     /asset/*path                     controllers.Application.showAsset(path)
 GET     /downloadFolder/*path            controllers.Application.downloadFolder(path)
 GET     /jsroutes.js                     controllers.JavascriptRoutes.generateRoutes
