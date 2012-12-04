@@ -15,13 +15,38 @@ import util.Settings
  */
 object FileServer extends Controller {
 
+  /**
+   * Serve a file from the Asset library 
+   */
   def serve(path: String) = {
     at(Settings.assetLibraryPath, path)
   }
 
+  /**
+   * serve a generated archive file 
+   */
   def serveArchive(path: String) = {
     at(Settings.archiveCachePath, path)
   }
+
+  /**
+   * serve a file for the Theme
+   * Should probably be one of the following files:
+   * favicon.png
+   * theme.css
+   * icon.png
+   */
+  def serveTheme(path: String) = {
+    if (Settings.themePath.isEmpty) {
+      // use internal default theme
+      Assets.at("/public/defaultTheme", path)
+
+    } else {
+      // serve theme from external path
+      at(Settings.themePath, path)
+    }
+  }
+
 
   // pasted from ExternalAssets -- to be replaced with better code!
   private def at(rootPath: String, file: String): Action[AnyContent] = Action { request =>

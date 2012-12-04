@@ -23,4 +23,5 @@ POST    /rest/admin/massEditMetadata/    controllers.Admin.massEditMetadata
 # 
 GET     /s/file/*file                    controllers.FileServer.serve(file)
 GET     /s/archive/*file                 controllers.FileServer.serveArchive(file)
+GET     /s/theme/*file                   controllers.FileServer.serveTheme(file)
 GET     /s/web/*file                     controllers.Assets.at(path="/public", file)

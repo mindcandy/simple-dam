@@ -15,12 +15,12 @@ object Archiver {
    * archive ALL folders
    */
   def createAllFolderArchives() {
-    Logger.debug("Starting Archive create at " + new Date())
+    Logger.info("Starting Archive create at " + new Date())
     val folders = AssetLibraryLoader.findAllAssetFolders(new File(Settings.assetLibraryPath))
     for (folder <- folders) {
       archiveFolder(getRelativePath(folder, Settings.assetLibraryPath))
     }
-    Logger.debug("Finished Archive create at " + new Date())
+    Logger.info("Finished Archive create at " + new Date())
   }
 
 
@@ -47,7 +47,7 @@ object Archiver {
       Logger.debug("No files to archive in: " + folderPath)
       None
     } else {
-      Logger.debug("ArchiveFolder: " + folderPath)
+      Logger.info("ArchiveFolder: " + folderPath)
       if (compress(fullArchivePath, files, Settings.assetLibraryPath)) {
         Some(archivePath)
       } else {
@@ -81,7 +81,6 @@ object Archiver {
   // ensure a directory exists
   private def ensureExists(directory: File) {
     if (!directory.exists) {
-      Logger.debug("creating dir: " + directory)
       directory.mkdirs
     }
   }

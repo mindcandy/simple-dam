@@ -116,7 +116,7 @@ object AssetLibrary {
    * load the library from the given path
    */
   def load(path: String): AssetLibrary = {
-    Logger.debug("Loading AssetLibrary from " + path)
+    Logger.info("Loading AssetLibrary from " + path)
     AssetLibraryLoader.load(path)
   }
 
@@ -125,7 +125,7 @@ object AssetLibrary {
    */ 
   def generateArchives() {
     areFolderArchivesGenerated = false
-    Logger.debug("Will archive folders in background...")
+    Logger.info("Will archive folders in background...")
     Akka.system.scheduler.scheduleOnce(10 seconds) {
       Archiver.createAllFolderArchives()
       AssetLibrary.areFolderArchivesGenerated = true 
