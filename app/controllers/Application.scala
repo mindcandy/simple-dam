@@ -53,13 +53,15 @@ object Application extends Controller {
     Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), ""));
   }
 
-  // /**
-  //  * zip up and serve a folder
-  //  */
-  // def downloadFolder(folderPath: String) = Action { 
-  //   Archiver.archiveFolder(folderPath) match {
-  //     case Some(archivePath) => Redirect(routes.FileServer.serveArchive(archivePath))
-  //     case None => InternalServerError("Failure to build or find archive")
-  //   }
-  // } 
+  /**
+   * serve up previously archived folder
+   */
+  def downloadFolder(folderPath: String) = Action { 
+    if (AssetLibrary.areFolderArchivesGenerated) {
+      val archivePath = Archiver.pathToArchiveFolder(folderPath)
+      Redirect(routes.FileServer.serveArchive(archivePath))
+    } else {
+      BadRequest("Folder archives have not been built")
+    }
+  } 
 }

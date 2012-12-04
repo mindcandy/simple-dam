@@ -6,6 +6,7 @@
 GET     /                                controllers.Application.index(search: String ?= "", keyword: String ?= "")
 GET     /folder/*folder                  controllers.Application.findFolder(folder)
 GET     /asset/*path                     controllers.Application.showAsset(path)
+GET     /downloadFolder/*path            controllers.Application.downloadFolder(path)
 GET     /jsroutes.js                     controllers.JavascriptRoutes.generateRoutes
 
 POST    /rest/archive                    controllers.ArchiveBuilder.archive

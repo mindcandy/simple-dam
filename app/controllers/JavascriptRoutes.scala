@@ -24,6 +24,7 @@ object JavascriptRoutes extends Controller {
         FileServer.serve,
         FileServer.serveArchive,
         Application.showAsset,
+        Application.downloadFolder,
         Admin.massEditMetadata, // TODO: see how to call these with JSON param - perhaps more codegen?
         ArchiveBuilder.archive
         // add any other static asset routes for Javascript here

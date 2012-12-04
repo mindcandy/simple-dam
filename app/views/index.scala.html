@@ -158,7 +158,7 @@
   <div class="navbar-inner">
     <a class="brand titlebrand" href="#">@{title}</a>
     <ul class="nav">
-      @if(individualAsset.isEmpty) { 
+    @if(individualAsset.isEmpty) { 
       <li><div class="btn-group"> 
         <a id="selectModeBtn" class="btn" data-toggle="button" href="#" title="Enable or Disable Asset Selection">Select</a>
         <a id="selectAllBtn" class="btn" href="#"><i class="icon-plus" title="Select All Assets in current Search"></i> All</a>
@@ -167,6 +167,18 @@
       <li><div class="btn-group"> 
         <a id="downloadAllBtn" class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> <span id="downloadAllBtnLabel">Download All</span></a>
       </div></li> 
+      @if(util.Settings.archiveOnStart && !currentFolder.isEmpty) {
+      <li><div class="btn-group"> 
+        <a id="downloadFolderBtn" 
+        @if(models.AssetLibrary.areFolderArchivesGenerated) {
+          class="btn btn-info" href="@routes.Application.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
+        } else {
+          class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
+        }
+        ><i class="icon-download-alt icon-white"></i> Download Folder</a>
+      </div></li> 
+      
+      }
     }
     </ul>
 
