@@ -52,6 +52,7 @@ object LibraryService extends Controller {
 
     val jsAsset = JsObject(Seq(
         "path" -> JsString(asset.original),
+        "name" -> JsString(asset.name),
         "hasThumbnail" -> JsBoolean(asset.hasThumbnail),
         "hasPreview" -> JsBoolean(asset.hasPreview),
         "preview" -> JsString(asset.preview),

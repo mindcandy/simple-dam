@@ -32,26 +32,6 @@
   </ul>
 }
 
-@displayName(name: String) = {
-    @if(name.length > 16) {
-        @{name.substring(0,16) + "..."}
-    } else {
-        @{name}
-    }
-}
-
-@imgSrcThumbnail(attr: String, a: models.Asset) = {
-  @if(a.hasThumbnail) {
-    @if(util.Settings.isAdmin) {
-      @{attr}="@routes.FileServer.serve(a.thumbnail)?bust=@{library.loadedAt}"
-    } else {
-      @{attr}="@routes.FileServer.serve(a.thumbnail)"
-    }
-  } else {
-    @* placeholder *@
-    @{attr}="http://placehold.it/96x96" width="96" height="96"
-  } 
-}
 
 @imgSrcPreview(a: models.Asset) = {
   @if(a.hasThumbnail) {
@@ -64,22 +44,6 @@
     @* placeholder *@
     src="http://placehold.it/320x320" width="320" height="320"
   } 
-}
-
-@assetThumbnail(a: models.Asset, index: Int) = {    
-  <div class="asset pull-left">
-    <div class="inner-asset" data-original="@{a.original}" data-size-bytes="@{a.sizeBytes}">
-      @if(index < 64) {
-        <img class="thumb" @imgSrcThumbnail("src", a) />
-      } else {
-        @* lazy load later thumbnails so we can return ALL the results and just load when scrolling *@
-      <img class="thumb lazy" src="@routes.Assets.at("img/grey.gif")" @imgSrcThumbnail("data-original", a) />
-      }
-      <p class="caption">
-        <a href="#" rel="tooltip" title="@{a.name}" data-placement="bottom">@displayName(a.name)</a>
-      </p>
-    </div>
-  </div>
 }
 
 @showIndividualAsset(a: models.Asset) = {
@@ -232,7 +196,7 @@
  *@
 
     <div class="span2 sidebar">
-      <h5 class="category"><a href="@routes.LibraryUI.index("", "", order)" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
+      <h5 class="category"><a href="#" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
 
       <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
       <div class="tree folders" id="folderTree" style="display:none;">
@@ -249,13 +213,10 @@
  * actual content 
  *@
 
-    <div class="span10 content">
+    <div class="span10 content" id="results">
 @if(individualAsset.isDefined) {
     @showIndividualAsset(individualAsset.get)  
-} else {     
-<!-- todo: search to get this content -->
-    @** for((a,i) <- assets.view.zipWithIndex) { @assetThumbnail(a,i) } **@
-}
+} 
     </div>
   </div>
 </div>
@@ -369,7 +330,9 @@ jQuery(document).ready(function() {
   // get data out of the Scala world and into Javascript
   LibraryUI.init("@{order}", @{library.loadedAt}, 
     "@routes.Assets.at("tree-themes/classic/style.css")",
-    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.isDefined}")
+    "@routes.Assets.at("img/grey.gif")",
+    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.isDefined}",
+    @util.Settings.isAdmin);
 });
 </script>
 

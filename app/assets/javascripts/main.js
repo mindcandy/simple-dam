@@ -6,16 +6,35 @@ var LibraryUI = {};
 
 (function(){
 
-
-var doSearch = function(searchType, searchParam, order) {
-  console.log("inner search: ", searchType, searchParam, order);
-
-};
-
-var info = function(text) {
+var statusText = function(text) {
+  $("#statusText").html(text);
   console.log(text);
 };
 
+var doSearch = function(searchType, searchParam, order) {
+  // console.log("inner search: ", searchType, searchParam, order);
+  LibraryUI.searchType = searchType;
+  LibraryUI.searchParam = searchParam;
+  LibraryUI.order = order;
+
+  // TODO: show loading spinner
+  // clear past results
+  $("#results").empty();
+
+  // call jquery etc
+  jsRoutesAjax.controllers.LibraryService.search(searchType, searchParam, order)
+  .ajax({
+    success: function(data) {
+      // console.log("search suceeded, data = ", data);
+      LibraryUI.renderAssets(data.assets);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("Search failed", textStatus, errorThrown);
+    }
+  });
+};
+
+// find a node to open in a jstree
 var findNodeToOpen = function(nodeSpec, idPrefix, attribute, param) {
   var to_open = [];
   if (param) {
@@ -32,16 +51,31 @@ var findNodeToOpen = function(nodeSpec, idPrefix, attribute, param) {
   return to_open;
 }
 
+
+// update the search location so it can be bookmarked
+var updateSearchLocation = function(url) {
+  if (LibraryUI.initalSearch === true) {
+    LibraryUI.initalSearch = false;
+  } else {
+    window.history.replaceState("", "", url);
+  }
+};
+
+
 // do an initial search when the page is first loaded
-LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset) {
-  console.log("init", defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset);
+LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin) {
+  // console.log("init", defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset);
+
+  // window.onpopstate = handlePopState;
 
   // set up state
   LibraryUI.order = defaultOrder;
   LibraryUI.loadTime = libraryLoadTime;
   LibraryUI.initalSearch = true;
+  LibraryUI.greyAsset = greyAsset;
+  LibraryUI.isAdmin = isAdmin;
 
-  if (individualAsset) {
+  if (individualAsset === true) {
     // show asset
     LibraryUI.searchType = 'individual';
     LibraryUI.searchParam = individualAsset;
@@ -110,17 +144,8 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, textSearch, ke
     }   
   }).show();
 
-
-
-  // // set up tooltips on assets
-  // $(".inner-asset a").tooltip();
-
-  // // set up lazy loading on asset thumbnails - use delay to ensure it happens after other things
-  // $("img.lazy").lazyload({
-  //    threshold : 200,
-  //    event: "scrollstop"
-  // });
-
+  // set initial UI state
+  updateUiState(0);
 
   // TODO: show individual asset
   if (LibraryUI.searchType === 'text') {
@@ -130,86 +155,152 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, textSearch, ke
 
 };
 
-// update the search location so it can be bookmarked
-var updateSearchLocation = function(url) {
-  if (LibraryUI.initalSearch === true) {
-    LibraryUI.initalSearch = false;
-  } else {
-    // TODO: maybe save state?
-    window.history.pushState("", "", url);
-  }
-};
+
 
 LibraryUI.searchAssets = function(searchParam) {
-  console.log("search assets", path);
-  updateSearchLocation(jsRoutes.controllers.LibraryUI.index(search, "", LibraryUI.order));
+  // console.log("search assets", searchParam);
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.index(searchParam, "", LibraryUI.order));
+  doSearch('text', searchParam, LibraryUI.order);
 };
 
 LibraryUI.searchFolder = function(path) {
-  console.log("search folder", path);
+  // console.log("search folder", path);
   updateSearchLocation(jsRoutes.controllers.LibraryUI.listAssetsInFolder(path, LibraryUI.order));
+  doSearch('folder', path, LibraryUI.order);
 };
 
 LibraryUI.searchKeyword = function(keyword) {
-  console.log("search keyword", keyword);
+  // console.log("search keyword", keyword);
   updateSearchLocation(jsRoutes.controllers.LibraryUI.index("", keyword, LibraryUI.order));
+  doSearch('keyword', keyword, LibraryUI.order);
 };
 
+LibraryUI.changeOrder = function(newOrder) {
+  // console.log("changed order", newOrder);
+  LibraryUI.order = newOrder;
+  if (LibraryUI.searchType === 'folder') {
+    LibraryUI.searchFolder(LibraryUI.searchParam);
+  } else if (LibraryUI.searchType == 'keyword') {
+    LibraryUI.searchKeyword(LibraryUI.searchParam);
+  } else {
+    LibraryUI.seachAssets(LibraryUI.searchParam);
+  }
+}
+
+var getThumbnailPath = function(path) {
+  return path.substr(0, path.lastIndexOf('.')) + "_thumbnail.jpg";
+}
+
+var imgSrcThumbnail = function(attr, asset) {
+  if (asset.thum) {
+    var thumbnailPath = getThumbnailPath(asset.path);
+    if(LibraryUI.isAdmin) {
+      return attr + '="' + jsRoutes.controllers.FileServer.serve(thumbnailPath) + '?bust=' + LibraryUI.loadTime + '"';
+    } else {
+      return attr + '="' + jsRoutes.controllers.FileServer.serve(thumbnailPath) + '"';
+    }
+  } else {
+    // placeholder
+    return attr + '="http://placehold.it/96x96" width="96" height="96"';
+  } 
+}
+
+var renderAssetThumbnail = function(index, asset) {
+  if (index < 64) {
+    return '<img class="thumb" ' + imgSrcThumbnail("src", asset) + ' />';
+  } else {
+    // lazy load later thumbnails so we can return ALL the results and just load when scrolling 
+    return '<img class="thumb lazy" src="' + LibraryUI.greyAsset + '"' +  imgSrcThumbnail("data-original", asset) + ' />'; 
+  }
+}
+
+var displayName = function(name) {
+  if (name.length > 16) {
+    return name.substr(0,16) + "...";
+  } else {
+    return name;
+  }
+}
 
 LibraryUI.renderAssets = function(assets) {
-  console.log("render assets");
+  // console.log("render assets");
+  statusText(assets.length + " Assets found.");
 
+  var results = $("#results");
+  results.empty();
+  $.each(assets, function(index,asset) {
+    var name = asset.path.substr(asset.path.lastIndexOf('/') + 1);   
+
+    var html = '<div class="asset pull-left">' +
+      '<div class="inner-asset" data-original="' + asset.path + '" data-size-bytes="' + asset.size + '">' + 
+      renderAssetThumbnail(index, asset) +
+      '<p class="caption">' +
+        '<a href="#" rel="tooltip" title="' + name + '" data-placement="bottom">' + displayName(name) + '</a>' +
+      '</p></div></div>';
+
+    results.append(html);
+  });
+
+  // set up tooltips on assets
+  $(".inner-asset a").tooltip();
+
+  // set up lazy loading on asset thumbnails - use delay to ensure it happens after other things
+  $("img.lazy").lazyload({
+     threshold : 200,
+     event: "scrollstop"
+  });
 };
 
 
-})();
+var AssetArchiveDownloadLimit = 20;
 
-/* set up function */
+var postJson = function(url, param) {
+  return $.ajax(url, {
+    type: 'POST',
+    dataType: 'json',
+    contentType : 'application/json',
+    data: JSON.stringify(param),
+    processData : false
+  });
+};
+
+var disableBtn = function(element) { element.addClass("disabled"); };
+var enableBtn = function(element) { element.removeClass("disabled"); };
+var isBtnDisabled = function(element) { return element.hasClass("disabled"); };
+var setEnabledBtn = function(element, isEnabled) { 
+  if (isEnabled) {
+    enableBtn(element);
+  } else {
+    disableBtn(element);
+  }
+};
+
+var updateUiState = function(selectionCount) {
+  if (selectionCount > 0) {
+    $("#statusText").html(selectionCount + " Assets selected.");
+    enableBtn($("#deselectAllBtn"));
+    enableBtn($("#massEditMetaBtn"));
+    $("#downloadAllBtnLabel").html("Download Selection");
+    setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
+
+  } else {
+    var assetCount = $(".inner-asset").length;
+    $("#statusText").html(assetCount + " assets found. None currently selected.");
+    disableBtn($("#deselectAllBtn"));
+    disableBtn($("#massEditMetaBtn"));
+    $("#downloadAllBtnLabel").html("Download All");
+    setEnabledBtn($("#downloadAllBtn"), assetCount <= AssetArchiveDownloadLimit);
+  }
+};
+
+
+
+// set up UI when its loaded - mainly onclick functions
 jQuery(document).ready(function() {
 
-  var AssetArchiveDownloadLimit = 20;
-
-  var postJson = function(url, param) {
-    return $.ajax(url, {
-      type: 'POST',
-      dataType: 'json',
-      contentType : 'application/json',
-      data: JSON.stringify(param),
-      processData : false
-    });
-  };
-
-  var disableBtn = function(element) { element.addClass("disabled"); };
-  var enableBtn = function(element) { element.removeClass("disabled"); };
-  var isBtnDisabled = function(element) { return element.hasClass("disabled"); };
-  var setEnabledBtn = function(element, isEnabled) { 
-    if (isEnabled) {
-      enableBtn(element);
-    } else {
-      disableBtn(element);
-    }
-  };
-
-  var updateUiState = function(selectionCount) {
-    if (selectionCount > 0) {
-      $("#statusText").html(selectionCount + " Assets selected.");
-      enableBtn($("#deselectAllBtn"));
-      enableBtn($("#massEditMetaBtn"));
-      $("#downloadAllBtnLabel").html("Download Selection");
-      setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
-
-    } else {
-      var assetCount = $(".inner-asset").length;
-      $("#statusText").html(assetCount + " assets found. None currently selected.");
-      disableBtn($("#deselectAllBtn"));
-      disableBtn($("#massEditMetaBtn"));
-      $("#downloadAllBtnLabel").html("Download All");
-      setEnabledBtn($("#downloadAllBtn"), assetCount <= AssetArchiveDownloadLimit);
-    }
-  };
-
-  // set initial UI state
-  updateUiState(0);
+  $("#everything").click(function(e) {
+    LibraryUI.searchAssets('');
+  });
 
   $("#selectAllBtn").click(function(e) {
     var count = $(".inner-asset").addClass("selectedAsset").length;
@@ -357,12 +448,13 @@ jQuery(document).ready(function() {
         $('#massDownload').modal('hide');
         window.location = data.archive;
 
-    }).fail(function(jqXHR, textStatus) {
+    }).fail(function(jqXHR, textStatus, errorThrown) {
         $('#massDownload').modal('hide');
-        alert( "Archive Build failed: " + textStatus );
+        alert( "Archive Build failed: " + textStatus + " " + errorThrown);
     });
   });
 
-
-});
+}); //jquery.docready
   
+})();
+
