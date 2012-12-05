@@ -1,5 +1,169 @@
 /* shared javascript */
 
+// Define the library UI global object
+// TODO: maybe use a better syntax for this?
+var LibraryUI = {};
+
+(function(){
+
+
+var doSearch = function(searchType, searchParam, order) {
+  console.log("inner search: ", searchType, searchParam, order);
+
+};
+
+var info = function(text) {
+  console.log(text);
+};
+
+var findNodeToOpen = function(nodeSpec, idPrefix, attribute, param) {
+  var to_open = [];
+  if (param) {
+    $(nodeSpec).each(function(index) { 
+      var nodeId = idPrefix + index;
+      $(this).attr("id", nodeId);
+
+      if ($(this).attr(attribute) === param) {
+        to_open.push("#" + nodeId);
+      } 
+    });
+  }
+
+  return to_open;
+}
+
+// do an initial search when the page is first loaded
+LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset) {
+  console.log("init", defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset);
+
+  // set up state
+  LibraryUI.order = defaultOrder;
+  LibraryUI.loadTime = libraryLoadTime;
+  LibraryUI.initalSearch = true;
+
+  if (individualAsset) {
+    // show asset
+    LibraryUI.searchType = 'individual';
+    LibraryUI.searchParam = individualAsset;
+
+  } else if (folderSearch) {
+    LibraryUI.searchType = 'folder';
+    LibraryUI.searchParam = folderSearch;
+
+  } else if (keywordSearch) {
+    // seach will be triggered by tree select
+    LibraryUI.searchType = 'keyword';
+    LibraryUI.searchParam = keywordSearch;
+
+  } else  {
+    // default to show text-based search (even if its empty, shows all)
+   LibraryUI.searchType = 'text';
+   LibraryUI.searchParam = textSearch;
+  }
+
+
+  // setup trees & auto-open any we need to -- this also triggers the initial search!
+  var folder_to_open = findNodeToOpen(".tree.folders li", "folder", "data-folder-path", folderSearch);
+  var keyword_to_open = findNodeToOpen(".tree.keywords li", "keyword", "data-keyword", keywordSearch);
+    
+  // settings shared between trees
+  var treeTheme = { 
+      "icons" : false,
+      "theme": "classic",
+      "url": treeCss
+  };
+  var treeCoreSettings = {
+      "animation": 100,
+      "open_parents": true
+  };
+
+  // create trees
+  $("#folderTree").jstree({
+      core: treeCoreSettings,
+      themes: treeTheme,
+      ui: {
+          "initially_select": folder_to_open
+      }, 
+      plugins: [ "themes",  "html_data", "ui" ]
+  })
+  .bind("select_node.jstree", function(e, data) {
+    // search for folder
+    if (data.rslt.obj) {
+        LibraryUI.searchFolder(data.rslt.obj.attr("data-folder-path"));
+        $(".tree.keywords").jstree("deselect_all");
+    }
+  }).show();
+
+  $("#keywordTree").jstree({
+      core: treeCoreSettings,
+      themes: treeTheme,
+      ui: {
+          "initially_select": keyword_to_open
+      }, 
+      plugins: [ "themes",  "html_data", "ui" ]
+  })
+  .bind("select_node.jstree", function(e, data) {
+    // search for keyword on select
+    if (data.rslt.obj) {
+      LibraryUI.searchKeyword(data.rslt.obj.attr("data-keyword"));
+      $(".tree.folders").jstree("deselect_all");
+    }   
+  }).show();
+
+
+
+  // // set up tooltips on assets
+  // $(".inner-asset a").tooltip();
+
+  // // set up lazy loading on asset thumbnails - use delay to ensure it happens after other things
+  // $("img.lazy").lazyload({
+  //    threshold : 200,
+  //    event: "scrollstop"
+  // });
+
+
+  // TODO: show individual asset
+  if (LibraryUI.searchType === 'text') {
+    // default to show everything!
+    LibraryUI.searchAssets(textSearch);
+  } 
+
+};
+
+// update the search location so it can be bookmarked
+var updateSearchLocation = function(url) {
+  if (LibraryUI.initalSearch === true) {
+    LibraryUI.initalSearch = false;
+  } else {
+    // TODO: maybe save state?
+    window.history.pushState("", "", url);
+  }
+};
+
+LibraryUI.searchAssets = function(searchParam) {
+  console.log("search assets", path);
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.index(search, "", LibraryUI.order));
+};
+
+LibraryUI.searchFolder = function(path) {
+  console.log("search folder", path);
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.listAssetsInFolder(path, LibraryUI.order));
+};
+
+LibraryUI.searchKeyword = function(keyword) {
+  console.log("search keyword", keyword);
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.index("", keyword, LibraryUI.order));
+};
+
+
+LibraryUI.renderAssets = function(assets) {
+  console.log("render assets");
+
+};
+
+
+})();
+
 /* set up function */
 jQuery(document).ready(function() {
 
@@ -73,7 +237,7 @@ jQuery(document).ready(function() {
     } else {
       // look at single item
       // TODO: use AJAX
-      window.location.href = jsRoutes.controllers.Application.showAsset(asset.attr("data-original"));
+      window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
     }
 
   });
@@ -198,6 +362,7 @@ jQuery(document).ready(function() {
         alert( "Archive Build failed: " + textStatus );
     });
   });
+
 
 });
   

@@ -16,7 +16,7 @@
 }
 
 @showFolder(folder: models.AssetFolder, folderPath: String) = {
-    <li data-folder-path="@{folderPath}" data-query-url="@routes.Application.listAssetsInFolder(folderPath, order)">
+    <li data-folder-path="@{folderPath}">
         <a href="#">@{folder.name}</a>
         @listFolders(folder.folders, folderPath)
     </li>
@@ -25,7 +25,7 @@
 @listKeywords(keywords: Seq[String]) = {
   <ul>
   @for(key <- keywords) {
-    <li data-keyword="@{key}" data-query-url="@routes.Application.index("", key, order)">
+    <li data-keyword="@{key}">
       <a href="#">@{key}</a>
     </li>
   }
@@ -96,14 +96,14 @@
       <dt>Type</dt>
       <dd>@{a.extension.toUpperCase}</dd>
       <dt>Folder</dt>
-      <dd><a href="@routes.Application.listAssetsInFolder(a.folderPath)">@{a.folderPath}</a></dd>
+      <dd><a href="#">@{a.folderPath}</a></dd>
       <dt>Size</dt>
       <dd>@{a.humanSize}</dd>
       @if(!a.keywords.isEmpty) {
       <dt>Keywords</dt>
       <dd>
         @for(key <- a.keywords) {
-          <a href="@routes.Application.index("",key, order)">@key</a>, 
+          <a href="#">@key</a>, 
         }
       }
     </dl>
@@ -179,7 +179,7 @@
       <li><div class="btn-group"> 
         <a id="downloadFolderBtn" 
         @if(models.AssetLibrary.areFolderArchivesGenerated) {
-          class="btn btn-info" href="@routes.Application.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
+          class="btn btn-info" href="@routes.LibraryUI.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
         } else {
           class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
         }
@@ -212,7 +212,7 @@
     }
     </ul>
 
-    <form class="navbar-form pull-right form-search" action="@routes.Application.index()" id="searchForm">
+    <form class="navbar-form pull-right form-search" action="@routes.LibraryUI.index()" id="searchForm">
       <div class="input-append">
         <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords."/>
         <button type="submit" class="btn"><i class="icon-search"></i> Search</button>
@@ -232,15 +232,15 @@
  *@
 
     <div class="span2 sidebar">
-      <h5 class="category"><a href="@routes.Application.index("", "", order)" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
+      <h5 class="category"><a href="@routes.LibraryUI.index("", "", order)" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
 
       <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
-      <div class="tree" id="folderTree" style="display:none;">
+      <div class="tree folders" id="folderTree" style="display:none;">
         @listFolders(library.topFolder.folders, "")
       </div>
 
       <h5 class="category"><i class="icon-tags"></i> Keywords</h5>
-      <div class="tree" id="keywordTree" style="display:none;">
+      <div class="tree keywords" id="keywordTree" style="display:none;">
         @listKeywords(library.keywords)
       </div>
     </div>
@@ -366,110 +366,10 @@
 
 <script>
 jQuery(document).ready(function() {
-
-  // build a big lookup table from path -> node id
-  var currentFolder = "@Html(currentFolder)";
-  //console.log("looking for", currentFolder);
-  var auto_open = [];
-  var expect_select = false;
-  // var nodes = [];
-      
-  // replace string path with hash id for easy lookup later...
-  $(".tree li").each(function(index) { 
-    var nodeName = $(this).attr("data-folder-path");
-    var nodeId = "folder" + index;
-    //nodes[ nodeName ] = nodeId; 
-    $(this).attr("id", nodeId);
-
-    if (nodeName === currentFolder) {
-      auto_open.push("#" + nodeId);
-      expect_select = true;
-    } 
-  });
-
-  // create tree
-  $("#folderTree").hide()
-  .jstree({
-      core: {
-          "animation": 100,
-          "open_parents": true
-      },
-      themes: { 
-          "icons" : false,
-          "theme": "classic",
-          "url": "@routes.Assets.at("tree-themes/classic/style.css")"
-      },
-      ui: {
-          "initially_select": auto_open
-      }, 
-      plugins: [ "themes",  "html_data", "ui" ]
-  })
-  .bind("select_node.jstree", function(e, data) {
-    if (data.rslt.obj) {
-      if (expect_select) {
-        expect_select = false;
-      } else {
-        // redirect! (eventually, just submit query)
-        window.location.href = data.rslt.obj.attr("data-query-url");
-      }
-    }
-  }).show();
-
-
-  var currentKeyword = "@Html(keywordSearch)";
-  var keyword_to_open = [];
-  var expect_keyword_select = false;
-  // var keyNodes = [];
-
-  $(".tree li").each(function(index) { 
-    var nodeName = $(this).attr("data-keyword");
-    var nodeId = "keyword" + index;
-    //keyNodes[ nodeName ] = nodeId; 
-    $(this).attr("id", nodeId);
-
-    if (nodeName === currentKeyword) {
-      keyword_to_open.push("#" + nodeId);
-      expect_keyword_select = true;
-    } 
-  });
-
-  $("#keywordTree").hide()
-  .jstree({
-      core: {
-          "animation": 100
-      },
-      themes: { 
-          "icons" : false,
-          "theme": "classic",
-          "url": "@routes.Assets.at("tree-themes/classic/style.css")"
-      },
-      ui: {
-          "initially_select": keyword_to_open
-      }, 
-      plugins: [ "themes",  "html_data", "ui" ]
-  })
-  .bind("select_node.jstree", function(e, data) {
-    if (data.rslt.obj) {
-      if (expect_keyword_select) {
-        expect_keyword_select = false;
-      } else {
-        // redirect! (eventually, just submit query)
-        window.location.href = data.rslt.obj.attr("data-query-url");
-      }
-    }   
-  }).show();
-
-
-
-  // set up tooltips on assets
-  $(".inner-asset a").tooltip();
-
-  // set up lazy loading on asset thumbnails - use delay to ensure it happens after other things
-  $("img.lazy").lazyload({
-     threshold : 200,
-     event: "scrollstop"
-  });
-
+  // get data out of the Scala world and into Javascript
+  LibraryUI.init("@{order}", @{library.loadedAt}, 
+    "@routes.Assets.at("tree-themes/classic/style.css")",
+    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.isDefined}")
 });
 </script>
 
