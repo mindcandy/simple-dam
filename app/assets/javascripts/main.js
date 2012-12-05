@@ -19,13 +19,17 @@ var doSearch = function(searchType, searchParam, order) {
 
   // TODO: show loading spinner
   // clear past results
+  deselectAllAssets();
+  LibraryUI.assets = [];
   $("#results").empty();
 
   // call jquery etc
   jsRoutesAjax.controllers.LibraryService.search(searchType, searchParam, order)
   .ajax({
     success: function(data) {
-      // console.log("search suceeded, data = ", data);
+      // console.log("search suceeded, data = ", data);      
+      LibraryUI.assets = data.assets;
+      // TODO: local search?
       LibraryUI.renderAssets(data.assets);
     },
     error: function(jqXHR, textStatus, errorThrown) {
@@ -74,6 +78,7 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
   LibraryUI.initalSearch = true;
   LibraryUI.greyAsset = greyAsset;
   LibraryUI.isAdmin = isAdmin;
+  LibraryUI.assets = [];
 
   if (individualAsset === true) {
     // show asset
@@ -251,21 +256,23 @@ LibraryUI.renderAssets = function(assets) {
   });
 
   // Hook up Click on assets: either select/deselect or go to individual view
-  $(".inner-asset").click(function(e) {
-    var asset = $(this);
+  $(".inner-asset").click(onAssetClick);  
+};
 
-    // is select mode active?
-    if ($("#selectModeBtn").hasClass("active")) {
-      asset.toggleClass("selectedAsset");
-      
-      updateUiState($(".selectedAsset").length);
+var onAssetClick = function(e) {
+  var asset = $(this);
 
-    } else {
-      // look at single item
-      // TODO: use AJAX
-      window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
-    }
-  });  
+  // is select mode active?
+  if ($("#selectModeBtn").hasClass("active")) {
+    asset.toggleClass("selectedAsset");
+    
+    updateUiState($(".selectedAsset").length);
+
+  } else {
+    // look at single item
+    // TODO: use AJAX
+    window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
+  }
 };
 
 
@@ -294,7 +301,7 @@ var setEnabledBtn = function(element, isEnabled) {
 
 var updateUiState = function(selectionCount) {
   if (selectionCount > 0) {
-    $("#statusText").html(selectionCount + " Assets selected.");
+    statusText(selectionCount + " Assets selected.");
     enableBtn($("#deselectAllBtn"));
     enableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download Selection");
@@ -302,7 +309,7 @@ var updateUiState = function(selectionCount) {
 
   } else {
     var assetCount = $(".inner-asset").length;
-    $("#statusText").html(assetCount + " assets found. None currently selected.");
+    statusText(assetCount + " assets found. None currently selected.");
     disableBtn($("#deselectAllBtn"));
     disableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download All");
@@ -310,6 +317,17 @@ var updateUiState = function(selectionCount) {
   }
 };
 
+var selectAllAssets = function() {
+   var count = $(".inner-asset").addClass("selectedAsset").length;
+  $("#selectModeBtn").addClass("active");
+  updateUiState(count); 
+};
+
+var deselectAllAssets = function() {
+  $(".selectedAsset").removeClass("selectedAsset");
+  $("#selectModeBtn").removeClass("active");
+  updateUiState(0);
+};
 
 
 // set up UI when its loaded - mainly onclick functions
@@ -319,17 +337,8 @@ jQuery(document).ready(function() {
     LibraryUI.searchAssets('');
   });
 
-  $("#selectAllBtn").click(function(e) {
-    var count = $(".inner-asset").addClass("selectedAsset").length;
-    $("#selectModeBtn").addClass("active");
-    updateUiState(count);
-  });
-
-  $("#deselectAllBtn").click(function(e) {
-    $(".selectedAsset").removeClass("selectedAsset");
-    $("#selectModeBtn").removeClass("active");
-    updateUiState(0);
-  });
+  $("#selectAllBtn").click(selectAllAssets);
+  $("#deselectAllBtn").click(deselectAllAssets);
 
 
   // Mass edit of assets

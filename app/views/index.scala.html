@@ -188,7 +188,7 @@
       
       }
 
-      <div class="btn-group">
+      <li><div class="btn-group">
       <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
         Order: @{order match {
           case "time"  => "Oldest"
@@ -208,7 +208,7 @@
         <li><a href=@changeOrderingUrl("size")  >Smallest First</a></li>
         <li><a href=@changeOrderingUrl("-size") >Largest First</a></li>
       </ul>
-    </div>
+    </div></li>
     }
     </ul>
 
