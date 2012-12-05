@@ -15,16 +15,16 @@ object JavascriptRoutes extends Controller {
     def generateRoutes = Action { implicit request =>
       import routes.javascript._
       val ajaxRoutes = Routes.javascriptRouter("jsRoutesAjax")(
-          Application.index,
-          Application.listAssetsInFolder// TODO          
+          LibraryService.search,
+          LibraryService.getAsset
           // add any other endpoints you want to use in Javascript here
         )
 
       val assetRoutes = generateAssetRoutes("jsRoutes")(
         FileServer.serve,
-        FileServer.serveArchive,
-        Application.showAsset,
-        Application.downloadFolder,
+        // FileServer.serveArchive,
+        // Application.showAsset,
+        // Application.downloadFolder,
         Admin.massEditMetadata, // TODO: see how to call these with JSON param - perhaps more codegen?
         ArchiveBuilder.archive
         // add any other static asset routes for Javascript here
