@@ -333,13 +333,21 @@ var deselectAllAssets = function() {
 // set up UI when its loaded - mainly onclick functions
 jQuery(document).ready(function() {
 
+  $("#searchForm").submit(function(e) {
+    e.preventDefault();
+    var textSearch = $("#search").val();
+    if (textSearch) {
+     LibraryUI.searchAssets(textSearch);
+    }
+    return false;
+  });
+
   $("#everything").click(function(e) {
     LibraryUI.searchAssets('');
   });
 
   $("#selectAllBtn").click(selectAllAssets);
   $("#deselectAllBtn").click(deselectAllAssets);
-
 
   // Mass edit of assets
   $("#massEditMetaBtn").click(function(e) {
