@@ -249,6 +249,23 @@ LibraryUI.renderAssets = function(assets) {
      threshold : 200,
      event: "scrollstop"
   });
+
+  // Hook up Click on assets: either select/deselect or go to individual view
+  $(".inner-asset").click(function(e) {
+    var asset = $(this);
+
+    // is select mode active?
+    if ($("#selectModeBtn").hasClass("active")) {
+      asset.toggleClass("selectedAsset");
+      
+      updateUiState($(".selectedAsset").length);
+
+    } else {
+      // look at single item
+      // TODO: use AJAX
+      window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
+    }
+  });  
 };
 
 
@@ -312,25 +329,6 @@ jQuery(document).ready(function() {
     $(".selectedAsset").removeClass("selectedAsset");
     $("#selectModeBtn").removeClass("active");
     updateUiState(0);
-  });
-
-  // either select/deselect or go to individual view
-  $(".inner-asset").click(function(e) {
-
-    var asset = $(this);
-
-    // is select mode active?
-    if ($("#selectModeBtn").hasClass("active")) {
-      asset.toggleClass("selectedAsset");
-      
-      updateUiState($(".selectedAsset").length);
-
-    } else {
-      // look at single item
-      // TODO: use AJAX
-      window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
-    }
-
   });
 
 
