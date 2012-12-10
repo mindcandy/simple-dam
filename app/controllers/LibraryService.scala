@@ -5,7 +5,7 @@ import play.api.mvc._
 import play.api.libs.json._
 
 import models._
-import util.{Settings, Archiver}
+import util.{Settings, Archiver, Humanize}
 
 /* 
  * Asset Library RESTful services for AJAX UI
@@ -56,7 +56,7 @@ object LibraryService extends Controller {
         "hasThumbnail" -> JsBoolean(asset.hasThumbnail),
         "hasPreview" -> JsBoolean(asset.hasPreview),
         "preview" -> JsString(asset.preview),
-        "size" -> JsNumber(asset.sizeBytes),
+        "size" -> JsString(Humanize.filesize(asset.sizeBytes)),
         "time" -> JsNumber(asset.lastModified),
         "description" -> JsString(asset.description),
         "keywords" -> JsArray(asset.keywords.map(JsString(_)).toSeq)

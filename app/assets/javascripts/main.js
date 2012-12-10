@@ -103,10 +103,9 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
   LibraryUI.isAdmin = isAdmin;
   LibraryUI.assets = [];
 
-  if (individualAsset === true) {
+  if (individualAsset) {
     // show asset
-    LibraryUI.searchType = 'individual';
-    LibraryUI.searchParam = individualAsset;
+    LibraryUI.showIndividualAsset(individualAsset, -1);
 
   } else if (folderSearch) {
     LibraryUI.searchType = 'folder';
@@ -260,7 +259,7 @@ LibraryUI.renderAssets = function(assets) {
     var name = asset.path.substr(asset.path.lastIndexOf('/') + 1);   
 
     var html = '<div class="asset pull-left">' +
-      '<div class="inner-asset" data-original="' + asset.path + '" data-size-bytes="' + asset.size + '">' + 
+      '<div class="inner-asset" data-index=" + index + " data-original="' + asset.path + '" data-size-bytes="' + asset.size + '">' + 
       renderAssetThumbnail(index, asset) +
       '<p class="caption">' +
         '<a href="#" rel="tooltip" title="' + name + '" data-placement="bottom">' + displayName(name) + '</a>' +
@@ -288,15 +287,94 @@ var onAssetClick = function(e) {
   // is select mode active?
   if ($("#selectModeBtn").hasClass("active")) {
     asset.toggleClass("selectedAsset");
-    
     updateUiState($(".selectedAsset").length);
-
   } else {
     // look at single item
-    // TODO: use AJAX
-    window.location.href = jsRoutes.controllers.LibraryUI.showAsset(asset.attr("data-original"));
+    LibraryUI.showIndividualAsset(asset.attr("data-original"), asset.attr("data-index")); 
   }
 };
+
+var ensureNotEmpty = function(s) {
+  if (s === "")
+    return "&nbsp;";
+  else
+    return s;
+}
+
+LibraryUI.showIndividualAsset = function(path, index) {
+
+  // LibraryUI.searchType = 'individual';
+  // LibraryUI.searchParam = individualAsset;
+
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
+
+  statusText("Loading asset details...");
+  $("#adTitle").html("Loading...");
+  $("#adDetails").hide(); 
+  $("#assetDetailPanel .modal-footer").hide();
+  $("#adLoading").spin({top:20, left:20}); 
+  $("#adLoading").show();
+  $("#assetDetailPanel").modal('show');    
+
+  LibraryUI.currentIndex = index;
+
+  jsRoutesAjax.controllers.LibraryService.getAsset(path)
+  .ajax({
+    success: function(data) {
+
+      statusText("Got asset details");
+      var asset = data.asset;
+      LibraryUI.currentAsset = asset;
+
+      console.log(asset);
+
+      // fill in asset details
+      var imgSrc = "http://placehold.it/320x320";
+      if (asset.hasPreview) {
+        imgSrc = jsRoutes.controllers.FileServer.serve(asset.preview);
+      }      
+      $("#adPreview").attr('src', imgSrc);
+
+      $("#adTitle").html(asset.name);
+      $("#adDescription").html(ensureNotEmpty(asset.description));
+
+      var extension = asset.path.substr(asset.path.lastIndexOf('.') + 1).toUpperCase();
+      $("#adType").html(ensureNotEmpty(extension));
+
+      var assetFolder = asset.path.substr(0, asset.path.lastIndexOf('/') + 1);
+      $("#adFolder").html(assetFolder)
+        .attr("href", jsRoutes.controllers.LibraryUI.listAssetsInFolder(assetFolder, LibraryUI.order));
+
+      $("#adSize").html(ensureNotEmpty(asset.size));
+      $("#adKeywords").html(ensureNotEmpty(asset.keywords));
+
+      $("#adLoading").spin(false);
+      $("#adLoading").hide();
+      $("#adDetails").show();
+      $("#assetDetailPanel .modal-footer").show(); 
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("Load failed", textStatus, errorThrown);
+      $("#assetDetailPanel").modal('hide');
+    }
+  });
+};
+
+var downloadAssetClicked = function(e) {
+  e.preventDefault();
+
+  if (LibraryUI.currentAsset) {
+    window.location.href = jsRoutes.controllers.FileServer.serve(LibraryUI.currentAsset.path); 
+  }
+}
+
+var editAssetMetaClicked = function(e) {
+  e.preventDefault();
+
+  if (LibraryUI.currentAsset) {
+    console.log("would edit ", LibraryUI.currentAsset);
+  }
+}
 
 
 var AssetArchiveDownloadLimit = 20;
@@ -501,6 +579,9 @@ jQuery(document).ready(function() {
   $("#downloadAllBtn").click(downloadAllButtonClicked);
   $("#massDownloadSubmitBtn").click(downloadSubmitButtonClicked);
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
+
+  $("#adDownload").click(downloadAssetClicked);
+  $("#adEditMeta").click(editAssetMetaClicked);
 
   $("#massEditMetaBtn").click(massEditMetaClicked);
   $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);

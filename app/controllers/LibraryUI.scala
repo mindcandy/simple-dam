@@ -33,11 +33,9 @@ object LibraryUI extends Controller {
    * show an individual asset's page (must be permalink)
    */
   def showAsset(assetPath: String) = Action { implicit request =>
-    // TODO: CHANGE
-    // find asset
-    val asset = AssetLibrary.current.findAssetByPath(assetPath)
     
-    Ok(views.html.index(List(), Settings.title, "", "", AssetLibrary.current, Some(asset), "", ""));
+    val asset = AssetLibrary.current.findAssetByPath(assetPath)    
+    Ok(views.html.libraryUI(Settings.title, "", "", AssetLibrary.current, Some(asset), "", ""));
   }
 
   /**

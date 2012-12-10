@@ -46,65 +46,67 @@
   } 
 }
 
-@showIndividualAsset(a: models.Asset) = {
-  <div class="assetDetail">
-    <h1 class="title">@{a.name}</h1>
-    <a href="@routes.FileServer.serve(a.original)">
-    <img class="preview" @imgSrcPreview(a) />
-    </a>
-    <dl class="dl-horizontal">
-      @if(!a.description.isEmpty) {
+@*** Individual asset modal dialog ***@
+<div id="assetDetailPanel" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="adTitle"></h3>
+  </div>
+  <div class="modal-body">
+    <div id="adLoading" stlye="height: 200px;"></div>
+    <div id="adDetails">
+      <img class="preview" id="adPreview" />
+      <dl class="dl-horizontal">
         <dt>Description</dt>
-        <dd>@{a.description}</dd>
-      }
-      <dt>Type</dt>
-      <dd>@{a.extension.toUpperCase}</dd>
-      <dt>Folder</dt>
-      <dd><a href="#">@{a.folderPath}</a></dd>
-      <dt>Size</dt>
-      <dd>@{a.humanSize}</dd>
-      @if(!a.keywords.isEmpty) {
-      <dt>Keywords</dt>
-      <dd>
-        @for(key <- a.keywords) {
-          <a href="#">@key</a>, 
-        }
-      }
-    </dl>
-    <a class="btn btn-info" href="@routes.FileServer.serve(a.original)" title="Download this Asset"><i class="icon-download-alt icon-white"></i> Download</a>
-
-      @if(util.Settings.isAdmin) {
-        <a href="#editAsset" role="button" class="btn btn-warning" data-toggle="modal"><i class="icon-edit icon-white"></i> Edit Metadata</a>
-      }
+        <dd id="adDescription"></dd>
+        <dt>Type</dt>
+        <dd id="adType"></dd>
+        <dt>Folder</dt>
+        <dd><a href="#" id="adFolder"></a></dd>
+        <dt>Size</dt>
+        <dd id="adSize"></dd>
+        <dt>Keywords</dt>
+        <dd id="adKeywords"></span>
+      </dl>
+      </div>
   </div>
+  <div class="modal-footer">
+  <a class="btn btn-info" id="adDownload" href="#" title="Download this Asset"><i class="icon-download-alt icon-white"></i> Download</a>
 
- @******** Admin edit of asset metadata *****@
-
-  @if(util.Settings.isAdmin) {
-  <div id="editAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Edit Metadata: @{a.name}</h3>
-    </div>
-    <form action="@routes.Admin.editMetadata(a.original)">
-      <fieldset>
-        <div class="modal-body">
-          <p>You can edit the description and keywords here, it will write out to a .json file and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
-          <label>Description</label>
-          <textarea name="description" id="description" rows="3"  class="input-block-level">@{a.description}</textarea>
-          <label>Keywords</label>
-          <input type="text" name="keywords" id="keywords"  class="input-block-level" value="@{a.keywords.mkString(", ")}"/>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
-          <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
-        </div>
-      </fieldset>
-    </form>
+    @if(util.Settings.isAdmin) {
+      <a href="#" id="adEditMeta" role="button" class="btn btn-warning"><i class="icon-edit icon-white"></i> Edit Metadata</a>
+    }
   </div>
-  }
+</div>
 
+
+@******** Admin edit of asset metadata *****@
+@*******
+@if(util.Settings.isAdmin) {
+<div id="editAsset" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Edit Metadata: @{a.name}</h3>
+  </div>
+  <form action="@routes.Admin.editMetadata(a.original)">
+    <fieldset>
+      <div class="modal-body">
+        <p>You can edit the description and keywords here, it will write out to a .json file and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
+        <label>Description</label>
+        <textarea name="description" id="description" rows="3"  class="input-block-level">@{a.description}</textarea>
+        <label>Keywords</label>
+        <input type="text" name="keywords" id="keywords"  class="input-block-level" value="@{a.keywords.mkString(", ")}"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+        <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> Save changes</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
 }
+*****@
+
 
 
 @*******************************
@@ -120,29 +122,33 @@
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <a class="brand titlebrand" href="#">@{title}</a>
-    <ul class="nav">
-    @if(individualAsset.isEmpty) { 
+    <ul class="nav">    
+
+      @*** selection buttons ***@
       <li><div class="btn-group"> 
         <a id="selectModeBtn" class="btn" data-toggle="button" href="#" title="Enable or Disable Asset Selection">Select</a>
         <a id="selectAllBtn" class="btn" href="#"><i class="icon-plus" title="Select All Assets in current Search"></i> All</a>
         <a id="deselectAllBtn" class="btn disabled" href="#"><i class="icon-minus" title="Clear Asset selection"></i> None</a>
       </div></li>
+
+      @*** download all button ***@
       <li><div class="btn-group"> 
         <a id="downloadAllBtn" class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> <span id="downloadAllBtnLabel">Download All</span></a>
       </div></li> 
-      @if(util.Settings.archiveOnStart && !currentFolder.isEmpty) {
-      <li><div class="btn-group"> 
-        <a id="downloadFolderBtn" 
-        @if(models.AssetLibrary.areFolderArchivesGenerated) {
-          class="btn btn-info" href="@routes.LibraryUI.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
-        } else {
-          class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
-        }
-        ><i class="icon-download-alt icon-white"></i> Download Folder</a>
-      </div></li> 
-      
+
+      @if(util.Settings.archiveOnStart) {
+        <li><div class="btn-group"> 
+          <a id="downloadFolderBtn" 
+          @if(models.AssetLibrary.areFolderArchivesGenerated) {
+            class="btn btn-info" href="@routes.LibraryUI.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
+          } else {
+            class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
+          }
+          ><i class="icon-download-alt icon-white"></i> Download Folder</a>
+        </div></li>   
       }
 
+      @*** ordering ***@
       <li><div class="btn-group">
       <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
         Order: <span id="currentOrderText"></span>
@@ -156,10 +162,10 @@
         <li><a href="#" class="orderChangeMenuItem" data-ordering="size" >Smallest First</a></li>
         <li><a href="#" class="orderChangeMenuItem" data-ordering="-size">Largest First</a></li>
       </ul>
-    </div></li>
-    }
+    </div></li>    
     </ul>
 
+    @*** search form ***@
     <form class="navbar-form pull-right form-search" id="searchForm">
       <div class="input-append">
         <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords."/>
@@ -197,9 +203,6 @@
  *@
 
     <div class="span10 content" id="results">
-@if(individualAsset.isDefined) {
-    @showIndividualAsset(individualAsset.get)  
-} 
     </div>
   </div>
 </div>
@@ -210,17 +213,10 @@
 <div class="navbar navbar-fixed-bottom navbar-inverse">
   <div class="navbar-inner">
     <ul class="nav">
-      <li>
-<p class="navbar-text">
-  <i class="icon-info-sign icon-white"></i> 
-  <span id="statusText">
-@if(individualAsset.isDefined) {
-    Showing single asset.
-} else {     
-    Library UI loading...
-}    
-  </span>
-</p>
+      <li><p class="navbar-text">
+        <i class="icon-info-sign icon-white"></i> 
+        <span id="statusText"></span>
+      </p></li>
     </ul>
 
     <ul class="nav pull-right">
@@ -310,7 +306,7 @@ jQuery(document).ready(function() {
   LibraryUI.init("@{order}", @{library.loadedAt}, 
     "@routes.Assets.at("tree-themes/classic/style.css")",
     "@routes.Assets.at("img/grey.gif")",
-    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.isDefined}",
+    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.map(_.original).getOrElse("")}",
     @util.Settings.isAdmin);
 });
 </script>

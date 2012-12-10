@@ -72,3 +72,15 @@ body {
 .selectedAsset {
     background-color: orange;
 }
+
+#adLoading {
+    height: 200px;
+}
+
+#assetDetailPanel {
+    margin: -350px 0 0 -250px;
+}
+
+#assetDetailPanel .modal-body {
+    max-height: 800px;
+}
