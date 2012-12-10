@@ -106,15 +106,6 @@
 
 }
 
-@changeOrderingUrl(newOrder: String) = {
-  @if(!currentFolder.isEmpty) {
-    "@routes.Application.listAssetsInFolder(currentFolder, newOrder)"
-  } else {
-    "@routes.Application.index(search, keywordSearch, newOrder)"
-  }
-}
-
-
 
 @*******************************
  * the actual page starts here 
@@ -154,23 +145,16 @@
 
       <li><div class="btn-group">
       <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-        Order: @{order match {
-          case "time"  => "Oldest"
-          case "-time" => "Newest"
-          case "size"  => "Smallest"
-          case "-size" => "Largest"
-          case "-name" => "Z->A"
-          case _       => "A->Z"
-        }}
+        Order: <span id="currentOrderText"></span>
         <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-        <li><a href=@changeOrderingUrl("name")  >Name A-&gt;Z</a></li>
-        <li><a href=@changeOrderingUrl("-name") >Name Z-&gt;A</a></li>
-        <li><a href=@changeOrderingUrl("time")  >Oldest First</a></li>
-        <li><a href=@changeOrderingUrl("-time") >Newest First</a></li>
-        <li><a href=@changeOrderingUrl("size")  >Smallest First</a></li>
-        <li><a href=@changeOrderingUrl("-size") >Largest First</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="name">Name A-&gt;Z</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="-name">Name Z-&gt;A</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="time" >Oldest First</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="-time">Newest First</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="size" >Smallest First</a></li>
+        <li><a href="#" class="orderChangeMenuItem" data-ordering="-size">Largest First</a></li>
       </ul>
     </div></li>
     }
@@ -318,12 +302,8 @@
 
 @******************
  * scripts to run after other scripts are loaded ...
- * TODO: move these out to other js files to speed up loading
  *@
-
 @includejs("main")
-
-
 <script>
 jQuery(document).ready(function() {
   // get data out of the Scala world and into Javascript

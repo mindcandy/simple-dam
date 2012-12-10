@@ -17,12 +17,25 @@ var statusText = function(text) {
   console.log(text);
 };
 
+var updateOrderText = function() {
+  var text = "A->Z";
+
+  if (LibraryUI.order === "time")       { text = "Oldest"; }
+  else if (LibraryUI.order === "-time") { text = "Newest"; }
+  else if (LibraryUI.order === "size")  { text = "Smallest"; }
+  else if (LibraryUI.order === "-size") { text = "Largest"; }
+  else if (LibraryUI.order === "-name") { text = "Z->A"; }
+
+  $("#currentOrderText").html(text);
+}
+
 var doSearch = function(searchType, searchParam, order) {
   // console.log("inner search: ", searchType, searchParam, order);
   statusText("Searching...");
   LibraryUI.searchType = searchType;
   LibraryUI.searchParam = searchParam;
   LibraryUI.order = order;
+  updateOrderText();
 
   // TODO: show loading spinner
   // clear past results
@@ -195,7 +208,7 @@ LibraryUI.changeOrder = function(newOrder) {
   } else if (LibraryUI.searchType == 'keyword') {
     LibraryUI.searchKeyword(LibraryUI.searchParam);
   } else {
-    LibraryUI.seachAssets(LibraryUI.searchParam);
+    LibraryUI.searchAssets(LibraryUI.searchParam);
   }
 }
 
@@ -467,6 +480,11 @@ var downloadSubmitButtonClicked = function(e) {
   });
 };
 
+var orderChangeMenuItemClicked = function(e) {
+  e.preventDefault();
+  var newOrder = $(this).attr("data-ordering");
+  LibraryUI.changeOrder(newOrder);
+};
 
 // set up UI when its loaded - mainly onclick functions
 jQuery(document).ready(function() {
@@ -477,14 +495,12 @@ jQuery(document).ready(function() {
   $("#selectAllBtn").click(selectAllAssets);
   $("#deselectAllBtn").click(deselectAllAssets);
 
-  // Mass edit of assets
-  $("#massEditMetaBtn").click(massEditMetaClicked);
-  $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
-
-  // mass download of assets
   $("#downloadAllBtn").click(downloadAllButtonClicked);
   $("#massDownloadSubmitBtn").click(downloadSubmitButtonClicked);
+  $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
 
-}); //jquery.docready
+  $("#massEditMetaBtn").click(massEditMetaClicked);
+  $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
+}); 
   
 })(); // close and call anonymous function
