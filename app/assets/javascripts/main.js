@@ -1,9 +1,15 @@
 /* shared javascript */
 
 // Define the library UI global object
-// TODO: maybe use a better syntax for this?
 var LibraryUI = {};
 
+// anonymous function for declaring library things in
+// 'private' functions/variables are defined like:
+//    var myPrivateFunction = function(args) { };
+//
+// 'public' functions are defined like:
+//    LibraryUI.myPublicFunction = function(args) { };
+//
 (function(){
 
 var statusText = function(text) {
@@ -471,5 +477,4 @@ jQuery(document).ready(function() {
 
 }); //jquery.docready
   
-})();
-
+})(); // close and call anonymous function
