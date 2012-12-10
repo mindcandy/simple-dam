@@ -12,6 +12,8 @@ var LibraryUI = {};
 //
 (function(){
 
+ var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
+
 var statusText = function(text) {
   $("#statusText").html(text);
   console.log(text);
@@ -37,11 +39,11 @@ var doSearch = function(searchType, searchParam, order) {
   LibraryUI.order = order;
   updateOrderText();
 
-  // TODO: show loading spinner
   // clear past results
   deselectAllAssets();
   LibraryUI.assets = [];
   $("#results").empty();
+  $("#results").spin(spinnerOptions);
 
   // call jquery etc
   jsRoutesAjax.controllers.LibraryService.search(searchType, searchParam, order)
@@ -49,7 +51,8 @@ var doSearch = function(searchType, searchParam, order) {
     success: function(data) {
       // console.log("search suceeded, data = ", data);      
       LibraryUI.assets = data.assets;
-      // TODO: local search?
+      // TODO: local sort
+      $("#results").spin(false);
       LibraryUI.renderAssets(data.assets);
     },
     error: function(jqXHR, textStatus, errorThrown) {
