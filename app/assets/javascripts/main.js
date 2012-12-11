@@ -88,7 +88,6 @@ var updateSearchLocation = function(url) {
   }
 };
 
-
 // do an initial search when the page is first loaded
 LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin) {
   // console.log("init", defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset);
@@ -102,6 +101,8 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
   LibraryUI.greyAsset = greyAsset;
   LibraryUI.isAdmin = isAdmin;
   LibraryUI.assets = [];
+
+  initUI();
 
   if (individualAsset) {
     // show asset
@@ -306,14 +307,21 @@ LibraryUI.showIndividualAsset = function(path, index) {
   // LibraryUI.searchType = 'individual';
   // LibraryUI.searchParam = individualAsset;
 
+  // TODO: restore on hide of modal...
+  LibraryUI.locationBeforeModal = window.location.href;
+
   updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
 
   statusText("Loading asset details...");
   $("#adTitle").html("Loading...");
   $("#adDetails").hide(); 
-  $("#assetDetailPanel .modal-footer").hide();
+  $("#adFooter").hide();
+  $("#eaFooter").hide();
   $("#adLoading").spin({top:20, left:20}); 
   $("#adLoading").show();
+  if (LibraryUI.isAdmin) {
+    $("#adEditAsset").hide();
+  }
   $("#assetDetailPanel").modal('show');    
 
   LibraryUI.currentIndex = index;
@@ -325,8 +333,6 @@ LibraryUI.showIndividualAsset = function(path, index) {
       statusText("Got asset details");
       var asset = data.asset;
       LibraryUI.currentAsset = asset;
-
-      console.log(asset);
 
       // fill in asset details
       var imgSrc = "http://placehold.it/320x320";
@@ -341,17 +347,18 @@ LibraryUI.showIndividualAsset = function(path, index) {
       var extension = asset.path.substr(asset.path.lastIndexOf('.') + 1).toUpperCase();
       $("#adType").html(ensureNotEmpty(extension));
 
+      // TODO: handle clicks on path or keywords
       var assetFolder = asset.path.substr(0, asset.path.lastIndexOf('/') + 1);
       $("#adFolder").html(assetFolder)
         .attr("href", jsRoutes.controllers.LibraryUI.listAssetsInFolder(assetFolder, LibraryUI.order));
 
       $("#adSize").html(ensureNotEmpty(asset.size));
-      $("#adKeywords").html(ensureNotEmpty(asset.keywords));
+      $("#adKeywords").html(ensureNotEmpty(asset.keywords.toString()));
 
       $("#adLoading").spin(false);
       $("#adLoading").hide();
       $("#adDetails").show();
-      $("#assetDetailPanel .modal-footer").show(); 
+      $("#adFooter").show(); 
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.error("Load failed", textStatus, errorThrown);
@@ -372,7 +379,20 @@ var editAssetMetaClicked = function(e) {
   e.preventDefault();
 
   if (LibraryUI.currentAsset) {
-    console.log("would edit ", LibraryUI.currentAsset);
+    var asset = LibraryUI.currentAsset;
+
+    // show the edit parts of the dialog, hide the rest
+    $("#adEditAsset").show();
+    $("#eaFooter").show();
+    $("#adLoading").hide();
+    $("#adFooter").hide();    
+    $("#adDetails").hide();
+
+    $("#eaTitle").html(asset.name);
+    $("#eaForm").attr("action", jsRoutes.controllers.Admin.editMetadata(asset.path));
+    $("#eaForm #description").val(asset.description);
+    $("#eaForm #keywords").val(asset.keywords.toString());
+    // $("#eaFormSubmit")
   }
 }
 
@@ -568,7 +588,7 @@ var orderChangeMenuItemClicked = function(e) {
 };
 
 // set up UI when its loaded - mainly onclick functions
-jQuery(document).ready(function() {
+var initUI = function() {
 
   $("#searchForm").submit(submitSearchForm);
   $("#everything").click(showEverythingClicked);
@@ -581,10 +601,13 @@ jQuery(document).ready(function() {
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
 
   $("#adDownload").click(downloadAssetClicked);
-  $("#adEditMeta").click(editAssetMetaClicked);
 
-  $("#massEditMetaBtn").click(massEditMetaClicked);
-  $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
-}); 
+  if (LibraryUI.isAdmin) {
+    $("#adEditMeta").click(editAssetMetaClicked);
+
+    $("#massEditMetaBtn").click(massEditMetaClicked);
+    $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
+  }
+}; 
   
 })(); // close and call anonymous function

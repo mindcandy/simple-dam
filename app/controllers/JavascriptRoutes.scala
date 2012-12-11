@@ -23,11 +23,12 @@ object JavascriptRoutes extends Controller {
       val assetRoutes = generateAssetRoutes("jsRoutes")(
         FileServer.serve,
         // FileServer.serveArchive,
-        // Application.showAsset,
+        Application.showAsset,
         // Application.downloadFolder,
         LibraryUI.index,
         LibraryUI.listAssetsInFolder,
         LibraryUI.showAsset,
+        Admin.editMetadata,
         Admin.massEditMetadata, // TODO: see how to call these with JSON param - perhaps more codegen?
         ArchiveBuilder.archive
         // add any other static asset routes for Javascript here
