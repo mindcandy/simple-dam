@@ -33,7 +33,7 @@ object Admin extends Controller {
     Action {
       AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
       if (url.isEmpty)
-        Redirect(routes.Application.index())
+        Redirect(routes.LibraryUI.index())
       else
         Redirect(url)
     }

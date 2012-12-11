@@ -10,15 +10,6 @@ GET     /downloadFolder/*path            controllers.LibraryUI.downloadFolder(pa
 GET     /jsroutes.js                     controllers.JavascriptRoutes.generateRoutes
 
 
-#######################################
-# OLD non-AJAX stuff -- To be removed eventually
-GET     /noajax/                                controllers.Application.index(search: String ?= "", keyword: String ?= "", order: String ?= "name")
-GET     /noajax/folder/*folder                  controllers.Application.listAssetsInFolder(folder, order: String ?= "name")
-GET     /noajax/asset/*path                     controllers.Application.showAsset(path)
-GET     /noajax/downloadFolder/*path            controllers.Application.downloadFolder(path)
-##############################
-
-
 GET     /rest/find                       controllers.LibraryService.search(searchType: String ?= "", search: String ?= "", order: String ?= "")
 GET     /rest/asset/*path                controllers.LibraryService.getAsset(path)
 

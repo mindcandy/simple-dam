@@ -23,8 +23,6 @@ object JavascriptRoutes extends Controller {
       val assetRoutes = generateAssetRoutes("jsRoutes")(
         FileServer.serve,
         // FileServer.serveArchive,
-        Application.showAsset,
-        // Application.downloadFolder,
         LibraryUI.index,
         LibraryUI.listAssetsInFolder,
         LibraryUI.showAsset,
