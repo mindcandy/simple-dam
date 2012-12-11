@@ -1,8 +1,5 @@
 /* shared javascript */
 
-// Define the library UI global object
-var LibraryUI = {};
-
 // anonymous function for declaring library things in
 // 'private' functions/variables are defined like:
 //    var myPrivateFunction = function(args) { };
@@ -10,7 +7,11 @@ var LibraryUI = {};
 // 'public' functions are defined like:
 //    LibraryUI.myPublicFunction = function(args) { };
 //
-(function(){
+(function(window){
+
+// Define the library UI global object
+var LibraryUI = {};
+
 
  var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
 
@@ -671,4 +672,7 @@ var initUI = function() {
   }
 }; 
   
-})(); // close and call anonymous function
+  // make LibraryUI public
+  window.LibraryUI = LibraryUI;
+
+})(window); // close and call anonymous function
