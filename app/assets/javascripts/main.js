@@ -186,25 +186,21 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
 
 
 LibraryUI.searchAssets = function(searchParam) {
-  // console.log("search assets", searchParam);
   updateSearchLocation(jsRoutes.controllers.LibraryUI.index(searchParam, "", LibraryUI.order));
   doSearch('text', searchParam, LibraryUI.order);
 };
 
 LibraryUI.searchFolder = function(path) {
-  // console.log("search folder", path);
   updateSearchLocation(jsRoutes.controllers.LibraryUI.listAssetsInFolder(path, LibraryUI.order));
   doSearch('folder', path, LibraryUI.order);
 };
 
 LibraryUI.searchKeyword = function(keyword) {
-  // console.log("search keyword", keyword);
   updateSearchLocation(jsRoutes.controllers.LibraryUI.index("", keyword, LibraryUI.order));
   doSearch('keyword', keyword, LibraryUI.order);
 };
 
 LibraryUI.changeOrder = function(newOrder) {
-  // console.log("changed order", newOrder);
   LibraryUI.order = newOrder;
   if (LibraryUI.searchType === 'folder') {
     LibraryUI.searchFolder(LibraryUI.searchParam);
@@ -251,7 +247,6 @@ var displayName = function(name) {
 }
 
 LibraryUI.renderAssets = function(assets) {
-  // console.log("render assets");
   statusText(assets.length + " Assets found.");
 
   var results = $("#results");
@@ -338,7 +333,6 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
   }
 
   LibraryUI.currentIndex = index;
-  console.log('current index', index);
   if (index >= 0) {
     $("#adForwardBack").show();
   } else {
@@ -395,17 +389,23 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
 };
 
 var assetNextClicked = function(e) {
-  console.log("clicked next");
-  var newIndex = LibraryUI.currentIndex + 1;
-  if (LibraryUI.assets.length > (newIndex + 1)) {
-    LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+  if (LibraryUI.assets && LibraryUI.currentIndex) {
+    var newIndex = Number(LibraryUI.currentIndex) + 1;
+    var length = LibraryUI.assets.length
+
+    if (newIndex < length) {
+      console.log("calling sia", LibraryUI.assets[newIndex].path);
+      LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+    }
   }
 };
 
 var assetPreviousClicked = function(e) {
-  var newIndex = LibraryUI.currentIndex - 1;
-  if (newIndex >= 0) {
-    LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+  if (LibraryUI.assets && LibraryUI.currentIndex) {
+    var newIndex = Number(LibraryUI.currentIndex) - 1;
+    if (newIndex >= 0) {
+      LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+    }
   }
 };
 
