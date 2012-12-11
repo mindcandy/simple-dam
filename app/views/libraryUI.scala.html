@@ -170,6 +170,11 @@
   <div class="modal-body">
     <div id="adLoading" stlye="height: 200px;"></div>
     <div id="adDetails">
+      <div class="btn-group" id="adForwardBack">
+        <button class="btn" id="adPrevious"><i class="icon-step-backward"></i> previous</button>
+        <button class="btn" id="adNext"><i class="icon-step-forward"></i> next</button>
+      </div>
+
       <img class="preview" id="adPreview" />
       <dl class="dl-horizontal">
         <dt>Description</dt>
@@ -205,12 +210,14 @@
 
   </div>
   <div class="modal-footer" id="adFooter">
-  <a class="btn btn-info" id="adDownload" href="#" title="Download this Asset"><i class="icon-download-alt icon-white"></i> Download</a>
+  <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+  <button class="btn btn-info" id="adDownload" title="Download this Asset"><i class="icon-download-alt icon-white"></i> Download</button>
 
     @if(util.Settings.isAdmin) {
-      <a href="#" id="adEditMeta" role="button" class="btn btn-warning"><i class="icon-edit icon-white"></i> Edit Metadata</a>
+      <button id="adEditMeta" role="button" class="btn btn-warning"><i class="icon-edit icon-white"></i> Edit Metadata</<button>
     }
   </div>
+
 </div>
 
 

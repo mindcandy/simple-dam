@@ -84,3 +84,11 @@ body {
 #assetDetailPanel .modal-body {
     max-height: 800px;
 }
+
+#adForwardBack {
+    margin-left: 170px;
+    margin-right: 0;
+    margin-bottom: 12px;
+    margin-top: -2px;
+}
+

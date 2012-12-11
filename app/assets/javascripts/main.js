@@ -260,7 +260,7 @@ LibraryUI.renderAssets = function(assets) {
     var name = asset.path.substr(asset.path.lastIndexOf('/') + 1);   
 
     var html = '<div class="asset pull-left">' +
-      '<div class="inner-asset" data-index=" + index + " data-original="' + asset.path + '" data-size-bytes="' + asset.size + '">' + 
+      '<div class="inner-asset" data-index="' + index + '" data-original="' + asset.path + '" data-size-bytes="' + asset.size + '">' + 
       renderAssetThumbnail(index, asset) +
       '<p class="caption">' +
         '<a href="#" rel="tooltip" title="' + name + '" data-placement="bottom">' + displayName(name) + '</a>' +
@@ -310,15 +310,18 @@ var onDetailPanelClosed = function() {
   }
 }
 
-LibraryUI.showIndividualAsset = function(path, index) {
+LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
+
+  navigatingList = navigatingList || false;
 
   // LibraryUI.searchType = 'individual';
   // LibraryUI.searchParam = individualAsset;
 
   // store previous url so we can restore it after closing the modal
-  LibraryUI.locationBeforeModal = window.location.href;
-
-  updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
+  if (navigatingList === false) {
+    LibraryUI.locationBeforeModal = window.location.href;
+    updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
+  }
 
   statusText("Loading asset details...");
   $("#adTitle").html("Loading...");
@@ -330,9 +333,17 @@ LibraryUI.showIndividualAsset = function(path, index) {
   if (LibraryUI.isAdmin) {
     $("#adEditAsset").hide();
   }
-  $("#assetDetailPanel").modal('show');    
+  if (navigatingList === false) {
+    $("#assetDetailPanel").modal('show');    
+  }
 
   LibraryUI.currentIndex = index;
+  console.log('current index', index);
+  if (index >= 0) {
+    $("#adForwardBack").show();
+  } else {
+    $("#adForwardBack").hide();
+  }
 
   jsRoutesAjax.controllers.LibraryService.getAsset(path)
   .ajax({
@@ -381,6 +392,21 @@ LibraryUI.showIndividualAsset = function(path, index) {
       $("#assetDetailPanel").modal('hide');
     }
   });
+};
+
+var assetNextClicked = function(e) {
+  console.log("clicked next");
+  var newIndex = LibraryUI.currentIndex + 1;
+  if (LibraryUI.assets.length > (newIndex + 1)) {
+    LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+  }
+};
+
+var assetPreviousClicked = function(e) {
+  var newIndex = LibraryUI.currentIndex - 1;
+  if (newIndex >= 0) {
+    LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
+  }
 };
 
 var assetkeywordClicked = function(e) {
@@ -637,6 +663,8 @@ var initUI = function() {
   $("#adDownload").click(downloadAssetClicked);
   $("#assetDetailPanel").modal({show: false}).on('hidden', onDetailPanelClosed);    
   $("#adFolder").click(assetFolderClicked);
+  $("#adPrevious").click(assetPreviousClicked);
+  $("#adNext").click(assetNextClicked);
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);
