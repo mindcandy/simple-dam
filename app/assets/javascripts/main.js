@@ -375,10 +375,21 @@ LibraryUI.showIndividualAsset = function(path, index) {
   });
 };
 
+var assetFolderClicked = function(e) {
+  $("#assetDetailPanel").modal('hide');
+
+  e.preventDefault();
+  var asset = LibraryUI.currentAsset;
+  var assetFolder = asset.path.substr(0, asset.path.lastIndexOf('/') + 1);
+
+  LibraryUI.searchFolder(assetFolder);
+}
+
 var downloadAssetClicked = function(e) {
   e.preventDefault();
 
   if (LibraryUI.currentAsset) {
+    // TODO: open in 'new' window
     window.location.href = jsRoutes.controllers.FileServer.serve(LibraryUI.currentAsset.path); 
   }
 }
@@ -400,7 +411,6 @@ var editAssetMetaClicked = function(e) {
     $("#eaForm").attr("action", jsRoutes.controllers.Admin.editMetadata(asset.path));
     $("#eaForm #description").val(asset.description);
     $("#eaForm #keywords").val(asset.keywords.toString());
-    // $("#eaFormSubmit")
   }
 }
 
@@ -610,6 +620,7 @@ var initUI = function() {
 
   $("#adDownload").click(downloadAssetClicked);
   $("#assetDetailPanel").modal({show: false}).on('hidden', onDetailPanelClosed);    
+  $("#adFolder").click(assetFolderClicked);
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);
