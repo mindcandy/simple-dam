@@ -168,13 +168,14 @@
     <h3 id="adTitle"></h3>
   </div>
   <div class="modal-body">
-    <div id="adLoading" stlye="height: 200px;"></div>
+    <div class="btn-group" id="adForwardBack">
+      <button class="btn" id="adPrevious"><i class="icon-step-backward"></i> previous</button>
+      <button class="btn" id="adNext"><i class="icon-step-forward"></i> next</button>
+    </div>
+    <div id="adLoading" class="progress progress-striped active">
+      <div class="bar"></div>
+    </div>
     <div id="adDetails">
-      <div class="btn-group" id="adForwardBack">
-        <button class="btn" id="adPrevious"><i class="icon-step-backward"></i> previous</button>
-        <button class="btn" id="adNext"><i class="icon-step-forward"></i> next</button>
-      </div>
-
       <img class="preview" id="adPreview" />
       <dl class="dl-horizontal">
         <dt>Description</dt>

@@ -73,8 +73,8 @@ body {
     background-color: orange;
 }
 
-#adLoading {
-    height: 200px;
+#adLoading .bar {
+    width: 100%;
 }
 
 #assetDetailPanel {
@@ -91,4 +91,3 @@ body {
     margin-bottom: 12px;
     margin-top: -2px;
 }
-

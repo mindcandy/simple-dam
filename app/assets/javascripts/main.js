@@ -303,14 +303,12 @@ var onDetailPanelClosed = function() {
     updateSearchLocation(LibraryUI.locationBeforeModal);
     LibraryUI.locationBeforeModal = '';
   }
+  updateUiState($(".selectedAsset").length);
 }
 
 LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
 
   navigatingList = navigatingList || false;
-
-  // LibraryUI.searchType = 'individual';
-  // LibraryUI.searchParam = individualAsset;
 
   // store previous url so we can restore it after closing the modal
   if (navigatingList === false) {
@@ -321,14 +319,13 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
   statusText("Loading asset details...");
   $("#adTitle").html("Loading...");
   $("#adDetails").hide(); 
-  $("#adFooter").hide();
   $("#eaFooter").hide();
-  $("#adLoading").spin({top:20, left:20}); 
   $("#adLoading").show();
   if (LibraryUI.isAdmin) {
     $("#adEditAsset").hide();
   }
   if (navigatingList === false) {
+    $("#adFooter").hide();
     $("#assetDetailPanel").modal('show');    
   }
 
@@ -343,9 +340,9 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
   .ajax({
     success: function(data) {
 
-      statusText("Got asset details");
       var asset = data.asset;
       LibraryUI.currentAsset = asset;
+      statusText("Showing " + asset.path);
 
       // fill in asset details
       var imgSrc = "http://placehold.it/320x320";
@@ -376,7 +373,7 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
       keywordLinks.append("&nbsp;");
       $("a.keyword").click(assetkeywordClicked);
 
-      $("#adLoading").spin(false);
+      // $("#adLoading").spin(false);
       $("#adLoading").hide();
       $("#adDetails").show();
       $("#adFooter").show(); 
@@ -448,8 +445,8 @@ var editAssetMetaClicked = function(e) {
     $("#adLoading").hide();
     $("#adFooter").hide();    
     $("#adDetails").hide();
+    $("#adForwardBack").hide();
 
-    $("#eaTitle").html(asset.name);
     $("#eaForm").attr("action", jsRoutes.controllers.Admin.editMetadata(asset.path));
     $("#eaForm #description").val(asset.description);
     $("#eaForm #keywords").val(asset.keywords.toString());
