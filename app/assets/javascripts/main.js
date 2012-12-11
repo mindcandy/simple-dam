@@ -361,7 +361,15 @@ LibraryUI.showIndividualAsset = function(path, index) {
         .attr("href", jsRoutes.controllers.LibraryUI.listAssetsInFolder(assetFolder, LibraryUI.order));
 
       $("#adSize").html(ensureNotEmpty(asset.size));
-      $("#adKeywords").html(ensureNotEmpty(asset.keywords.toString()));
+      var keywordLinks = $("#adKeywords");
+      keywordLinks.empty();
+      $.each(asset.keywords, function(index, keyword) {
+          keywordLinks.append('<a class="keyword" href="' + 
+            jsRoutes.controllers.LibraryUI.index("", keyword, LibraryUI.order) +
+            '">' + keyword + '</a>, ');
+      });
+      keywordLinks.append("&nbsp;");
+      $("a.keyword").click(assetkeywordClicked);
 
       $("#adLoading").spin(false);
       $("#adLoading").hide();
@@ -374,6 +382,14 @@ LibraryUI.showIndividualAsset = function(path, index) {
     }
   });
 };
+
+var assetkeywordClicked = function(e) {
+  $("#assetDetailPanel").modal('hide');
+
+  var keyword = $(this).text();
+  e.preventDefault();
+  LibraryUI.searchKeyword(keyword);  
+}
 
 var assetFolderClicked = function(e) {
   $("#assetDetailPanel").modal('hide');
