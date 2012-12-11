@@ -302,12 +302,20 @@ var ensureNotEmpty = function(s) {
     return s;
 }
 
+var onDetailPanelClosed = function() {
+  // restore URL when individual panel is shut
+  if (LibraryUI.locationBeforeModal) {
+    updateSearchLocation(LibraryUI.locationBeforeModal);
+    LibraryUI.locationBeforeModal = '';
+  }
+}
+
 LibraryUI.showIndividualAsset = function(path, index) {
 
   // LibraryUI.searchType = 'individual';
   // LibraryUI.searchParam = individualAsset;
 
-  // TODO: restore on hide of modal...
+  // store previous url so we can restore it after closing the modal
   LibraryUI.locationBeforeModal = window.location.href;
 
   updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
@@ -601,6 +609,7 @@ var initUI = function() {
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
 
   $("#adDownload").click(downloadAssetClicked);
+  $("#assetDetailPanel").modal({show: false}).on('hidden', onDetailPanelClosed);    
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);

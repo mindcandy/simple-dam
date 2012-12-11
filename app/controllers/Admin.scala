@@ -52,7 +52,7 @@ object Admin extends Controller {
         AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
 
         // redirect to same page we were on before
-        Redirect(routes.Application.showAsset(oldAsset.original))
+        Redirect(routes.LibraryUI.showAsset(oldAsset.original))
     } 
   }
 
