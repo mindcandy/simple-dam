@@ -25,7 +25,7 @@ case class Asset (
   def nameLower = name.toLowerCase
 
   // cache the string of useful things to match against - path and keywords
-  private val matchString = original.toLowerCase + keywords.toList.map(_.toLowerCase).mkString(" ")
+  private val matchString = original.toLowerCase + " " + keywords.toList.map(_.toLowerCase).mkString(" ") + " " + description
 
   /**
    * check if this asset matches the search terms (ANDed together)
