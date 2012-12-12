@@ -19,7 +19,7 @@ POST    /rest/archive                    controllers.ArchiveBuilder.archive
 # ADMIN mode routes
 #
 GET     /admin/rescan                    controllers.Admin.rescan(url: String ?= "")
-GET     /admin/editMetadata/*asset       controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "")
+GET     /admin/editMetadata/*asset       controllers.Admin.editMetadata(asset, description: String ?= "", keywords: String ?= "", url: String ?= "")
 POST    /rest/admin/massEditMetadata/    controllers.Admin.massEditMetadata
 
 #

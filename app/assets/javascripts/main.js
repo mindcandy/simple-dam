@@ -448,9 +448,15 @@ var editAssetMetaClicked = function(e) {
     $("#adDetails").hide();
     $("#adForwardBack").hide();
 
+    var redirectUrl = LibraryUI.locationBeforeModal;
+    if (! redirectUrl) {
+      redirectUrl = jsRoutes.controllers.LibraryUI.showAsset(asset.path);
+    }
+
     $("#eaForm").attr("action", jsRoutes.controllers.Admin.editMetadata(asset.path));
     $("#eaForm #description").val(asset.description);
     $("#eaForm #keywords").val(asset.keywords.toString());
+    $("#eaForm #url").val(redirectUrl);
   }
 }
 
@@ -554,7 +560,9 @@ var massEditMetaSubmitClicked = function(e) {
   $("#massEditMetaProgress").html("Working...");
   
   // send query
-  var reloadAfter = function() { location.reload(); }
+  var reloadAfter = function() { 
+    location.reload(); 
+  }
   postJson(jsRoutes.controllers.Admin.massEditMetadata(), queryParameters)
   .done(reloadAfter).fail(reloadAfter);
 };

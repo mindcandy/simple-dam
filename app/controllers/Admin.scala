@@ -42,7 +42,7 @@ object Admin extends Controller {
   /**
    * edit metadata on an asset
    */
-  def editMetadata(asset: String, description: String, keywords: String) = WithAdmin {
+  def editMetadata(asset: String, description: String, keywords: String, url: String) = WithAdmin {
     Action {
         // save metadata
         val oldAsset = AssetLibrary.current.findAssetByPath(asset)
@@ -52,7 +52,11 @@ object Admin extends Controller {
         AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
 
         // redirect to same page we were on before
-        Redirect(routes.LibraryUI.showAsset(oldAsset.original))
+        if (url.isEmpty) { 
+          Redirect(routes.LibraryUI.showAsset(oldAsset.original))
+        } else {
+          Redirect(url)
+        }
     } 
   }
 
