@@ -314,8 +314,8 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
   // store previous url so we can restore it after closing the modal
   if (navigatingList === false) {
     LibraryUI.locationBeforeModal = window.location.href;
-    updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
   }
+  updateSearchLocation(jsRoutes.controllers.LibraryUI.showAsset(path));
 
   statusText("Loading asset details...");
   $("#adTitle").html("Loading...");
