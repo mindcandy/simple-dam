@@ -62,24 +62,30 @@ var doSearch = function(searchType, searchParam, order) {
   });
 };
 
+var assignNodeIds = function(nodeSpec, idPrefix) {
+  $(nodeSpec).each(function(index) { 
+    var nodeId = idPrefix + index;
+    $(this).attr("id", nodeId);
+  });  
+}
+
 // find a node to open in a jstree
-var findNodeToOpen = function(nodeSpec, idPrefix, attribute, param) {
-  var to_open = [];
+var findNodeToOpen = function(nodeSpec, attribute, param) {
+  var found = undefined;
+
   if (param) {
     $(nodeSpec).each(function(index) { 
-      var nodeId = idPrefix + index;
-      $(this).attr("id", nodeId);
-
       if ($(this).attr(attribute) === param) {
-        to_open.push("#" + nodeId);
+        found = "#" + $(this).attr('id');
+        console.log('found match for ', attribute, '=', param, "which was", found);
+        return false;
       } 
     });
   }
 
-  return to_open;
+  return found;
 }
-
-
+ 
 // update the search location so it can be bookmarked
 var updateSearchLocation = function(url) {
   if (LibraryUI.initalSearch === true) {
@@ -88,6 +94,15 @@ var updateSearchLocation = function(url) {
     window.history.replaceState("", "", url);
   }
 };
+
+var findKeywordNodeId = function(keyword) {
+  return findNodeToOpen(".tree.keywords li", "data-keyword", keyword)
+}
+
+var findFolderNodeId = function(folder) {
+  return findNodeToOpen(".tree.folders li","data-folder-path", folder)
+}
+
 
 // do an initial search when the page is first loaded
 LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin, keywords) {
@@ -124,8 +139,11 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
 
 
   // setup trees & auto-open any we need to -- this also triggers the initial search!
-  var folder_to_open = findNodeToOpen(".tree.folders li", "folder", "data-folder-path", folderSearch);
-  var keyword_to_open = findNodeToOpen(".tree.keywords li", "keyword", "data-keyword", keywordSearch);
+  assignNodeIds(".tree.folders li", "folder");
+  assignNodeIds(".tree.keywords li", "keyword");
+  var folder_to_open = [ findFolderNodeId(folderSearch) ];
+  var keyword_to_open = [ findKeywordNodeId(keywordSearch) ];
+  console.log("folder2open", folder_to_open, "keyword2open", keyword_to_open);
     
   // settings shared between trees
   var treeTheme = { 
@@ -151,7 +169,6 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
     // search for folder
     if (data.rslt.obj) {
         LibraryUI.searchFolder(data.rslt.obj.attr("data-folder-path"));
-        $(".tree.keywords").jstree("deselect_all");
     }
   }).show();
 
@@ -167,7 +184,6 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
     // search for keyword on select
     if (data.rslt.obj) {
       LibraryUI.searchKeyword(data.rslt.obj.attr("data-keyword"));
-      $(".tree.folders").jstree("deselect_all");
     }   
   }).show();
 
@@ -186,18 +202,30 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
 
 LibraryUI.searchAssets = function(searchParam) {
   updateSearchLocation(jsRoutes.controllers.LibraryUI.index(searchParam, "", LibraryUI.order));
+  $(".tree.keywords").jstree("deselect_all");
+  $(".tree.folders").jstree("deselect_all");
   doSearch('text', searchParam, LibraryUI.order);
 };
 
 LibraryUI.searchFolder = function(path) {
   updateSearchLocation(jsRoutes.controllers.LibraryUI.listAssetsInFolder(path, LibraryUI.order));
+  $(".tree.keywords").jstree("deselect_all");
   doSearch('folder', path, LibraryUI.order);
 };
 
 LibraryUI.searchKeyword = function(keyword) {
   updateSearchLocation(jsRoutes.controllers.LibraryUI.index("", keyword, LibraryUI.order));
+  $(".tree.folders").jstree("deselect_all");
   doSearch('keyword', keyword, LibraryUI.order);
 };
+
+var selectFolderAndDoSearch = function(path) {
+  $(".tree.folders").jstree("select_node", findFolderNodeId(path, true) );
+}
+
+var selectKeywordAndDoSearch = function(keyword) {
+  $(".tree.keywords").jstree("select_node", findKeywordNodeId(keyword, true) );
+}
 
 LibraryUI.changeOrder = function(newOrder) {
   LibraryUI.order = newOrder;
@@ -420,7 +448,7 @@ var assetkeywordClicked = function(e) {
 
   var keyword = $(this).text();
   e.preventDefault();
-  LibraryUI.searchKeyword(keyword);  
+  selectKeywordAndDoSearch(keyword);
 };
 
 var assetFolderClicked = function(e) {
@@ -430,7 +458,7 @@ var assetFolderClicked = function(e) {
   var asset = LibraryUI.currentAsset;
   var assetFolder = asset.path.substr(0, asset.path.lastIndexOf('/') + 1);
 
-  LibraryUI.searchFolder(assetFolder);
+  selectFolderAndDoSearch(assetFolder);
 };
 
 var downloadAssetClicked = function(e) {
