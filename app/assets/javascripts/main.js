@@ -90,12 +90,10 @@ var updateSearchLocation = function(url) {
 };
 
 // do an initial search when the page is first loaded
-LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin) {
-  // console.log("init", defaultOrder, libraryLoadTime, treeCss, textSearch, keywordSearch, folderSearch, individualAsset);
-
-  // window.onpopstate = handlePopState;
+LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin, keywords) {
 
   // set up state
+  LibraryUI.keywords = keywords;
   LibraryUI.order = defaultOrder;
   LibraryUI.loadTime = libraryLoadTime;
   LibraryUI.initalSearch = true;
@@ -707,6 +705,11 @@ var initUI = function() {
   $("#adFolder").click(assetFolderClicked);
   $("#adPrevious").click(assetPreviousClicked);
   $("#adNext").click(assetNextClicked);
+
+  $("#searchForm #search").typeahead({
+    source: LibraryUI.keywords,
+    minLength: 2
+  });
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);

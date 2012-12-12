@@ -286,7 +286,7 @@
 @******************
  * scripts to run after other scripts are loaded ...
  *@
-@includejs("main")
+
 <script>
 jQuery(document).ready(function() {
   // get data out of the Scala world and into Javascript
@@ -294,7 +294,8 @@ jQuery(document).ready(function() {
     "@routes.Assets.at("tree-themes/classic/style.css")",
     "@routes.Assets.at("img/grey.gif")",
     "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.map(_.original).getOrElse("")}",
-    @util.Settings.isAdmin);
+    @util.Settings.isAdmin,
+    [@Html(library.keywords.mkString("'", "','", "'"))]);
 });
 </script>
 
