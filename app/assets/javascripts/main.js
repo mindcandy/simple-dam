@@ -299,13 +299,27 @@ var ensureNotEmpty = function(s) {
 }
 
 var onDetailPanelClosed = function() {
-  // restore URL when individual panel is shut
   if (LibraryUI.locationBeforeModal) {
-    updateSearchLocation(LibraryUI.locationBeforeModal);
-    LibraryUI.locationBeforeModal = '';
+    if (LibraryUI.needToReloadSearch === true) {
+      // reload the search - we did some editing
+      LibraryUI.needToReloadSearch = false;
+      window.location.href = LibraryUI.locationBeforeModal;
+    } else {
+      // restore URL when individual panel is shut
+      updateSearchLocation(LibraryUI.locationBeforeModal);
+      LibraryUI.locationBeforeModal = '';
+    }
   }
   updateUiState($(".selectedAsset").length);
 }
+
+var showAssetForwardOrBackButtons = function() {
+  if (LibraryUI.currentIndex >= 0) {
+    $("#adForwardBack").show();
+  } else {
+    $("#adForwardBack").hide();
+  }
+};
 
 LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
 
@@ -331,11 +345,7 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
   }
 
   LibraryUI.currentIndex = index;
-  if (index >= 0) {
-    $("#adForwardBack").show();
-  } else {
-    $("#adForwardBack").hide();
-  }
+  showAssetForwardOrBackButtons();
 
   jsRoutesAjax.controllers.LibraryService.getAsset(path)
   .ajax({
@@ -413,7 +423,7 @@ var assetkeywordClicked = function(e) {
   var keyword = $(this).text();
   e.preventDefault();
   LibraryUI.searchKeyword(keyword);  
-}
+};
 
 var assetFolderClicked = function(e) {
   $("#assetDetailPanel").modal('hide');
@@ -423,7 +433,7 @@ var assetFolderClicked = function(e) {
   var assetFolder = asset.path.substr(0, asset.path.lastIndexOf('/') + 1);
 
   LibraryUI.searchFolder(assetFolder);
-}
+};
 
 var downloadAssetClicked = function(e) {
   e.preventDefault();
@@ -432,7 +442,7 @@ var downloadAssetClicked = function(e) {
     // TODO: open in 'new' window
     window.location.href = jsRoutes.controllers.FileServer.serve(LibraryUI.currentAsset.path); 
   }
-}
+};
 
 var editAssetMetaClicked = function(e) {
   e.preventDefault();
@@ -448,16 +458,42 @@ var editAssetMetaClicked = function(e) {
     $("#adDetails").hide();
     $("#adForwardBack").hide();
 
-    var redirectUrl = LibraryUI.locationBeforeModal;
-    if (! redirectUrl) {
-      redirectUrl = jsRoutes.controllers.LibraryUI.showAsset(asset.path);
-    }
-
-    $("#eaForm").attr("action", jsRoutes.controllers.Admin.editMetadata(asset.path));
     $("#eaForm #description").val(asset.description);
     $("#eaForm #keywords").val(asset.keywords.toString());
-    $("#eaForm #url").val(redirectUrl);
   }
+};
+
+var editAssetSubmitClicked = function(e) {
+  e.preventDefault();
+  if (LibraryUI.currentAsset) {
+    var description = $("#eaForm #description").val();
+    var keywords = $("#eaForm #keywords").val();
+    var asset = LibraryUI.currentAsset;
+
+    $("#adEditAsset").hide();
+    $("#eaFooter").hide();
+    $("#adLoading").show();
+
+    jsRoutesAjax.controllers.Admin.editMetadata(asset.path, description, keywords)
+    .ajax({
+      complete: function(jqXHR, textStatus) {
+        // reload current asset view
+        LibraryUI.needToReloadSearch = true;
+        LibraryUI.showIndividualAsset(asset.path, LibraryUI.currentIndex, true);
+      }
+    });
+  }
+};
+
+var editAssetCancelClicked = function(e) {
+  e.preventDefault();
+
+  $("#adEditAsset").hide();
+  $("#eaFooter").hide();
+  $("#adLoading").hide();
+  $("#adDetails").show();
+  $("#adFooter").show(); 
+  showAssetForwardOrBackButtons();
 }
 
 
@@ -674,6 +710,8 @@ var initUI = function() {
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);
+    $("#eaFormSubmit").click(editAssetSubmitClicked);
+    $("#eaFormCancel").click(editAssetCancelClicked);
 
     $("#massEditMetaBtn").click(massEditMetaClicked);
     $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);

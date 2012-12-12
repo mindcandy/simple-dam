@@ -15,6 +15,7 @@ object JavascriptRoutes extends Controller {
     def generateRoutes = Action { implicit request =>
       import routes.javascript._
       val ajaxRoutes = Routes.javascriptRouter("jsRoutesAjax")(
+          Admin.editMetadata,
           LibraryService.search,
           LibraryService.getAsset
           // add any other endpoints you want to use in Javascript here
@@ -26,7 +27,6 @@ object JavascriptRoutes extends Controller {
         LibraryUI.index,
         LibraryUI.listAssetsInFolder,
         LibraryUI.showAsset,
-        Admin.editMetadata,
         Admin.massEditMetadata, // TODO: see how to call these with JSON param - perhaps more codegen?
         ArchiveBuilder.archive
         // add any other static asset routes for Javascript here
