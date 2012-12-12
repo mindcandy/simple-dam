@@ -106,32 +106,31 @@
  * sidebar 
  *@
 
-<div class="span3" id="sidebar">
-  <h5 class="category"><a href="#" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
-
-  <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
-  <div class="tree folders" id="folderTree" style="display:none;">
-    @listFolders(library.topFolder.folders, "")
-  </div>
-
-  <h5 class="category"><i class="icon-tags"></i> Keywords</h5>
-  <div class="tree keywords" id="keywordTree" style="display:none;">
-    @listKeywords(library.keywords)
-  </div>
-
-  <div id="sidebarPadding"></div>
-</div>
-
 <div class="container-fluid rounded">
-  <div class="row-fluid">    
-    <div class="span2" id="emptySpace">
+  <div class="row-fluid">  
+    <div class="span2" id="sidebar">
+      <h5 class="category"><a href="#" id="everything" title="Show all Assets"><i class="icon-home"></i> Show Everything</a></h5>
+
+      <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
+      <div class="tree folders" id="folderTree" style="display:none;">
+        @listFolders(library.topFolder.folders, "")
+      </div>
+
+      <h5 class="category"><i class="icon-tags"></i> Keywords</h5>
+      <div class="tree keywords" id="keywordTree" style="display:none;">
+        @listKeywords(library.keywords)
+      </div>
+
+      <div id="sidebarPadding"></div>
     </div>
+
 
 @*******************************
  * actual content 
  *@
 
-    <div class="span10 content" id="results">
+  
+    <div class="span10 offset2 content" id="results">
     </div>
   </div>
 </div>

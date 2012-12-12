@@ -15,15 +15,25 @@ body {
     margin-right: 10px;
 }
 
-#sidebar {
-    position: fixed;
-    height: 100%;
-    overflow: auto;
+/* make sidebar itself scrollable */
+@media (min-width: 768px) {
+    #sidebar {
+        position: fixed;
+        height: 100%;
+        overflow: auto;
+    }
+    #sidebarPadding {
+        height: 40px;
+        width: 10px;
+        padding-bottom: 50px;
+    }
 }
-#sidebarPadding {
-    height: 40px;
-    width: 10px;
-    padding-bottom: 50px;
+/* for smaller screens this won't be a sidebar */
+@media (max-width: 767px) {
+    #sidebar {
+        height: 300px;
+        overflow: auto;
+    }
 }
 
 #searchForm {
