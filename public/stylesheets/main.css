@@ -91,3 +91,9 @@ body {
     margin-bottom: 12px;
     margin-top: -2px;
 }
+
+/* fix for dropdown appearing beneath modal*/
+.dropdown-menu {
+  z-index: 2000;
+}
+

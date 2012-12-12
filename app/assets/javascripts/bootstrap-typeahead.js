@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============================================================ */
- /** NOTE: extended version from https://gist.github.com/1866577 */
+ /** version from https://gist.github.com/2030277  **/
 
 !function( $ ){
 
@@ -31,6 +31,8 @@
     this.$menu = $(this.options.menu).appendTo('body')
     this.source = this.options.source
     this.onselect = this.options.onselect
+    this.autoselect = this.options.autoselect
+    this.autowidth = this.options.autowidth
     this.strings = true
     this.shown = false
     this.listen()
@@ -41,16 +43,22 @@
     constructor: Typeahead
 
   , select: function () {
-      var val = JSON.parse(this.$menu.find('.active').attr('data-value'))
-        , text
+      var text, original_text;
+      if (this.$menu.find('.active').length == 0) {
+        var val = this.$element.val();
+      }
+      else {
+        var val = JSON.parse(this.$menu.find('.active').attr('data-value'));
+      }
 
       if (!this.strings) text = val[this.options.property]
       else text = val
 
+      original_text = this.$element.val();
       this.$element.val(text)
 
       if (typeof this.onselect == "function")
-          this.onselect(val)
+          this.onselect(text, original_text)
 
       return this.hide()
     }
@@ -161,7 +169,8 @@
         return i[0]
       })
 
-      items.first().addClass('active')
+      if (that.autoselect) items.first().addClass('active')
+      if (that.autowidth) this.$menu.width(this.$element.width());
       this.$menu.html(items)
       return this
     }
@@ -212,10 +221,16 @@
         case 38: // up arrow
           break
 
-        case 9: // tab
         case 13: // enter
           if (!this.shown) return
           this.select()
+          break
+
+        case 9: // tab
+          var that = this
+          e.stopPropagation()
+          e.preventDefault()
+          setTimeout(function () { that.hide() }, 150)
           break
 
         case 27: // escape
@@ -291,6 +306,8 @@
   , menu: '<ul class="typeahead dropdown-menu"></ul>'
   , item: '<li><a href="#"></a></li>'
   , onselect: null
+  , autoselect: true
+  , autowidth: true
   , property: 'value'
   }
 

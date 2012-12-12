@@ -736,8 +736,10 @@ var initUI = function() {
 
   $("#searchForm #search").typeahead({
     source: LibraryUI.keywords,
-    minLength: 2
+    minLength: 2,
+    autoselect: false
   });
+
 
   if (LibraryUI.isAdmin) {
     $("#adEditMeta").click(editAssetMetaClicked);
@@ -746,6 +748,27 @@ var initUI = function() {
 
     $("#massEditMetaBtn").click(massEditMetaClicked);
     $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
+
+    // extending typeahead so it works with our comma-separated list of keywords
+    $("#eaForm #keywords").typeahead({
+      source: LibraryUI.keywords,
+      minLength: 2,
+      onselect: function(item, previous_items) {
+        terms = previous_items.split(',');
+        terms.pop();
+        terms.push(item);
+        terms.push('');
+        $.each(terms, function(idx, val) { terms[idx] = $.trim(val); });
+        $('#eaForm #keywords').val(terms.join(', '));
+      },
+      // Matcher has to ignore things before , 
+      matcher: function (item) {
+        var currentQuery = this.query.substr(this.query.lastIndexOf(',') + 1).trim().toLowerCase();
+        return ~item.toLowerCase().indexOf(currentQuery);
+      },
+      // Autoselect is disabled so that users can enter new tags
+      autoselect: false
+    });
   }
 }; 
   
