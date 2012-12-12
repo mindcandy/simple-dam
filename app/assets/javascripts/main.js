@@ -33,7 +33,6 @@ var updateOrderText = function() {
 }
 
 var doSearch = function(searchType, searchParam, order) {
-  // console.log("inner search: ", searchType, searchParam, order);
   statusText("Searching...");
   LibraryUI.searchType = searchType;
   LibraryUI.searchParam = searchParam;
@@ -50,7 +49,6 @@ var doSearch = function(searchType, searchParam, order) {
   jsRoutesAjax.controllers.LibraryService.search(searchType, searchParam, order)
   .ajax({
     success: function(data) {
-      // console.log("search suceeded, data = ", data);      
       LibraryUI.assets = data.assets;
       // TODO: local sort
       $("#results").spin(false);
@@ -77,7 +75,6 @@ var findNodeToOpen = function(nodeSpec, attribute, param) {
     $(nodeSpec).each(function(index) { 
       if ($(this).attr(attribute) === param) {
         found = "#" + $(this).attr('id');
-        console.log('found match for ', attribute, '=', param, "which was", found);
         return false;
       } 
     });
@@ -143,7 +140,6 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
   assignNodeIds(".tree.keywords li", "keyword");
   var folder_to_open = [ findFolderNodeId(folderSearch) ];
   var keyword_to_open = [ findKeywordNodeId(keywordSearch) ];
-  console.log("folder2open", folder_to_open, "keyword2open", keyword_to_open);
     
   // settings shared between trees
   var treeTheme = { 
@@ -428,7 +424,6 @@ var assetNextClicked = function(e) {
     var length = LibraryUI.assets.length
 
     if (newIndex < length) {
-      console.log("calling sia", LibraryUI.assets[newIndex].path);
       LibraryUI.showIndividualAsset(LibraryUI.assets[newIndex].path, newIndex, true);
     }
   }

@@ -89,9 +89,9 @@
     </ul>
 
     @*** search form ***@
-    <form class="navbar-form pull-right form-search" id="searchForm">
+    <form class="navbar-form pull-right form-search" id="searchForm" autocomplete="off">
       <div class="input-append">
-        <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords."/>
+        <input type="text" class="span3 search-query" name="search" id="search" value="@{search}" title="Type here and click Search to find assets. 'foo bar' will find assets with 'foo' and 'bar' in title, folder or keywords." autocomplete="off"/>
         <button type="submit" class="btn"><i class="icon-search"></i> Search</button>
       </div>
     </form>
@@ -193,13 +193,13 @@
 
   @if(util.Settings.isAdmin) {
     <div id="adEditAsset">
-    <form id="eaForm" action="">
+    <form id="eaForm" action="" autocomplete="off">
       <fieldset>
         <p>You can edit the description and keywords here, it will write out to a .json file and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
         <label>Description</label>
         <textarea name="description" id="description" rows="3" class="input-block-level"></textarea>
         <label>Keywords</label>
-        <input type="text" name="keywords" id="keywords"  class="input-block-level" value=""/>
+        <input type="text" name="keywords" id="keywords"  class="input-block-level" value="" autocomplete="off"/>
       </fieldset>
       <div class="modal-footer" id="eaFooter">
         <button class="btn" id="eaFormCancel"><i class="icon-remove"></i> Cancel</button>
