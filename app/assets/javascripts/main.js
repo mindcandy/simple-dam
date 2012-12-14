@@ -710,6 +710,28 @@ var orderChangeMenuItemClicked = function(e) {
   LibraryUI.changeOrder(newOrder);
 };
 
+var initKeywordTypeahead = function(elem) {
+  elem.typeahead({
+    source: LibraryUI.keywords,
+    minLength: 2,
+    onselect: function(item, previous_items) {
+      terms = previous_items.split(',');
+      terms.pop();
+      terms.push(item);
+      terms.push('');
+      $.each(terms, function(idx, val) { terms[idx] = $.trim(val); });
+      elem.val(terms.join(', '));
+    },
+    // Matcher has to ignore things before , 
+    matcher: function (item) {
+      var currentQuery = this.query.substr(this.query.lastIndexOf(',') + 1).trim().toLowerCase();
+      return ~item.toLowerCase().indexOf(currentQuery);
+    },
+    // Autoselect is disabled so that users can enter new tags
+    autoselect: false
+  })
+};
+
 // set up UI when its loaded - mainly onclick functions
 var initUI = function() {
 
@@ -745,25 +767,9 @@ var initUI = function() {
     $("#massEditMetaSubmitBtn").click(massEditMetaSubmitClicked);
 
     // extending typeahead so it works with our comma-separated list of keywords
-    $("#eaForm #keywords").typeahead({
-      source: LibraryUI.keywords,
-      minLength: 2,
-      onselect: function(item, previous_items) {
-        terms = previous_items.split(',');
-        terms.pop();
-        terms.push(item);
-        terms.push('');
-        $.each(terms, function(idx, val) { terms[idx] = $.trim(val); });
-        $('#eaForm #keywords').val(terms.join(', '));
-      },
-      // Matcher has to ignore things before , 
-      matcher: function (item) {
-        var currentQuery = this.query.substr(this.query.lastIndexOf(',') + 1).trim().toLowerCase();
-        return ~item.toLowerCase().indexOf(currentQuery);
-      },
-      // Autoselect is disabled so that users can enter new tags
-      autoselect: false
-    });
+    initKeywordTypeahead($("#eaForm #keywords"));
+    initKeywordTypeahead($("#massEditForm #addKeywords"));
+    initKeywordTypeahead($("#massEditForm #removeKeywords"));
   }
 }; 
   

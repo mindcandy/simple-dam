@@ -241,15 +241,15 @@
   </div>
   <div class="modal-body">
     <p>You can add/remove keywords to multiple assets at the same time. This will write out changes to .json files and then reload all the assets to show you changes. To share these changes with others use a version control system like Git or Subversion.</p>
-    <form>    
+    <form id="massEditForm" autocomplete="off">    
       <fieldset>
         <label>Assets to edit</label>
         <select multiple name="assets" id="massEditAssetList" class="input-block-level">
         </select>
         <label>Keywords to add</label>
-        <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"/>
+        <input type="text" name="addKeywords" id="addKeywords"  class="input-block-level"  autocomplete="off"/>
         <label>Keywords to remove</label>
-        <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"/>
+        <input type="text" name="removeKeywords" id="removeKeywords"  class="input-block-level"  autocomplete="off"/>
       </fieldset>
     </form>
   </div>
