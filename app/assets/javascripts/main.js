@@ -38,6 +38,7 @@ var doSearch = function(searchType, searchParam, order) {
   LibraryUI.searchParam = searchParam;
   LibraryUI.order = order;
   updateOrderText();
+  updateDownloadFolderBtn();
 
   // clear past results
   deselectAllAssets();
@@ -102,7 +103,7 @@ var findFolderNodeId = function(folder) {
 
 
 // do an initial search when the page is first loaded
-LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin, keywords) {
+LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, textSearch, keywordSearch, folderSearch, individualAsset, isAdmin, showFolderDownload, areFolderDownloadsReady, keywords) {
 
   // set up state
   LibraryUI.keywords = keywords;
@@ -112,6 +113,8 @@ LibraryUI.init = function(defaultOrder, libraryLoadTime, treeCss, greyAsset, tex
   LibraryUI.greyAsset = greyAsset;
   LibraryUI.isAdmin = isAdmin;
   LibraryUI.assets = [];
+  LibraryUI.showFolderDownload = showFolderDownload; 
+  LibraryUI.areFolderDownloadsReady = areFolderDownloadsReady;
 
   initUI();
 
@@ -731,6 +734,26 @@ var initKeywordTypeahead = function(elem) {
     autoselect: false
   })
 };
+
+var updateDownloadFolderBtn = function() {
+  var btn = $("#downloadFolderBtn");
+
+  if (! LibraryUI.showFolderDownload)  {
+    btn.hide();
+    return;
+  }
+
+  if (LibraryUI.searchType === 'folder') {
+    if (LibraryUI.areFolderDownloadsReady) {
+      btn.attr('href', jsRoutes.controllers.LibraryUI.downloadFolder(LibraryUI.searchParam));
+    } else {
+      btn.attr('href', '#');      
+    }
+    btn.show();
+  } else {
+    btn.hide();
+  }
+}
 
 // set up UI when its loaded - mainly onclick functions
 var initUI = function() {

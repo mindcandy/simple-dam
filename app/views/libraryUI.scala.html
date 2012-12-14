@@ -59,17 +59,16 @@
         <a id="downloadAllBtn" class="btn btn-info" href="#" title="Download all Selected Assets, or all Assets in search"><i class="icon-download-alt icon-white"></i> <span id="downloadAllBtnLabel">Download All</span></a>
       </div></li> 
 
-      @if(util.Settings.archiveOnStart) {
-        <li><div class="btn-group"> 
-          <a id="downloadFolderBtn" 
-          @if(models.AssetLibrary.areFolderArchivesGenerated) {
-            class="btn btn-info" href="@routes.LibraryUI.downloadFolder(currentFolder)" title="Download all Assets in this Folder"
-          } else {
-            class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
-          }
-          ><i class="icon-download-alt icon-white"></i> Download Folder</a>
-        </div></li>   
-      }
+      @*** download folder button **@
+      <li><div class="btn-group"> 
+        <a id="downloadFolderBtn" style="display: none;"
+        @if(models.AssetLibrary.areFolderArchivesGenerated) {
+          class="btn btn-info" href="#" title="Download all Assets in this Folder"
+        } else {
+          class="btn btn-info disabled" href="#" title="Cannot yet downoad this folder, archives are being built - please try again later..."
+        }
+        ><i class="icon-download-alt icon-white"></i> Download Folder</a>
+      </div></li>   
 
       @*** ordering ***@
       <li><div class="btn-group">
@@ -300,6 +299,7 @@ jQuery(document).ready(function() {
     "@routes.Assets.at("img/grey.gif")",
     "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.map(_.original).getOrElse("")}",
     @util.Settings.isAdmin,
+    @util.Settings.archiveOnStart,  @models.AssetLibrary.areFolderArchivesGenerated,
     [@Html(library.keywords.mkString("'", "','", "'"))]);
 });
 </script>
