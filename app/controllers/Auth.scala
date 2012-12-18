@@ -34,6 +34,10 @@ object Auth extends Controller {
     Ok(html.login(Settings.title, loginForm, routes.Auth.authenticate))
   }
 
+  def logout = Action {
+    Redirect(routes.Auth.login).withNewSession
+  }
+
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => Redirect(routes.Auth.login),
