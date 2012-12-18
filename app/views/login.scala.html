@@ -1,0 +1,45 @@
+@(title: String, loginform: Form[Pair[String,String]], route: Call)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.FileServer.serveTheme("favicon.png")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    </head>
+    <body>
+
+        <div class="container">
+
+            @form(action = route, 'class -> "loginForm") {
+
+                <h2>Please sign in</h2>
+
+                @inputText(
+                    field = loginform("username"),
+                    'placeholder -> "Username",
+                    '_label -> ""
+                )
+
+                @inputPassword(
+                    field = loginform("password"),
+                    'placeholder -> "Password",
+                    '_label -> ""
+                )
+
+                <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+            }
+
+        </div>
+
+        @includejs("jquery-1.8.3")
+        @includejs("bootstrap")
+
+    </body>
+</html>
