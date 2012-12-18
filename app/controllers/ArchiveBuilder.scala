@@ -14,7 +14,7 @@ import util.{Settings, Archiver}
 /**
  * The archive server co-ordinates creation of zip archives from assets and directs clients to the built zips
  */
-object ArchiveBuilder extends Controller {
+object ArchiveBuilder extends Controller with Secured {
 
   /**
    * archive -- take a JSON body that descives which assets in a simple list of paths:
@@ -26,7 +26,7 @@ object ArchiveBuilder extends Controller {
    * OR it returns an error:
    * {"status: "FAIL", "message": "there was a failure"}
    */
-  def archive = Action(parse.json) { implicit request => {
+  def archive = Authenticated(parse.json) { implicit request => {
       val assets = (request.body \ "assets").as[Seq[String]]
 
       Logger.debug("ArchiveBuilder.archive(" + assets.mkString(", ") + ")")

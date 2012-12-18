@@ -13,7 +13,7 @@ import util.Settings
 /**
  * serve up files
  */
-object FileServer extends Controller {
+object FileServer extends Controller with Secured {
 
   /**
    * Serve a file from the Asset library 
@@ -49,7 +49,7 @@ object FileServer extends Controller {
 
 
   // pasted from ExternalAssets -- to be replaced with better code!
-  private def at(rootPath: String, file: String): Action[AnyContent] = Action { request =>
+  private def at(rootPath: String, file: String): Action[AnyContent] = Authenticated { request =>
 
       val fileToServe = new File(rootPath, file)
 
