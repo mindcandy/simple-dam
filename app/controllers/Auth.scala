@@ -6,6 +6,9 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc.BodyParsers._
+import play.api.libs.concurrent.Promise
+
+import play.api.libs.ws._
 
 import util.Settings
 
@@ -17,17 +20,17 @@ object Auth extends Controller {
     tuple(
       "username" -> text,
       "password" -> text
-    ) verifying ("Invalid username or password", result => result match {
-      case (username, password) => checkWithWordpress(username, password)
-    })
+    )
   )
 
   val wordpressAuthCookie = Play.current.configuration.getString("application.auth.cookiename").get
   val authUrl    = Play.current.configuration.getString("application.auth.authurl").get
   val wpLoginUrl = Play.current.configuration.getString("application.auth.loginurl").get
 
-  def checkWithWordpress(username: String, password: String): Boolean = {
-    true
+  def checkWithWordpress(username: String, password: String): Promise[String] = {
+    WS.url(authUrl).withQueryString(("username", username), ("password", password)).get().map { response =>
+      (response.json \ "auth").as[String]
+    }
   }
 
   def login = Action { implicit request =>
@@ -41,7 +44,18 @@ object Auth extends Controller {
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => Redirect(routes.Auth.login),
-      user => Redirect(routes.LibraryUI.index()).withSession (Security.username -> user._1)
+      userPass => {
+        val (username, password) = userPass
+        Async {
+          checkWithWordpress(username, password).map { authed =>
+            authed match {
+              case "true" => 
+                Redirect(routes.LibraryUI.index()).withSession(Security.username -> username)
+              case "false" => Redirect(routes.Auth.login)
+            }
+          }
+        }
+      }
     )
   }
 
