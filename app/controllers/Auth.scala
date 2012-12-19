@@ -25,11 +25,14 @@ object Auth extends Controller {
 
   val authEnabled = Play.current.configuration.getString("application.auth.enabled").getOrElse("false")
 
-  val authUrl    = Play.current.configuration.getString("application.auth.authurl").getOrElse("")
+  val authUrl    = Play.current.configuration.getString("application.auth.authurl")
 
   def checkWithWordpress(username: String, password: String): Promise[String] = {
-    WS.url(authUrl).withQueryString(("username", username), ("password", password)).get().map { response =>
-      (response.json \ "auth").as[String]
+    authUrl match {
+      case Some(url) => WS.url(url).withQueryString(("username", username), ("password", password)).get().map { response =>
+        (response.json \ "auth").as[String]
+      }
+      case None => Promise.pure("false")
     }
   }
 
@@ -54,7 +57,7 @@ object Auth extends Controller {
             authed match {
               case "true" => 
                 Redirect(routes.LibraryUI.index()).withSession(Security.username -> username)
-              case "false" => Redirect(routes.Auth.login)
+              case _ => Redirect(routes.Auth.login)
             }
           }
         }
