@@ -23,9 +23,11 @@ object Auth extends Controller {
     )
   )
 
-  val wordpressAuthCookie = Play.current.configuration.getString("application.auth.cookiename").get
-  val authUrl    = Play.current.configuration.getString("application.auth.authurl").get
-  val wpLoginUrl = Play.current.configuration.getString("application.auth.loginurl").get
+  val authEnabled = Play.current.configuration.getString("application.auth.enabled").getOrElse("false")
+
+  val wordpressAuthCookie = Play.current.configuration.getString("application.auth.cookiename").getOrElse("")
+  val authUrl    = Play.current.configuration.getString("application.auth.authurl").getOrElse("")
+  val wpLoginUrl = Play.current.configuration.getString("application.auth.loginurl").getOrElse("")
 
   def checkWithWordpress(username: String, password: String): Promise[String] = {
     WS.url(authUrl).withQueryString(("username", username), ("password", password)).get().map { response =>
@@ -34,7 +36,10 @@ object Auth extends Controller {
   }
 
   def login = Action { implicit request =>
-    Ok(html.login(Settings.title, loginForm, routes.Auth.authenticate))
+    authEnabled match {
+      case "true" => Ok(html.login(Settings.title, loginForm, routes.Auth.authenticate))
+      case _ => Redirect(routes.LibraryUI.index()).withSession(Security.username -> "user")
+    }
   }
 
   def logout = Action {
