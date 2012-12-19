@@ -33,7 +33,7 @@ object ApplicationBuild extends Build {
   }
 
   
-  val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
+  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       gzippableAssets <<= (classDirectory in Compile)(dir => (dir ** ("*.js" || "*.css" || "*.html"))),
       gzipAssetsSetting,
       playPackageEverything <<= playPackageEverything dependsOn gzipAssets

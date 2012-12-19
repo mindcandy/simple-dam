@@ -16,6 +16,14 @@ GET     /rest/asset/*path                controllers.LibraryService.getAsset(pat
 POST    /rest/archive                    controllers.ArchiveBuilder.archive
 
 #
+# Auth Routes
+#
+
+GET     /login                           controllers.Auth.login
+GET     /logout                          controllers.Auth.logout
+POST    /authenticate                    controllers.Auth.authenticate
+
+#
 # ADMIN mode routes
 #
 GET     /admin/rescan                    controllers.Admin.rescan(url: String ?= "")

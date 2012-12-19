@@ -7,12 +7,12 @@ import play.core.Router._
 /**
  * utility javascript router
  */
-object JavascriptRoutes extends Controller {
+object JavascriptRoutes extends Controller with Secured {
 
     /**
      * generate javascript routes
      */
-    def generateRoutes = Action { implicit request =>
+    def generateRoutes = Authenticated { implicit request =>
       import routes.javascript._
       val ajaxRoutes = Routes.javascriptRouter("jsRoutesAjax")(
           Admin.editMetadata,

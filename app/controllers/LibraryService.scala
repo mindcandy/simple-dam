@@ -10,13 +10,13 @@ import util.{Settings, Archiver, Humanize}
 /* 
  * Asset Library RESTful services for AJAX UI
  */
-object LibraryService extends Controller {
+object LibraryService extends Controller with Secured {
 
   /**
    * endpoint for searching assets
    * searchTypes can be 'folder','keyword', or undefined in which case folder, keyword and name are searched
    */
-  def search(searchType: String, search: String, order: String) = Action {
+  def search(searchType: String, search: String, order: String) = Authenticated {  request =>
 
     val sanitisedSearch = search.trim    
     val assets = searchType match {
@@ -46,7 +46,7 @@ object LibraryService extends Controller {
   /**
    * get an individual asset's data
    */
-  def getAsset(assetPath: String) = Action { implicit request =>
+  def getAsset(assetPath: String) = Authenticated { implicit request =>
     // find asset
     val asset = AssetLibrary.current.findAssetByPath(assetPath)
 

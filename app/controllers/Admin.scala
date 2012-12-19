@@ -10,13 +10,13 @@ import util.Settings
 /* 
  * admin mode controller -- allows editing of metadata
  */
-object Admin extends Controller {
+object Admin extends Controller with Secured {
 
     /**
      * utility wrapper of Action to enforce admin mode
      */
     def WithAdmin[A](action: Action[A]): Action[A] = {
-        Action(action.parser) { request =>
+        Authenticated(action.parser) { request =>
             if (Settings.isAdmin) {
                 action(request)
             } else {
@@ -30,7 +30,7 @@ object Admin extends Controller {
    * rescan the asset library
    */
   def rescan(url: String) = WithAdmin {
-    Action {
+    Authenticated { request =>
       AssetLibrary.current = AssetLibrary.load(Settings.assetLibraryPath)
       if (url.isEmpty)
         Redirect(routes.LibraryUI.index())
@@ -43,7 +43,7 @@ object Admin extends Controller {
    * edit metadata on an asset
    */
   def editMetadata(asset: String, description: String, keywords: String) = WithAdmin {
-    Action {
+    Authenticated { request =>
         // save metadata
         val oldAsset = AssetLibrary.current.findAssetByPath(asset)
         Asset.saveMetadata(AssetLibrary.current.basePath, oldAsset, description, keywords)
@@ -61,7 +61,7 @@ object Admin extends Controller {
    * mass edit of metadata -- expects a JSON body with parameters (as asset list may be LARGE)
    * { "addKeywords": "foo, bar", "removeKeywords": "foo, bar", "assets": ["asset1", "asset2"] }
    */
-  def massEditMetadata = Action(parse.json) { request => {
+  def massEditMetadata = Authenticated(parse.json) { request => {
       if (!Settings.isAdmin) {
         BadRequest(Json.toJson(
           Map("status" -> "FAIL", "message" -> "Admin mode is not enabled")

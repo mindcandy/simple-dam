@@ -10,12 +10,12 @@ import util.{Settings, Archiver}
 /* 
  * main controller for Library UI - serve up base pages for AJAX UI
  */
-object LibraryUI extends Controller {
+object LibraryUI extends Controller with Secured {
 
   /**
    * main index -- also currently does a search
    */
-  def index(search: String, keyword: String, order: String) = Action { implicit request =>
+  def index(search: String, keyword: String, order: String) = Authenticated { implicit request =>
 
     Ok(views.html.libraryUI(Settings.title, search.trim, "", AssetLibrary.current, None, keyword, order));
   }
@@ -23,7 +23,7 @@ object LibraryUI extends Controller {
   /**
    * search within a folder (must be permalink)
    */
-  def listAssetsInFolder(folderPath: String, order: String) = Action { implicit request =>
+  def listAssetsInFolder(folderPath: String, order: String) = Authenticated { implicit request =>
 
     Ok(views.html.libraryUI(Settings.title, "", folderPath, AssetLibrary.current, None, "", order));
   }
@@ -32,7 +32,7 @@ object LibraryUI extends Controller {
   /**
    * show an individual asset's page (must be permalink)
    */
-  def showAsset(assetPath: String) = Action { implicit request =>
+  def showAsset(assetPath: String) = Authenticated { implicit request =>
     
     val asset = AssetLibrary.current.findAssetByPath(assetPath)    
     Ok(views.html.libraryUI(Settings.title, "", "", AssetLibrary.current, Some(asset), "", ""));
@@ -41,7 +41,7 @@ object LibraryUI extends Controller {
   /**
    * serve up previously archived folder
    */
-  def downloadFolder(folderPath: String) = Action { 
+  def downloadFolder(folderPath: String) = Authenticated { implicit request =>
     if (AssetLibrary.areFolderArchivesGenerated) {
       val archivePath = Archiver.pathToArchiveFolder(folderPath)
       Redirect(routes.FileServer.serveArchive(archivePath))
