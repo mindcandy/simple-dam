@@ -25,9 +25,7 @@ object Auth extends Controller {
 
   val authEnabled = Play.current.configuration.getString("application.auth.enabled").getOrElse("false")
 
-  val wordpressAuthCookie = Play.current.configuration.getString("application.auth.cookiename").getOrElse("")
   val authUrl    = Play.current.configuration.getString("application.auth.authurl").getOrElse("")
-  val wpLoginUrl = Play.current.configuration.getString("application.auth.loginurl").getOrElse("")
 
   def checkWithWordpress(username: String, password: String): Promise[String] = {
     WS.url(authUrl).withQueryString(("username", username), ("password", password)).get().map { response =>
