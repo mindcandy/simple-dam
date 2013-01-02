@@ -219,10 +219,14 @@ LibraryUI.searchKeyword = function(keyword) {
 };
 
 var selectFolderAndDoSearch = function(path) {
+  $(".tree.keywords").jstree("deselect_all");
+  $(".tree.folders").jstree("deselect_all");
   $(".tree.folders").jstree("select_node", findFolderNodeId(path, true) );
 }
 
 var selectKeywordAndDoSearch = function(keyword) {
+  $(".tree.keywords").jstree("deselect_all");
+  $(".tree.folders").jstree("deselect_all");
   $(".tree.keywords").jstree("select_node", findKeywordNodeId(keyword, true) );
 }
 
