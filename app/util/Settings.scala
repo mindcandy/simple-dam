@@ -46,4 +46,10 @@ object Settings {
   lazy val isAdmin: Boolean = config.getBoolean("ui.adminMode").getOrElse(false)
 
   lazy val archiveOnStart: Boolean = config.getBoolean("archiveOnStart").getOrElse(false)
+
+  lazy val helpUrl: String = config.getString("ui.helpUrl").getOrElse("")
+
+  lazy val infoUrl: String = config.getString("ui.infoUrl").getOrElse("")
+  lazy val infoText: String = config.getString("ui.infoText").getOrElse("")
+
 }

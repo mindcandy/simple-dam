@@ -147,7 +147,12 @@
     </ul>
 
     <ul class="nav pull-right">
-      <li><a href="#"><i class="icon-question-sign icon-white"></i> Help</a></li>
+      @if(!util.Settings.infoText.isEmpty) {
+        <li><a href="@util.Settings.infoUrl">@util.Settings.infoText</a></li>
+      }
+      @if(!util.Settings.helpUrl.isEmpty) {
+        <li><a href="@util.Settings.helpUrl"><i class="icon-question-sign icon-white"></i> Help</a></li>
+      }
     </ul>
 
 @if(util.Settings.isAdmin) {
