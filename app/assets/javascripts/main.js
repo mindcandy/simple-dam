@@ -554,6 +554,7 @@ var updateUiState = function(selectionCount) {
     enableBtn($("#deselectAllBtn"));
     enableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download Selection");
+    $("#downloadAllBtn").show();
     setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
 
   } else {
@@ -562,7 +563,7 @@ var updateUiState = function(selectionCount) {
     disableBtn($("#deselectAllBtn"));
     disableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download All");
-    setEnabledBtn($("#downloadAllBtn"), assetCount <= AssetArchiveDownloadLimit);
+    $("#downloadAllBtn").hide();
   }
 };
 
@@ -768,6 +769,7 @@ var initUI = function() {
   $("#selectAllBtn").click(selectAllAssets);
   $("#deselectAllBtn").click(deselectAllAssets);
 
+  $("#downloadAllBtn").hide();
   $("#downloadAllBtn").click(downloadAllButtonClicked);
   $("#massDownloadSubmitBtn").click(downloadSubmitButtonClicked);
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
