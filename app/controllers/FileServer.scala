@@ -16,11 +16,20 @@ import util.Settings
 object FileServer extends Controller with Secured {
 
   /**
-   * Serve a file from the Asset library 
+   * Serve a file from the Asset library -- will be DOWNLOADED by web browser
    */
-  def serve(path: String) = {
-    at(Settings.assetLibraryPath, path)
+  def downloadFile(path: String) = {
+    at(Settings.assetLibraryPath, path, inBrowser = false)
   }
+
+  /**
+     * Serve an image file from the Asset library -- will be shown *in* web browser
+     */
+    def serveImage(path: String) = {
+      at(Settings.assetLibraryPath, path)
+    }
+
+
 
   /**
    * serve a generated archive file 
@@ -49,12 +58,12 @@ object FileServer extends Controller with Secured {
 
 
   // pasted from ExternalAssets -- to be replaced with better code!
-  private def at(rootPath: String, file: String): Action[AnyContent] = Authenticated { request =>
+  private def at(rootPath: String, file: String, inBrowser: Boolean = true): Action[AnyContent] = Authenticated { request =>
 
       val fileToServe = new File(rootPath, file)
 
       if (fileToServe.exists) {
-        Ok.sendFile(fileToServe, inline = true).withHeaders(CACHE_CONTROL -> "max-age=3600")
+        Ok.sendFile(fileToServe, inline = inBrowser).withHeaders(CACHE_CONTROL -> "max-age=3600")
       } else {
         NotFound
       }

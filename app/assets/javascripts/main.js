@@ -249,9 +249,9 @@ var imgSrcThumbnail = function(attr, asset) {
   if (asset.thum) {
     var thumbnailPath = getThumbnailPath(asset.path);
     if(LibraryUI.isAdmin) {
-      return attr + '="' + jsRoutes.controllers.FileServer.serve(thumbnailPath) + '?bust=' + LibraryUI.loadTime + '"';
+      return attr + '="' + jsRoutes.controllers.FileServer.serveImage(thumbnailPath) + '?bust=' + LibraryUI.loadTime + '"';
     } else {
-      return attr + '="' + jsRoutes.controllers.FileServer.serve(thumbnailPath) + '"';
+      return attr + '="' + jsRoutes.controllers.FileServer.serveImage(thumbnailPath) + '"';
     }
   } else {
     // placeholder
@@ -387,7 +387,7 @@ LibraryUI.showIndividualAsset = function(path, index, navigatingList) {
       // fill in asset details
       var imgSrc = "http://placehold.it/320x320";
       if (asset.hasPreview) {
-        imgSrc = jsRoutes.controllers.FileServer.serve(asset.preview);
+        imgSrc = jsRoutes.controllers.FileServer.serveImage(asset.preview);
       }      
       $("#adPreview").attr('src', imgSrc);
 
@@ -468,7 +468,7 @@ var downloadAssetClicked = function(e) {
 
   if (LibraryUI.currentAsset) {
     // TODO: open in 'new' window
-    window.location.href = jsRoutes.controllers.FileServer.serve(LibraryUI.currentAsset.path); 
+    window.location.href = jsRoutes.controllers.FileServer.downloadFile(LibraryUI.currentAsset.path);
   }
 };
 
@@ -655,7 +655,7 @@ var downloadAllButtonClicked = function(e) {
   } else if (assets.length === 1) {
     // exactly one asset, download it
     assets.each(function() {
-      window.location.href = jsRoutes.controllers.FileServer.serve($(this).attr("data-original"));
+      window.location.href = jsRoutes.controllers.FileServer.downloadFile($(this).attr("data-original"));
     });
     return;
 

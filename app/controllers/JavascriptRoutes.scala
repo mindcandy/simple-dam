@@ -22,7 +22,8 @@ object JavascriptRoutes extends Controller with Secured {
         )
 
       val assetRoutes = generateAssetRoutes("jsRoutes")(
-        FileServer.serve,
+        FileServer.downloadFile,
+        FileServer.serveImage,
         // FileServer.serveArchive,
         LibraryUI.index,
         LibraryUI.listAssetsInFolder,
