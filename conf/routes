@@ -34,7 +34,7 @@ POST    /rest/admin/massEditMetadata/    controllers.Admin.massEditMetadata
 # Static resources -- may be replaced by Apache or nginx in production
 #
 GET     /s/img/*file                     controllers.FileServer.serveImage(file)
-GET     /s/file/*file                    controllers.FileServer.downloadFile(file)
+GET     /s/download/*file                controllers.FileServer.downloadFile(file)
 GET     /s/archive/*file                 controllers.FileServer.serveArchive(file)
 GET     /s/theme/*file                   controllers.FileServer.serveTheme(file)
 GET     /s/web/*file                     controllers.Assets.at(path="/public", file)

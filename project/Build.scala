@@ -5,7 +5,7 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
   val appName         = "simple-dam"
-  val appVersion      = "0.2.7"
+  val appVersion      = "0.3.0"
 
   val appDependencies = Seq(
     "org.mockito" % "mockito-core" % "1.9.0",
