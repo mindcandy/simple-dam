@@ -50,7 +50,10 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
       else {
         folder.folders.find(_.name == components.head) match {
           case Some(matchingFolder) => findFolderRecursive(matchingFolder, components.tail)
-          case None => throw new Exception("No matching folder for " + components.head)
+          case None => {
+            Logger.error("No matching folder for " + components.head)
+            throw new Exception("No matching folder for '" + components.head + "'")
+          }
         }
       }
     }
@@ -65,13 +68,22 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
   def findAssetByPath(assetPath: String): Asset = {
 
     // split into path and folder
-    val splitPoint = assetPath.lastIndexOf("/") + 1
-    val path = assetPath.substring(0, splitPoint)
-    val assetName = assetPath.substring(splitPoint).trim
+    val fixedUpAssetPath = assetPath.replace("&amp&", "&")
+    val splitPoint = fixedUpAssetPath.lastIndexOf("/") + 1
+    val path = fixedUpAssetPath.substring(0, splitPoint)
+    val assetName = fixedUpAssetPath.substring(splitPoint).trim
 
     val folder = findFolder(path)
 
-    folder.assets.find(_.name == assetName).get
+    folder.assets.find(_.name == assetName) match {
+      case Some(asset) => asset
+      case None => {
+        Logger.error("Cannot find asset '" + assetName + "' in folder " + path)
+        Logger.debug("assets in that folder = " + folder.assets.mkString(",\n"))
+        throw new Exception("could not find asset '" + assetName + "' in folder " + path)
+      }
+    }
+
   }
 
   /** 
