@@ -63,7 +63,15 @@ object FileServer extends Controller with Secured {
       val fileToServe = new File(rootPath, file)
 
       if (fileToServe.exists) {
-        Ok.sendFile(fileToServe, inline = inBrowser).withHeaders(CACHE_CONTROL -> "max-age=3600")
+        val response = Ok.sendFile(fileToServe, inline = inBrowser).withHeaders(CACHE_CONTROL -> "max-age=3600")
+        if (!inBrowser) {
+          // enforce binary download type and quote Content-Disposition for Firefox
+          response.withHeaders(
+            CONTENT_TYPE -> play.api.http.ContentTypes.BINARY,
+            CONTENT_DISPOSITION -> ("attachment; filename=\"" + fileToServe.getName + "\"")  )
+        } else {
+          response
+        }
       } else {
         NotFound
       }
