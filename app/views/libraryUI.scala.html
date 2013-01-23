@@ -302,10 +302,12 @@ jQuery(document).ready(function() {
   LibraryUI.init("@{order}", @{library.loadedAt}, 
     "@routes.Assets.at("tree-themes/classic/style.css")",
     "@routes.Assets.at("img/grey.gif")",
-    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", "@{individualAsset.map(_.original).getOrElse("")}",
-    @util.Settings.isAdmin,
-    @util.Settings.archiveOnStart,  @models.AssetLibrary.areFolderArchivesGenerated,
-    [@Html(library.keywords.mkString("'", "','", "'"))]);
+    "@Html(search)", "@Html(keywordSearch)", "@Html(currentFolder)", 
+    "@{individualAsset.map(_.original).getOrElse("")}",
+    @{util.Settings.isAdmin},
+    @{util.Settings.archiveOnStart},  
+    @{models.AssetLibrary.areFolderArchivesGenerated},
+    [@{ library.keywords.map(_.replace("\'", "\\\'")).mkString("'", "','", "'") }]);
 });
 </script>
 
