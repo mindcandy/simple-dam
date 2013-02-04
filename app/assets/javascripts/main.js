@@ -12,8 +12,10 @@
 // Define the library UI global object
 var LibraryUI = {};
 
+// IE8 you slag!
+var console = window.console || { log: function() {} };
 
- var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
+var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
 
 var statusText = function(text) {
   $("#statusText").html(text);
