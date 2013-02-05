@@ -1,0 +1,25 @@
+@(ieVersion: Int)
+
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Incompatible browser, sorry</title>
+  <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+</head>
+<body>
+<div class="container">
+  <h1>Apologies, this browser is not compatible with this website</h1>
+  <p>We suggest you use one of the following:
+    <ul>
+      <li><a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a></li>
+      <li><a href="http://www.mozilla.org/en-US/firefox/new/">Mozilla Firefox</a></li>
+      <li>(on Mac) <a href="http://www.apple.com/safari/">Apple Safari</a></li>
+      <li>(on Windows only) Internet Explorer @{ieVersion} or later from <a href="http://windows.microsoft.com/en-US/internet-explorer/download-ie">Microsoft</a></li>
+      <li>other modern web browsers such as <a href="http://www.opera.com/">Opera</a> should also work, but have not been tested.</li>
+    </ul>
+  </p>
+</div>
+</body> 
+</html>
+
