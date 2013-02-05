@@ -19,7 +19,7 @@ var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:
 
 var statusText = function(text) {
   $("#statusText").html(text);
-  console.log(text);
+  //console.log(text);
 };
 
 var updateOrderText = function() {
@@ -91,7 +91,9 @@ var updateSearchLocation = function(url) {
   if (LibraryUI.initalSearch === true) {
     LibraryUI.initalSearch = false;
   } else {
-    window.history.replaceState("", "", url);
+    if (window.history.replaceState) {
+      window.history.replaceState("", "", url);
+    }
   }
 };
 
