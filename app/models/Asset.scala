@@ -17,7 +17,8 @@ case class Asset (
   description: String, 
   keywords: Set[String],
   sizeBytes: Long,
-  lastModified: Long) {
+  lastModified: Long,
+  group: Int) {
   
   /*
    * name in Lowercase -- used in sorting a lot
@@ -77,7 +78,7 @@ object Asset {
   /**
    * load an Asset
    */
-  def apply(path: File, basePath: String): Asset = {
+  def apply(path: File, basePath: String, group: Int): Asset = {
     val metadataFile = new NscFile(new File(getSuffixPath(path, ".json")))
     val metadata = loadMetadata(metadataFile)
 
@@ -93,7 +94,8 @@ object Asset {
       description = description,
       keywords = keywords,
       sizeBytes = sizeBytes,
-      lastModified = path.lastModified)
+      lastModified = path.lastModified,
+      group = group)
   }
 
   private def loadMetadata (file: NscFile): Map[String, String] = {

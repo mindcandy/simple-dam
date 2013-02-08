@@ -1,4 +1,4 @@
-@(title: String, search: String, currentFolder: String, library: models.AssetLibrary, individualAsset: Option[models.Asset], keywordSearch: String, order: String)(implicit request: play.api.mvc.RequestHeader)
+@(title: String, search: String, currentFolder: String, library: AssetLibrary, individualAsset: Option[Asset], keywordSearch: String, order: String, userView: UserView)(implicit request: play.api.mvc.RequestHeader)
 
 
 @*******************************
@@ -112,12 +112,12 @@
 
       <h5 class="category"><i class="icon-folder-close"></i> Folders</h5>
       <div class="tree folders" id="folderTree" style="display:none;">
-        @listFolders(library.topFolder.folders, "")
+        @listFolders(userView.topFolders, "")
       </div>
 
       <h5 class="category"><i class="icon-tags"></i> Keywords</h5>
       <div class="tree keywords" id="keywordTree" style="display:none;">
-        @listKeywords(library.keywords)
+        @listKeywords(userView.keywords)
       </div>
 
       <div id="sidebarPadding"></div>
@@ -147,6 +147,10 @@
     </ul>
 
     <ul class="nav pull-right">
+      @if(Auth.authEnabled) {
+        <li><a href="@routes.Auth.logout">Log out</a></li>
+      }
+
       @if(!util.Settings.infoText.isEmpty) {
         <li><a href="@util.Settings.infoUrl">@util.Settings.infoText</a></li>
       }
@@ -307,7 +311,7 @@ jQuery(document).ready(function() {
     @{util.Settings.isAdmin},
     @{util.Settings.archiveOnStart},  
     @{models.AssetLibrary.areFolderArchivesGenerated},
-    [@{ library.keywords.map(_.replace("\'", "\\\'")).mkString("'", "','", "'") }]);
+    [@{ userView.keywords.map(_.replace("\'", "\\\'")).mkString("'", "','", "'") }]);
 });
 </script>
 

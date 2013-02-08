@@ -1,4 +1,4 @@
-@(title: String, loginform: Form[Pair[String,String]], route: Call)
+@(title: String, loginform: Form[Pair[String,String]], info: String, route: Call)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -20,6 +20,10 @@
             @form(action = route, 'class -> "loginForm") {
 
                 <h2>Please sign in</h2>
+
+                @if(!info.isEmpty) {
+                    <p>@Html(info)</p>
+                }
 
                 @inputText(
                     field = loginform("username"),

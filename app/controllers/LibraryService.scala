@@ -5,25 +5,60 @@ import play.api.mvc._
 import play.api.libs.json._
 
 import models._
-import util.{Settings, Archiver, Humanize}
+import util.{Settings, Archiver, Humanize, AuthenticatedUser}
 
 /* 
  * Asset Library RESTful services for AJAX UI
  */
 object LibraryService extends Controller with Secured {
 
+  private def findByKeyword(userView: UserView, sanitisedSearch: String) = {
+    if (userView.isEverythingVisible)
+      AssetLibrary.current.findAssetsByKeyword(sanitisedSearch)
+    else {
+      // search in allowed top level folders, then combine searches        
+      userView.topFolders.foldLeft (List[Asset]()) {
+        case (accum, folder) => accum ++ folder.findAssetsByKeyword(sanitisedSearch)
+      }
+    }
+  }
+
+  private def findString(userView: UserView, sanitisedSearch: String) = {
+    if (userView.isEverythingVisible)
+      AssetLibrary.current.findAssets(sanitisedSearch)
+    else {
+      // search in allowed top level folders, then combine searches    
+       userView.topFolders.foldLeft (List[Asset]()) {
+        case (accum, folder) => accum ++ folder.findAssets(sanitisedSearch)
+      }
+    }
+  }
+
+  private def findAllAssets(userView: UserView) = {
+    if (userView.isEverythingVisible)
+      AssetLibrary.current.sortedAssets
+    else {
+      // search in allowed top level folders, then combine searches    
+      userView.topFolders.foldLeft (List[Asset]()) {
+        case (accum, folder) => accum ++ folder.allAssets
+      }
+    }
+  }
+
   /**
    * endpoint for searching assets
    * searchTypes can be 'folder','keyword', or undefined in which case folder, keyword and name are searched
    */
-  def search(searchType: String, search: String, order: String) = Authenticated {  request =>
+  def search(searchType: String, search: String, order: String) = Authenticated { implicit request =>
 
+    val userView = UserView(AssetLibrary.current, Auth.currentUser)
     val sanitisedSearch = search.trim    
+
     val assets = searchType match {
       case "folder" => AssetLibrary.current.findFolder(sanitisedSearch).allAssets
-      case "keyword" => AssetLibrary.current.findAssetsByKeyword(sanitisedSearch)
-      case _ if (!sanitisedSearch.isEmpty) => AssetLibrary.current.findAssets(sanitisedSearch)
-      case _ => AssetLibrary.current.sortedAssets
+      case "keyword" => findByKeyword(userView, sanitisedSearch)
+      case _ if (!sanitisedSearch.isEmpty) => findString(userView, sanitisedSearch)
+      case _ => findAllAssets(userView)
     }
     // TODO: sort on client
     val sortedAssets = orderAssets(assets, order)

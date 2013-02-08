@@ -11,9 +11,38 @@ object AssetLibraryLoader {
   /**
    * load asset library from a path
    */
-  def load(assetLibraryPath: String) = AssetLibrary(
-    loadFolder(new File(assetLibraryPath), assetLibraryPath).getOrElse(AssetFolder.Empty),
-    assetLibraryPath)
+  def load(assetLibraryPath: String) = {
+
+    val path = new File(assetLibraryPath)
+    val basePath = assetLibraryPath
+
+     val allFiles = path.listFiles() match {
+      case null => List()
+      case files => files.toList
+    }
+
+    val folders = allFiles.filter( isValidDirectory(_) )
+    
+    if (folders.isEmpty) {
+      // nothing to see here
+      AssetLibrary(AssetFolder.Empty, assetLibraryPath, Map())
+
+    } else {
+      // assign group ids
+      val groups = { 
+          for ((folder, index) <- folders.zipWithIndex) 
+            yield (folder.getName, index) 
+        }.toMap
+
+      val subFolders = folders.flatMap { 
+          f => loadFolder(f, basePath, groups(f.getName)) 
+        }.sortBy(_.name.toLowerCase)
+
+      AssetLibrary(AssetFolder(path.getName, List(), subFolders, 0),
+        assetLibraryPath,  groups)
+    } 
+  }
+
 
   // is this a valid directory?
   private def isValidDirectory(path: File): Boolean = {
@@ -27,7 +56,7 @@ object AssetLibraryLoader {
   /**
    * load a folder of Assets
     */
-  private def loadFolder(path: File, basePath: String): Option[AssetFolder] = {
+  private def loadFolder(path: File, basePath: String, group: Int): Option[AssetFolder] = {
     val allFiles = path.listFiles() match {
       case null => List()
       case files => files.toList
@@ -36,11 +65,18 @@ object AssetLibraryLoader {
     val folders = allFiles.filter( isValidDirectory(_) )
     val assets = allFiles.filter( Asset.isValidAsset(_) )
 
-    if (folders.isEmpty && assets.isEmpty) None
-    else Some(AssetFolder(
-      name = path.getName,
-      assets = assets.map(Asset(_, basePath)).sortBy(_.nameLower),
-      folders = folders.flatMap(loadFolder(_, basePath)).sortBy(_.name.toLowerCase)))    
+    if (folders.isEmpty && assets.isEmpty) {
+      // nothing to see here
+      None
+    } else {
+      val subFolders = folders.flatMap(loadFolder(_, basePath, group))
+
+      Some(AssetFolder(
+        name = path.getName,
+        assets = assets.map(Asset(_, basePath, group)).sortBy(_.nameLower),
+        folders = subFolders.sortBy(_.name.toLowerCase),
+        group = group))
+    }
   }
 
   /**

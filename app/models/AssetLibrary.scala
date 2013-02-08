@@ -14,7 +14,7 @@ import java.util.Date
  * a loaded asset library
  * NOTE: put all caching etc in this
  */
-case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
+case class AssetLibrary (topFolder: AssetFolder, basePath: String, groups: Map[String, Int]) {
 
   /**
    * get load time to use as cache bust if needed
@@ -29,16 +29,23 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
   /**
    * cached set of all keywords used in all assets
    */
-  lazy val keywords: List[String] = collectKeywords(sortedAssets)
+  lazy val keywords: List[String] = AssetLibrary.collectKeywords(sortedAssets).toList.sortBy(_.toLowerCase)
+
+  /** 
+   * cached set of all keywords used by top folders
+   */
+  lazy val keywordsByTopFolder: Map[AssetFolder, Set[String]] = {
+      for (folder <- topFolder.folders) yield (folder, AssetLibrary.collectKeywords(folder.allAssetsUnsorted))
+    }.toMap
 
   /**
    * find assets that match the given search 
    * will AND together terms separated by spaces
    */
-  def findAssets(search: String): List[Asset] = {
-    val searchTerms = search.toLowerCase.split(" ").map(_.trim).filter(!_.isEmpty).toList
-    sortedAssets.filter(_.matches(searchTerms))
+  def findAssets(search: String): List[Asset] = {    
+    sortedAssets.filter(_.matches(AssetLibrary.getSearchTerms(search)))
   }
+
 
   /**
    * find a folder by its path
@@ -93,14 +100,6 @@ case class AssetLibrary (topFolder: AssetFolder, basePath: String) {
     sortedAssets.filter(_.keywords.contains(keyword) )
   }
 
-  /**
-   * collect all keywords
-   */
-  private def collectKeywords(assets: Seq[Asset]): List[String] = {
-    assets.foldLeft (Set[String]()) {
-      case (set, asset) => set ++ asset.keywords
-    }.toList.sortBy(_.toLowerCase)
-  }
 }
 
 /**
@@ -111,7 +110,7 @@ object AssetLibrary {
   /**
    * an empty library
    */
-  val Empty = AssetLibrary(AssetFolder.Empty, "")
+  val Empty = AssetLibrary(AssetFolder.Empty, "", Map())
 
   /**
    * currently loaded asset library
@@ -141,6 +140,18 @@ object AssetLibrary {
     Akka.system.scheduler.scheduleOnce(10 seconds) {
       Archiver.createAllFolderArchives()
       AssetLibrary.areFolderArchivesGenerated = true 
+    }
+  }
+
+
+  def getSearchTerms(search: String) = search.toLowerCase.split(" ").map(_.trim).filter(!_.isEmpty).toList
+
+  /**
+   * collect all keywords for a list of assets
+   */
+  private def collectKeywords(assets: Seq[Asset]): Set[String] = {
+    assets.foldLeft (Set[String]()) {
+      case (set, asset) => set ++ asset.keywords
     }
   }
 }
