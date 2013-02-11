@@ -20,6 +20,11 @@ import views._
 
 object Auth extends Controller {
 
+  /** token to force a relogin for existing logged in users */
+  val authToken = "10"
+  val authTokenKey = "authToken"
+
+
   val loginForm = Form(
     tuple(
       "username" -> text,
@@ -83,7 +88,7 @@ object Auth extends Controller {
           checkWithWordpress(username, password).map { authed =>
             authed match {
               case Some(user) => 
-                Redirect(routes.LibraryUI.index()).withSession(user.toSession) 
+                Redirect(routes.LibraryUI.index()).withSession(user.toSession + (Auth.authTokenKey -> Auth.authToken)) 
               case _ => Redirect(routes.Auth.login)
             }
           }
@@ -100,10 +105,14 @@ trait Secured {
   case class AuthenticatedRequest[A]( val username: String, request: Request[A] ) extends WrappedRequest(request)
 
   def Authenticated[A](parser: BodyParser[A])(f: AuthenticatedRequest[A] => Result) = {
-    Action(parser) { request =>
-      request.session.get("username").flatMap( (u: String) => Some(u) ).map { username =>
-        f(AuthenticatedRequest(username, request))
-      }.getOrElse(onUnauthorized(request))
+    Action(parser) { request => {
+        val authTokenOk = request.session.get(Auth.authTokenKey) == Some(Auth.authToken)
+        
+        request.session.get("username") match {
+          case Some(username) if authTokenOk => f(AuthenticatedRequest(username, request))
+          case _ => onUnauthorized(request)
+        }
+      }
     }
   }
 
