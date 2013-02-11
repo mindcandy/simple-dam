@@ -45,7 +45,7 @@ object Auth extends Controller {
 
   private def processWordpressResponse(username: String, json: JsValue): Option[AuthenticatedUser] = {
     (json \ "auth").asOpt[String] match {
-      case Some("true") => Some(AuthenticatedUser(username, (json \\ "groups").map(_.as[String]) ))
+      case Some("true") => Some(AuthenticatedUser(username, (json \ "groups").asOpt[Seq[String]].getOrElse(List()) ))
       case _ => None
     }
   }
