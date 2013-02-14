@@ -49,8 +49,9 @@ object Auth extends Controller {
   lazy val authInfo = Play.current.configuration.getString("application.auth.infoText").getOrElse("")
 
   private def processWordpressResponse(username: String, json: JsValue): Option[AuthenticatedUser] = {
-    (json \ "auth").asOpt[String] match {
-      case Some("true") => Some(AuthenticatedUser(username, (json \ "groups").asOpt[Seq[String]].getOrElse(List()) ))
+    Logger.debug(json.toString)
+    (json \ "auth").asOpt[Boolean] match {
+      case Some(true) => Some(AuthenticatedUser(username, (json \ "groups").asOpt[Seq[String]].getOrElse(List()) ))
       case _ => None
     }
   }
@@ -60,7 +61,7 @@ object Auth extends Controller {
     //Promise.pure(Some(AuthenticatedUser(username, List("mind candy", "moshi monsters") )))
     
     authUrl match {
-      case Some(url) => WS.url(url).withQueryString(("username", username), ("password", password)).get().map { 
+      case Some(url) => WS.url(url).withQueryString("__api_auth" -> "1", "username" -> username, "password" -> password).get().map { 
         response => processWordpressResponse(username, response.json)
       }
       case _ => Promise.pure(None)
