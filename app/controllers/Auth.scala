@@ -48,29 +48,28 @@ object Auth extends Controller {
 
   lazy val authInfo = Play.current.configuration.getString("application.auth.infoText").getOrElse("")
 
-  private def processWordpressResponse(username: String, json: JsValue): Option[AuthenticatedUser] = {
+  private def processWordpressResponse(username: String, json: JsValue): Either[String,AuthenticatedUser] = {
     Logger.debug(json.toString)
     (json \ "auth").asOpt[Boolean] match {
-      case Some(true) => Some(AuthenticatedUser(username, (json \ "groups").asOpt[Seq[String]].getOrElse(List()) ))
-      case _ => None
+      case Some(true) => Right(AuthenticatedUser(username, (json \ "groups").asOpt[Seq[String]].getOrElse(List()) ))
+      case _ => Left((json \ "error").asOpt[String].getOrElse("ERROR: Failed to authenticate!"))
     }
   }
 
-  def checkWithWordpress(username: String, password: String): Promise[Option[AuthenticatedUser]] = {
-    /*** MOCKING **/
-    //Promise.pure(Some(AuthenticatedUser(username, List("mind candy", "moshi monsters") )))
-    
+  def checkWithWordpress(username: String, password: String): Promise[Either[String,AuthenticatedUser]] = {    
     authUrl match {
       case Some(url) => WS.url(url).withQueryString("__api_auth" -> "1", "username" -> username, "password" -> password).get().map { 
         response => processWordpressResponse(username, response.json)
       }
-      case _ => Promise.pure(None)
+      case _ => Promise.pure(Left("ERROR: No url defined for external authentication! Contact Support!"))
     }
   }
 
+  def showLoginForm(error: String)  = html.login(Settings.title, loginForm, authInfo, routes.Auth.authenticate, error)
+
   def login = Action { implicit request =>
     if (authEnabled) {
-      Ok(html.login(Settings.title, loginForm, authInfo, routes.Auth.authenticate))
+      Ok(showLoginForm(""))
     } else {  
       Redirect(routes.LibraryUI.index()).withSession(Security.username -> "user")
     }
@@ -82,15 +81,16 @@ object Auth extends Controller {
 
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Redirect(routes.Auth.login),
+      formWithErrors => Ok(showLoginForm("")),
       userPass => {
         val (username, password) = userPass
         Async {
           checkWithWordpress(username, password).map { authed =>
             authed match {
-              case Some(user) => 
+              case Right(user) => 
                 Redirect(routes.LibraryUI.index()).withSession(user.toSession + (Auth.authTokenKey -> Auth.authToken)) 
-              case _ => Redirect(routes.Auth.login)
+              case Left(error) => 
+                Ok(showLoginForm(error))
             }
           }
         }
