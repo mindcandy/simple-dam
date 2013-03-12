@@ -252,11 +252,7 @@ var getThumbnailPath = function(path) {
 var imgSrcThumbnail = function(attr, asset) {
   if (asset.thum) {
     var thumbnailPath = getThumbnailPath(asset.path);
-    if(LibraryUI.isAdmin) {
-      return attr + '="' + jsRoutes.controllers.FileServer.serveImage(thumbnailPath) + '?bust=' + LibraryUI.loadTime + '"';
-    } else {
-      return attr + '="' + jsRoutes.controllers.FileServer.serveImage(thumbnailPath) + '"';
-    }
+    return attr + '="' + jsRoutes.controllers.FileServer.serveImage(thumbnailPath) + '"';
   } else {
     // placeholder
     return attr + '="http://placehold.it/96x96" width="96" height="96"';

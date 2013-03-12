@@ -36,7 +36,7 @@ object JavascriptRoutes extends Controller with Secured {
 
       val combined = ajaxRoutes.trim() + ";\n" + assetRoutes
 
-      Ok(combined).as("text/javascript")
+      Ok(combined).as("text/javascript").withHeaders(VARY -> ACCEPT_ENCODING)
     }
 
     /**
