@@ -264,7 +264,7 @@ var imgSrcThumbnail = function(attr, asset) {
 }
 
 var renderAssetThumbnail = function(index, asset) {
-  if (index < 64) {
+  if (index < 100) {
     return '<img class="thumb" ' + imgSrcThumbnail("src", asset) + ' />';
   } else {
     // lazy load later thumbnails so we can return ALL the results and just load when scrolling 
@@ -559,7 +559,8 @@ var updateUiState = function(selectionCount) {
     enableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download Selection");
     $("#downloadAllBtn").show();
-    setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
+    enableBtn($("#downloadAllBtn"));
+    //setEnabledBtn($("#downloadAllBtn"), selectionCount <= AssetArchiveDownloadLimit);
 
   } else {
     var assetCount = $(".inner-asset").length;
@@ -567,7 +568,10 @@ var updateUiState = function(selectionCount) {
     disableBtn($("#deselectAllBtn"));
     disableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download All");
-    $("#downloadAllBtn").hide();
+    if ($("#downloadFolderBtn").is(":visible")) {
+      // hide if download folder button present
+      $("#downloadAllBtn").hide();
+    }
   }
 };
 
@@ -648,7 +652,7 @@ var getAssetsToDownload = function() {
 
 var downloadAllButtonClicked = function(e) {
   e.stopPropagation();
-  if (isBtnDisabled($(this))) return;
+  //if (isBtnDisabled($(this))) return;
 
   var assets = getAssetsToDownload();
 
@@ -773,7 +777,7 @@ var initUI = function() {
   $("#selectAllBtn").click(selectAllAssets);
   $("#deselectAllBtn").click(deselectAllAssets);
 
-  $("#downloadAllBtn").hide();
+  //$("#downloadAllBtn").hide();
   $("#downloadAllBtn").click(downloadAllButtonClicked);
   $("#massDownloadSubmitBtn").click(downloadSubmitButtonClicked);
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
