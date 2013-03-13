@@ -293,6 +293,30 @@
 </div>
 
 
+@****** you can't download this many assets diablog ******@
+<div id="massDownloadNotAllowed" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Too many assets to download</h3>
+  </div>
+  <div class="modal-body">
+    <p>Sorry, you can't download more than <span id="maxAssetsToDownload">X</span> assets at a time. Please select fewer.</p>
+@if(util.Settings.archiveOnStart) {
+  @if(models.AssetLibrary.areFolderArchivesGenerated) {
+    <p>However, there are archives of each Folder ready to download! To find these, select from the <strong><i class="icon-folder-close"></i>&nbsp;Folders</strong> list on the left of the page and then you will see a blue <br/><strong><i class="icon-download-alt"></i>&nbsp;Download Folder</strong> button at the top of the page.
+  } else {
+    <p>However, archives for each folder are being built. If you refresh this page later (up to an hour) you should be able to download an entire folder at a time!</p>
+  }
+}
+    <p></p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> Close</button>
+  </div>
+</div>
+
+
+
 } @* end of main() call *@
 
 

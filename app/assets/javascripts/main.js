@@ -665,7 +665,8 @@ var downloadAllButtonClicked = function(e) {
 
   } else if (assets.length > AssetArchiveDownloadLimit) {
 
-    alert("Too many assets! You can only download " + AssetArchiveDownloadLimit + " at a time, apologies.");
+    $("#maxAssetsToDownload").html(AssetArchiveDownloadLimit);
+    $("#massDownloadNotAllowed").modal();
     return;
   }
 
