@@ -564,9 +564,11 @@ var updateUiState = function(selectionCount) {
     disableBtn($("#deselectAllBtn"));
     disableBtn($("#massEditMetaBtn"));
     $("#downloadAllBtnLabel").html("Download All");
-    if ($("#downloadFolderBtn").is(":visible")) {
+    if (LibraryUI.showFolderDownload && (LibraryUI.searchType === 'folder')) {
       // hide if download folder button present
       $("#downloadAllBtn").hide();
+    } else {
+      $("#downloadAllBtn").show();
     }
   }
 };
