@@ -6,6 +6,7 @@ import Play.current
 import org.joda.time.format.{ DateTimeFormatter, DateTimeFormat }
 import org.joda.time.DateTimeZone
 import java.io._
+import collection.JavaConverters._
 
 import util.Settings
 
@@ -57,6 +58,9 @@ object FileServer extends Controller with Secured {
   }
 
 
+  /********
+   * some datetime parsing stuff taken from Play framework's Assets.at()
+   */
   private val timeZoneCode = "GMT"
 
   //Dateformatter is immutable and threadsafe
@@ -69,20 +73,6 @@ object FileServer extends Controller with Secured {
 
   private val parsableTimezoneCode = " " + timeZoneCode
 
-  case class FileCacheInfo(etag: String, lastModified: String)
-
-  private def cacheInfoForFile(file: File): FileCacheInfo = {
-    // using last-modified-time as entity tag for now, so we can seamlessly replace with full etags later if needed
-    val etag = file.lastModified.toString  
-    val lastModified = df.print({ new java.util.Date(file.lastModified).getTime })
-    FileCacheInfo(etag, lastModified)
-  }
-
-  private val cacheControl: String = Play.mode match {
-    case Mode.Prod => Play.configuration.getString("assets.defaultCache").getOrElse("max-age=640000")
-    case _ => "no-cache"
-  }
-
   def parseDate(date: String): Option[java.util.Date] = try {
     //jodatime does not parse timezones, so we handle that manually
     val d = dfp.parseDateTime(date.replace(parsableTimezoneCode, "")).toDate
@@ -90,6 +80,42 @@ object FileServer extends Controller with Secured {
   } catch {
     case _ => None
   }
+
+
+  
+  /**
+   * hold file caching info
+   */
+  case class FileCacheInfo(etag: String, lastModified: String)
+
+  private def cacheInfoForFile(file: File): FileCacheInfo = {
+
+    // using last-modified-time as entity tag for now, so we can seamlessly replace with full etags later if needed
+    val modified = lastModifiedForFile(file)
+    val etag = modified.toString  
+    val lastModified = df.print({ new java.util.Date(modified).getTime })
+    FileCacheInfo(etag, lastModified)
+  }
+
+  // cache file last-modified time (if not in Admin mode)
+  private val lastModifiedCache = (new java.util.concurrent.ConcurrentHashMap[String, Long]()).asScala
+
+  private def lastModifiedForFile(file: File): Long = {
+    lastModifiedCache.get(file.getPath).filter(_ => (!Settings.isAdmin && Play.isProd)).orElse {
+      val modified = file.lastModified
+      lastModifiedCache.put(file.getPath, modified)
+      Some(modified)
+    }.get
+  }
+
+  /**
+   * get cache control string -- customisable by setting assets.defaultCache= in the config file
+   */
+  private val cacheControl: String = Play.mode match {
+      case Mode.Prod => (Play.configuration.getString("assets.defaultCache").getOrElse("max-age=3600") + " must-revalidate")
+    case _ => "no-cache"
+  }
+
 
 
   /**
@@ -106,7 +132,7 @@ object FileServer extends Controller with Secured {
 
       // responds to Entity Tag If-None-Match query
       request.headers.get(IF_NONE_MATCH).flatMap { ifNoneMatch =>
-        Some(info.etag).filter(_ == ifNoneMatch)          
+        Some(info.etag).filter(_ == ifNoneMatch)
       }.map(_ => NotModified).getOrElse {
 
         // respond to If-Modified-Since query via last modified time
