@@ -101,11 +101,11 @@ object FileServer extends Controller with Secured {
   private val lastModifiedCache = (new java.util.concurrent.ConcurrentHashMap[String, Long]()).asScala
 
   private def lastModifiedForFile(file: File): Long = {
-    lastModifiedCache.get(file.getPath).filter(_ => (!Settings.isAdmin && Play.isProd)).orElse {
+    lastModifiedCache.get(file.getPath).filter(_ => (!Settings.isAdmin && Play.isProd)).getOrElse {
       val modified = file.lastModified
       lastModifiedCache.put(file.getPath, modified)
-      Some(modified)
-    }.get
+      modified
+    }
   }
 
   /**
