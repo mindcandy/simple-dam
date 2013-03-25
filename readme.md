@@ -59,3 +59,10 @@ Example assets
 --------------
 
 A separate github repository of [example assets](https://github.com/mindcandy/simple-dam-assets-example) has been created. You can simply download this and point your configuration's "assetLibrary" path at it to see how to arrange asset previews, thumbnails and metadata.
+
+
+Downloads
+---------
+
+[simple-dam-0.3.0.zip](http://mindcandy.github.com/simple-dam/downloads/simple-dam-0.3.0.zip) (40Mb) - should require only a Java Runtime Environment
+
