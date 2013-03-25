@@ -20,7 +20,7 @@ Features
     * asset_thumbnail.jpg -- the thumbnail (max 96x96)
     * asset_preview.jpg -- the preview (max 320x320)
 
-* a simple 'single page' UI for searching / downloading assets
+* a simple 'single page' UI for searching / downloading assets (using [Twitter Bootstrap](http://twitter.github.com/bootstrap/index.html))
 
 * search by folder, keyword, description
 
