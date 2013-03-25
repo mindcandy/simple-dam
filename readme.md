@@ -3,7 +3,7 @@ Simple DAM, the *very* simple digital asset manager
 
 This is a very simple minded 'Digital Asset Manager' that allows 'asset files' to be served up from a directory, with previews, thumbnails and searchable metadata. 
 
-It uses the [Play Framework 2.0.4](http://www.playframework.com/) currently (will eventually port to 2.1) but a precompiled version will be made available that only requires the Java Runtime.
+It uses the [Play Framework 2.0.4](http://www.playframework.com/) currently (will eventually port to 2.1) but a precompiled version is available that only requires the Java Runtime (see below).
 
 ![Screenshot](docs/screenshot.png)
 
