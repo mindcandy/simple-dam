@@ -9,19 +9,30 @@ Features
 --------
 
 * no database - designed for less than 10,000 assets
+
 * no external dependences (builds to a standalone .jar file)
+
 * all data loaded from files at startup and NEVER changes
-** asset.foo -- the asset
-** asset.json -- asset metadata in JSON
-** asset_thumbnail.jpg -- the thumbnail (max 96x96)
-** asset_preview.jpg -- the preview (max 320x320)
+
+    * asset.foo -- the asset
+    * asset.json -- asset metadata in JSON
+    * asset_thumbnail.jpg -- the thumbnail (max 96x96)
+    * asset_preview.jpg -- the preview (max 320x320)
+
 * a simple 'single page' UI for searching / downloading assets
+
 * search by folder, keyword, description
+
 * sort by name, size, age
+
 * URLs that can be emailed (e.g. "here are the latest assets in the 'Kittens' folder")
+
 * optional folder archive generation
+
 * optional external Authentication (via wordpress plugin)
+
 * local 'admin' mode for single-user editing of JSON metadata
+
 * to update files, simply copy new files to server and restart simple-dam app
 
 
