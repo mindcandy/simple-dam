@@ -68,11 +68,7 @@ object Auth extends Controller {
   def showLoginForm(error: String)  = html.login(Settings.title, loginForm, authInfo, routes.Auth.authenticate, error)
 
   def login = Action { implicit request =>
-    if (authEnabled) {
-      Ok(showLoginForm(""))
-    } else {  
-      Redirect(routes.LibraryUI.index()).withSession(Security.username -> "user")
-    }
+    Ok(showLoginForm(""))
   }
 
   def logout = Action {
@@ -106,7 +102,10 @@ trait Secured {
   case class AuthenticatedRequest[A]( val username: String, request: Request[A] ) extends WrappedRequest(request)
 
   def Authenticated[A](parser: BodyParser[A])(f: AuthenticatedRequest[A] => Result) = {
-    Action(parser) { request => {
+    Action(parser) { request => if (!Auth.authEnabled) {
+        // no auth
+        f(AuthenticatedRequest("", request))
+      } else {
         val authTokenOk = request.session.get(Auth.authTokenKey) == Some(Auth.authToken)
         
         request.session.get("username") match {
