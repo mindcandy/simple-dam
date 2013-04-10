@@ -15,13 +15,11 @@ var LibraryUI = {};
 // IE8 you slag!
 var console = window.console || { log: function() {} };
 
-var trackingEnabled = (typeof ga == 'function');
-
 // Analytics event tracking
 var trackEvent = function(category, action, data) {
-  if (trackingEnabled) {
-    ga('send', 'event', category, action, data);
-  }
+  if (typeof window.ga == 'function') {
+    window.ga('send', 'event', category, action, data);
+  } 
 };
 
 var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
