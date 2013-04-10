@@ -15,6 +15,15 @@ var LibraryUI = {};
 // IE8 you slag!
 var console = window.console || { log: function() {} };
 
+var trackingEnabled = (typeof ga == 'function');
+
+// Analytics event tracking
+var trackEvent = function(category, action, data) {
+  if (trackingEnabled) {
+    ga('send', 'event', category, action, data);
+  }
+};
+
 var spinnerOptions = { lines:15, length:24, width:8, radius:40, trail:25, speed:0.8, top:50, left:'auto' };
 
 var statusText = function(text) {
@@ -49,6 +58,7 @@ var doSearch = function(searchType, searchParam, order) {
   $("#results").spin(spinnerOptions);
 
   // call jquery etc
+  trackEvent('search', searchType, searchParam);
   jsRoutesAjax.controllers.LibraryService.search(searchType, searchParam, order)
   .ajax({
     success: function(data) {
@@ -56,6 +66,7 @@ var doSearch = function(searchType, searchParam, order) {
       // TODO: local sort
       $("#results").spin(false);
       LibraryUI.renderAssets(data.assets);
+      trackEvent('search', 'resultCount', data.assets.length);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.error("Search failed", textStatus, errorThrown);
