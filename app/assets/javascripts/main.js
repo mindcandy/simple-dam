@@ -16,9 +16,9 @@ var LibraryUI = {};
 var console = window.console || { log: function() {} };
 
 // Analytics event tracking
-var trackEvent = function(category, action, data) {
+var trackEvent = function(category, action, label, numericalValue) {
   if (typeof window.ga == 'function') {
-    window.ga('send', 'event', category, action, data);
+    window.ga('send', 'event', category, action, label, numericalValue);
   } 
 };
 
@@ -64,7 +64,7 @@ var doSearch = function(searchType, searchParam, order) {
       // TODO: local sort
       $("#results").spin(false);
       LibraryUI.renderAssets(data.assets);
-      trackEvent('search', 'resultCount', data.assets.length);
+      trackEvent('search', 'resultCount', searchType + ":" + searchParam, data.assets.length);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.error("Search failed", textStatus, errorThrown);
@@ -477,6 +477,7 @@ var downloadAssetClicked = function(e) {
 
   if (LibraryUI.currentAsset) {
     // TODO: open in 'new' window
+    trackEvent('download', 'single', LibraryUI.currentAsset.path);
     window.location.href = jsRoutes.controllers.FileServer.downloadFile(LibraryUI.currentAsset.path);
   }
 };
@@ -670,6 +671,7 @@ var downloadAllButtonClicked = function(e) {
   } else if (assets.length === 1) {
     // exactly one asset, download it
     assets.each(function() {
+      trackEvent('download', 'single', $(this).attr("data-original"));
       window.location.href = jsRoutes.controllers.FileServer.downloadFile($(this).attr("data-original"));
     });
     return;
@@ -720,6 +722,7 @@ var downloadSubmitButtonClicked = function(e) {
   postJson(jsRoutes.controllers.ArchiveBuilder.archive(), queryParameters)
   .done(function(data) {
       $('#massDownload').modal('hide');
+      trackEvent('download','multiple','count', assets.length);
       window.location = data.archive;
 
   }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -776,6 +779,14 @@ var updateDownloadFolderBtn = function() {
   }
 }
 
+var downloadFolderButtonClicked = function() {
+  var btn = $("#downloadFolderBtn");
+  var url = btn.attr('href');
+  if (url != '#') {
+    trackEvent('download', 'folder', LibraryUI.searchParam);
+  }
+}
+
 // set up UI when its loaded - mainly onclick functions
 var initUI = function() {
 
@@ -789,6 +800,7 @@ var initUI = function() {
   $("#downloadAllBtn").click(downloadAllButtonClicked);
   $("#massDownloadSubmitBtn").click(downloadSubmitButtonClicked);
   $(".orderChangeMenuItem").click(orderChangeMenuItemClicked);
+  $("#downloadFolderBtn").click(downloadFolderButtonClicked);
 
   $("#adDownload").click(downloadAssetClicked);
   $("#assetDetailPanel").modal({show: false}).on('hidden', onDetailPanelClosed);    
