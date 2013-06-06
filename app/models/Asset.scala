@@ -26,13 +26,13 @@ case class Asset (
   def nameLower = name.toLowerCase
 
   // cache the string of useful things to match against - path and keywords
-  private val matchString = original.toLowerCase + " " + keywords.toList.map(_.toLowerCase).mkString(" ") + " " + description
+  private val matchString = original.toLowerCase + " " + keywords.toList.map(_.toLowerCase).mkString(" ") + " " + description.toLowerCase
 
   /**
    * check if this asset matches the search terms (ANDed together)
    */
   def matches(searchTerms: Seq[String]): Boolean = {
-     searchTerms.forall(matchString.contains(_))
+    searchTerms.forall(matchString.contains(_))
   }
 
   /**
