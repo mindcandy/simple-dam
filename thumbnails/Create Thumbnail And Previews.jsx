@@ -58,7 +58,7 @@ function ProcessFile(file) {
         TrimImage();
 
         // resize to Preview
-        ResizeImage(320,320);
+        ResizeImage(480,480);
 
         // save image jpeg
         SaveJPEG(file, "_preview.jpg", 80, true);

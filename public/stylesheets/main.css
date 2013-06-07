@@ -99,7 +99,10 @@ body {
 }
 
 #assetDetailPanel {
-    margin: -350px 0 0 -250px;
+    top: 30%;
+    left: 30%;
+    width: 700px;
+    /*margin: -350px 0 0 -250px;*/
 }
 
 #assetDetailPanel .modal-body {
